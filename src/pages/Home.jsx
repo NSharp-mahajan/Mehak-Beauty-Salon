@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { Sparkles, Shield, GraduationCap, Star, Quote } from 'lucide-react'
+import { Sparkles, Shield, GraduationCap, Star, Quote, Users, Award, Calendar, Phone, Mail, MapPin, Clock, Instagram, Facebook, MessageCircle, ChevronRight, ArrowRight } from 'lucide-react'
 import './Home.css'
 
 const services = [
@@ -142,6 +142,33 @@ const testimonials = [
     service: 'Beauty Course',
     review: 'I joined the makeup course and learned so much with proper guidance and hands-on practice.',
     featured: false
+  }
+]
+
+const stats = [
+  {
+    id: 1,
+    number: '500+',
+    label: 'Happy Clients',
+    icon: Users
+  },
+  {
+    id: 2,
+    number: '5+',
+    label: 'Years Experience',
+    icon: Calendar
+  },
+  {
+    id: 3,
+    number: '100%',
+    label: 'Certified Experts',
+    icon: Award
+  },
+  {
+    id: 4,
+    number: '10+',
+    label: 'Beauty Courses',
+    icon: GraduationCap
   }
 ]
 
@@ -506,6 +533,157 @@ const Home = () => {
           ))}
         </motion.div>
       </section>
+
+      <section className="stats-section">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="stats-container"
+        >
+          {stats.map((stat, index) => (
+            <motion.div
+              key={stat.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
+              className="stat-item"
+            >
+              <div className="stat-icon">
+                <stat.icon />
+              </div>
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: index * 0.15 + 0.3, type: "spring" }}
+                className="stat-number"
+              >
+                {stat.number}
+              </motion.div>
+              <div className="stat-label">{stat.label}</div>
+              {index < stats.length - 1 && <div className="stat-divider"></div>}
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      <section className="cta-section">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="cta-container"
+        >
+          <div className="cta-background">
+            <div className="cta-overlay"></div>
+          </div>
+          <div className="cta-content">
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="cta-badge"
+            >
+              Book Your Experience
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="cta-title"
+            >
+              Your Luxury Beauty Journey Starts Here
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="cta-subtitle"
+            >
+              From bridal elegance to relaxing spa therapies, let Mehak Salon & Spa bring out your confidence and beauty.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="cta-buttons"
+            >
+              <button className="cta-button primary">Book Appointment</button>
+              <button className="cta-button secondary">Contact Us</button>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
+      <footer className="footer">
+        <div className="footer-container">
+          <div className="footer-grid">
+            <div className="footer-column">
+              <h3 className="footer-logo">Mehak Salon & Spa</h3>
+              <p className="footer-description">
+                Premium beauty, wellness and grooming experiences in a calm, elegant and comfortable environment.
+              </p>
+              <div className="footer-social">
+                <a href="#" className="social-link"><Instagram /></a>
+                <a href="#" className="social-link"><Facebook /></a>
+                <a href="#" className="social-link"><MessageCircle /></a>
+              </div>
+            </div>
+            <div className="footer-column">
+              <h4 className="footer-heading">Quick Links</h4>
+              <ul className="footer-links">
+                <li><a href="#" className="footer-link">Home</a></li>
+                <li><a href="#" className="footer-link">Services</a></li>
+                <li><a href="#" className="footer-link">About</a></li>
+                <li><a href="#" className="footer-link">Gallery</a></li>
+                <li><a href="#" className="footer-link">Contact</a></li>
+              </ul>
+            </div>
+            <div className="footer-column">
+              <h4 className="footer-heading">Services</h4>
+              <ul className="footer-links">
+                <li><a href="#" className="footer-link">Bridal Makeup</a></li>
+                <li><a href="#" className="footer-link">Spa Therapy</a></li>
+                <li><a href="#" className="footer-link">Hair Styling</a></li>
+                <li><a href="#" className="footer-link">Skin Care</a></li>
+                <li><a href="#" className="footer-link">Beauty Courses</a></li>
+              </ul>
+            </div>
+            <div className="footer-column">
+              <h4 className="footer-heading">Contact Info</h4>
+              <ul className="footer-contact">
+                <li className="contact-item">
+                  <Phone />
+                  <span>+91 98765 43210</span>
+                </li>
+                <li className="contact-item">
+                  <Mail />
+                  <span>info@mehaksalon.com</span>
+                </li>
+                <li className="contact-item">
+                  <MapPin />
+                  <span>123 Beauty Street, City Center</span>
+                </li>
+                <li className="contact-item">
+                  <Clock />
+                  <span>Mon - Sat: 10 AM - 8 PM</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="footer-bottom">
+            <p>© 2026 Mehak Salon & Spa. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
