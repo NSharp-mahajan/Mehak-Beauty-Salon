@@ -1,0 +1,513 @@
+import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { Sparkles, Shield, GraduationCap, Star, Quote } from 'lucide-react'
+import './Home.css'
+
+const services = [
+  {
+    id: 1,
+    title: 'Bridal Makeup',
+    image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80'
+  },
+  {
+    id: 2,
+    title: 'Hair Styling',
+    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80'
+  },
+  {
+    id: 3,
+    title: 'Spa & Massage',
+    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80'
+  },
+  {
+    id: 4,
+    title: 'Facial & Skin Care',
+    image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80'
+  },
+  {
+    id: 5,
+    title: 'Beauty Courses',
+    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'
+  }
+]
+
+const courses = [
+  {
+    id: 1,
+    title: 'Professional Makeup Course',
+    description: 'Master the art of professional makeup with hands-on training from industry experts.',
+    duration: '3 Months',
+    certified: true,
+    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80',
+    featured: false
+  },
+  {
+    id: 2,
+    title: 'Hair Styling & Care',
+    description: 'Learn advanced hair cutting, coloring, and styling techniques for all hair types.',
+    duration: '2 Months',
+    certified: true,
+    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80',
+    featured: true
+  },
+  {
+    id: 3,
+    title: 'Spa & Skin Therapy',
+    description: 'Comprehensive training in spa treatments, facials, and advanced skin care therapies.',
+    duration: '3 Months',
+    certified: true,
+    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80',
+    featured: false
+  },
+  {
+    id: 4,
+    title: 'Bridal Artistry',
+    description: 'Specialized bridal makeup and hairstyling for weddings and special occasions.',
+    duration: '4 Months',
+    certified: true,
+    image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80',
+    featured: false
+  }
+]
+
+const galleryItems = [
+  {
+    id: 1,
+    category: 'Bridal Makeup',
+    title: 'Elegant Bridal Look',
+    height: 'tall'
+  },
+  {
+    id: 2,
+    category: 'Hair Styling',
+    title: 'Modern Hair Art',
+    height: 'normal'
+  },
+  {
+    id: 3,
+    category: 'Spa Therapy',
+    title: 'Relaxing Spa Session',
+    height: 'tall'
+  },
+  {
+    id: 4,
+    category: 'Skin Care',
+    title: 'Glowing Skin Treatment',
+    height: 'normal'
+  },
+  {
+    id: 5,
+    category: 'Salon Interior',
+    title: 'Premium Salon Space',
+    height: 'normal'
+  },
+  {
+    id: 6,
+    category: 'Beauty Courses',
+    title: 'Training Session',
+    height: 'tall'
+  },
+  {
+    id: 7,
+    category: 'Party Makeup',
+    title: 'Glam Party Look',
+    height: 'normal'
+  },
+  {
+    id: 8,
+    category: 'Future Lehenga Collection',
+    title: 'Bridal Collection',
+    height: 'normal'
+  }
+]
+
+const testimonials = [
+  {
+    id: 1,
+    name: 'Priya Sharma',
+    service: 'Bridal Makeup',
+    review: 'Absolutely loved my bridal makeup. The look was elegant, long-lasting and exactly what I wanted.',
+    featured: false
+  },
+  {
+    id: 2,
+    name: 'Neha Verma',
+    service: 'Spa Therapy',
+    review: 'The spa experience was so relaxing and hygienic. The staff made me feel completely comfortable.',
+    featured: true
+  },
+  {
+    id: 3,
+    name: 'Simran Kaur',
+    service: 'Beauty Course',
+    review: 'I joined the makeup course and learned so much with proper guidance and hands-on practice.',
+    featured: false
+  }
+]
+
+const Home = () => {
+  const [hoveredIndex, setHoveredIndex] = useState(0)
+  return (
+    <div className="home">
+      <section className="hero">
+        <div className="hero-blob blob-1"></div>
+        <div className="hero-blob blob-2"></div>
+        <div className="hero-blob blob-3"></div>
+        
+        <div className="hero-container">
+          <div className="hero-left">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <span className="hero-badge">Premium Beauty & Wellness</span>
+            </motion.div>
+            
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              Glow <span className="highlight">Naturally</span>, Feel Beautiful
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="hero-subheading"
+            >
+              Experience luxury salon, spa, bridal and beauty services designed to make every visit feel special.
+            </motion.p>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="hero-buttons"
+            >
+              <button className="cta-button primary">Book Appointment</button>
+              <button className="cta-button secondary">Explore Services</button>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="hero-trust"
+            >
+              <span>Salon</span>
+              <span className="separator">•</span>
+              <span>Spa</span>
+              <span className="separator">•</span>
+              <span>Bridal</span>
+              <span className="separator">•</span>
+              <span>Beauty Courses</span>
+            </motion.div>
+          </div>
+          
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="hero-right"
+          >
+            <div className="hero-image-card">
+              <div className="image-placeholder">
+                <span>Premium Image</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="services-preview">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="services-header"
+        >
+          <h2 className="services-title">Our Signature Services</h2>
+          <p className="services-subtitle">Premium salon, spa and bridal experiences crafted for your beauty and comfort.</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="services-cards"
+        >
+          {services.map((service, index) => (
+            <div
+              key={service.id}
+              className={`service-card ${index === hoveredIndex ? 'active' : ''}`}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(0)}
+            >
+              <div className="service-card-image">
+                <img src={service.image} alt={service.title} />
+                <div className="service-overlay"></div>
+              </div>
+              <div className="service-card-content">
+                <h3 className="service-title">{service.title}</h3>
+                {index === hoveredIndex && (
+                  <motion.button
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                    className="explore-button"
+                  >
+                    Explore Now
+                  </motion.button>
+                )}
+              </div>
+            </div>
+          ))}
+        </motion.div>
+      </section>
+
+      <section className="about-section">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="about-container"
+        >
+          <div className="about-image">
+            <div className="about-image-card">
+              <div className="image-placeholder">
+                <span>Premium Salon Image</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="about-content">
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="about-badge"
+            >
+              About Our Salon
+            </motion.span>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="about-heading"
+            >
+              Where Beauty Meets Comfort
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="about-text"
+            >
+              Mehak Salon & Spa is designed to bring premium beauty, wellness and grooming experiences in a calm, elegant and comfortable environment. From bridal makeup to relaxing spa services and professional beauty courses, every service is delivered with care, hygiene and attention to detail.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="about-trust-points"
+            >
+              <div className="trust-point">
+                <Sparkles className="trust-icon" />
+                <span>Premium Beauty Services</span>
+              </div>
+              <div className="trust-point">
+                <Shield className="trust-icon" />
+                <span>Hygienic & Comfortable Space</span>
+              </div>
+              <div className="trust-point">
+                <GraduationCap className="trust-icon" />
+                <span>Bridal, Spa & Training Expertise</span>
+              </div>
+            </motion.div>
+
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="about-button"
+            >
+              Know More About Us
+            </motion.button>
+          </div>
+        </motion.div>
+      </section>
+
+      <section className="courses-section">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="courses-header"
+        >
+          <span className="courses-badge">Professional Training</span>
+          <h2 className="courses-title">Learn Beauty From Industry Experts</h2>
+          <p className="courses-subtitle">Join our professional beauty and grooming courses designed for beginners and aspiring beauty professionals.</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="courses-grid"
+        >
+          {courses.map((course, index) => (
+            <motion.div
+              key={course.id}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className={`course-card ${course.featured ? 'featured' : ''}`}
+            >
+              <div className="course-image">
+                <img src={course.image} alt={course.title} />
+                <div className="course-overlay"></div>
+              </div>
+              <div className="course-content">
+                <div className="course-badges">
+                  <span className="course-duration">{course.duration}</span>
+                  {course.certified && (
+                    <span className="course-certified">Certified Training</span>
+                  )}
+                </div>
+                <h3 className="course-title">{course.title}</h3>
+                <p className="course-description">{course.description}</p>
+                <button className="course-button">Enroll Now</button>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      <section className="gallery-section">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="gallery-header"
+        >
+          <span className="gallery-badge">Our Work</span>
+          <h2 className="gallery-title">Moments of Beauty & Elegance</h2>
+          <p className="gallery-subtitle">A glimpse of our bridal looks, salon transformations, spa moments and training sessions.</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="gallery-grid"
+        >
+          {galleryItems.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className={`gallery-card ${item.height}`}
+            >
+              <div className="gallery-placeholder">
+                <div className="placeholder-gradient"></div>
+                <div className="gallery-overlay">
+                  <span className="gallery-category">{item.category}</span>
+                  <h3 className="gallery-item-title">{item.title}</h3>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="gallery-footer"
+        >
+          <button className="gallery-button">View Full Gallery</button>
+        </motion.div>
+      </section>
+
+      <section className="testimonials-section">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="testimonials-header"
+        >
+          <span className="testimonials-badge">Client Stories</span>
+          <h2 className="testimonials-title">What Our Clients Say</h2>
+          <p className="testimonials-subtitle">Real experiences from clients who trusted Mehak Salon & Spa for their special moments.</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="testimonials-grid"
+        >
+          {testimonials.map((testimonial, index) => (
+            <motion.div
+              key={testimonial.id}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
+              className={`testimonial-card ${testimonial.featured ? 'featured' : ''}`}
+            >
+              <motion.div
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="quote-icon"
+              >
+                <Quote />
+              </motion.div>
+              <div className="testimonial-stars">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="star" />
+                ))}
+              </div>
+              <p className="testimonial-review">{testimonial.review}</p>
+              <div className="testimonial-footer">
+                <div className="testimonial-avatar">
+                  <span>{testimonial.name.split(' ').map(n => n[0]).join('')}</span>
+                </div>
+                <div className="testimonial-info">
+                  <h4 className="testimonial-name">{testimonial.name}</h4>
+                  <span className="testimonial-service">{testimonial.service}</span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+    </div>
+  )
+}
+
+export default Home
