@@ -114,8 +114,8 @@
 }
 
 .cta-button.primary:hover {
-  background-color: var(--espresso);
-  color: var(--cream);
+  background-color: white;
+  color: black;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(198, 161, 110, 0.4);
 }
@@ -381,8 +381,8 @@
 }
 
 .explore-button:hover {
-  background-color: var(--cream);
-  color: var(--espresso);
+  background-color: white;
+  color: black;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(198, 161, 110, 0.4);
 }
@@ -578,8 +578,8 @@
 }
 
 .about-button:hover {
-  background-color: var(--espresso);
-  color: var(--cream);
+  background-color: white;
+  color: black;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(198, 161, 110, 0.4);
 }
@@ -824,8 +824,8 @@
 }
 
 .course-button:hover {
-  background-color: var(--espresso);
-  color: var(--cream);
+  background-color: white;
+  color: black;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(198, 161, 110, 0.4);
 }
@@ -1063,8 +1063,8 @@
 }
 
 .gallery-button:hover {
-  background-color: var(--espresso);
-  color: var(--cream);
+  background-color: white;
+  color: black;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(198, 161, 110, 0.4);
 }
@@ -1468,7 +1468,7 @@
   margin-top: 1rem;
 }
 
-.cta-button {
+.cta-section .cta-button {
   padding: 1rem 2rem;
   border-radius: 50px;
   font-size: 1rem;
@@ -1480,24 +1480,25 @@
   border: none;
 }
 
-.cta-button.primary {
+.cta-section .cta-button.primary {
   background-color: var(--gold);
   color: var(--espresso);
 }
 
-.cta-button.primary:hover {
-  background-color: var(--cream);
+.cta-section .cta-button.primary:hover {
+  background-color: white;
+  color: black;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(198, 161, 110, 0.4);
 }
 
-.cta-button.secondary {
+.cta-section .cta-button.secondary {
   background-color: transparent;
   color: var(--cream);
   border: 2px solid var(--gold);
 }
 
-.cta-button.secondary:hover {
+.cta-section .cta-button.secondary:hover {
   background-color: var(--gold);
   color: var(--espresso);
   transform: translateY(-2px);
@@ -1766,7 +1767,10 @@ a {
 }
 
 /* Typography Consistency */
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: 'Playfair Display', serif;
   font-weight: 700;
 }

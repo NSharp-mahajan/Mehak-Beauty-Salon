@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import logo from '../../assets/logo/logo.png'
+import logo from '../../assets/logo/logo2.png'
 import './Navbar.css'
 
 const Navbar = () => {
@@ -15,7 +15,6 @@ const Navbar = () => {
       <div className="navbar-container">
         <div className="navbar-logo">
           <img src={logo} alt="Mehak Beauty Salon & Spa" className="logo-image" />
-          <span>Beauty Salon & Spa</span>
         </div>
 
         <button className="navbar-toggle" onClick={toggleMenu} aria-label="Toggle menu">
