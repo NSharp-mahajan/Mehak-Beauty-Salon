@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { Sparkles, Shield, GraduationCap, Star, Quote, Users, Award, Calendar, Phone, Mail, MapPin, Clock, Instagram, Facebook, MessageCircle, ChevronRight, ArrowRight } from 'lucide-react'
+import { Sparkles, Shield, GraduationCap, Star, Quote, Users, Award, Calendar, ChevronRight, ArrowRight } from 'lucide-react'
 import './Home.css'
 
 const services = [
@@ -622,68 +622,6 @@ const Home = () => {
           </div>
         </motion.div>
       </section>
-
-      <footer className="footer">
-        <div className="footer-container">
-          <div className="footer-grid">
-            <div className="footer-column">
-              <h3 className="footer-logo">Mehak Salon & Spa</h3>
-              <p className="footer-description">
-                Premium beauty, wellness and grooming experiences in a calm, elegant and comfortable environment.
-              </p>
-              <div className="footer-social">
-                <a href="#" className="social-link"><Instagram /></a>
-                <a href="#" className="social-link"><Facebook /></a>
-                <a href="#" className="social-link"><MessageCircle /></a>
-              </div>
-            </div>
-            <div className="footer-column">
-              <h4 className="footer-heading">Quick Links</h4>
-              <ul className="footer-links">
-                <li><a href="#" className="footer-link">Home</a></li>
-                <li><a href="#" className="footer-link">Services</a></li>
-                <li><a href="#" className="footer-link">About</a></li>
-                <li><a href="#" className="footer-link">Gallery</a></li>
-                <li><a href="#" className="footer-link">Contact</a></li>
-              </ul>
-            </div>
-            <div className="footer-column">
-              <h4 className="footer-heading">Services</h4>
-              <ul className="footer-links">
-                <li><a href="#" className="footer-link">Bridal Makeup</a></li>
-                <li><a href="#" className="footer-link">Spa Therapy</a></li>
-                <li><a href="#" className="footer-link">Hair Styling</a></li>
-                <li><a href="#" className="footer-link">Skin Care</a></li>
-                <li><a href="#" className="footer-link">Beauty Courses</a></li>
-              </ul>
-            </div>
-            <div className="footer-column">
-              <h4 className="footer-heading">Contact Info</h4>
-              <ul className="footer-contact">
-                <li className="contact-item">
-                  <Phone />
-                  <span>+91 98765 43210</span>
-                </li>
-                <li className="contact-item">
-                  <Mail />
-                  <span>info@mehaksalon.com</span>
-                </li>
-                <li className="contact-item">
-                  <MapPin />
-                  <span>123 Beauty Street, City Center</span>
-                </li>
-                <li className="contact-item">
-                  <Clock />
-                  <span>Mon - Sat: 10 AM - 8 PM</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p>© 2026 Mehak Salon & Spa. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
