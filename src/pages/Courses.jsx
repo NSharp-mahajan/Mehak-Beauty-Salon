@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { GraduationCap, Award, Users, BookOpen, CheckCircle, ArrowRight, Sparkles, TrendingUp, Shield, Clock, Star } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import './Courses.css'
 
 const courses = [
@@ -12,56 +13,136 @@ const courses = [
     rating: '4.8',
     students: '120+',
     certified: true,
-    description: 'Master personal grooming and beauty techniques for self-enhancement with professional guidance.',
-    featured: false
+    description: 'A personal grooming course designed to help learners understand everyday beauty, makeup basics, skincare routine and self-styling techniques with practical guidance.',
+    featured: false,
+    learningPoints: [
+      'Makeup Basics',
+      'Skin Preparation',
+      'Personal Grooming',
+      'Product Knowledge',
+      'Hair Styling Basics',
+      'Practice Sessions'
+    ],
+    includes: [
+      'Hands-on training',
+      'Professional guidance',
+      'Practice-based learning',
+      'Certificate after completion',
+      'Salon environment exposure',
+      'Beginner-friendly sessions'
+    ]
   },
   {
     id: 2,
     title: 'Basic Course',
     price: '₹30,000',
     duration: '1 Month',
-    category: 'Foundation',
+    category: 'Beauty Foundation',
     rating: '4.9',
     students: '250+',
     certified: true,
-    description: 'Build a strong foundation in beauty fundamentals with hands-on training and expert mentorship.',
-    featured: false
+    description: 'Build a strong foundation in beauty fundamentals with hands-on training and expert mentorship. Learn essential techniques for facials, waxing, threading, and basic hair care.',
+    featured: false,
+    learningPoints: [
+      'Facial Techniques',
+      'Waxing Methods',
+      'Threading Skills',
+      'Basic Hair Care',
+      'Skin Analysis',
+      'Client Consultation'
+    ],
+    includes: [
+      'Hands-on training',
+      'Professional guidance',
+      'Practice-based learning',
+      'Certificate after completion',
+      'Salon environment exposure',
+      'Beginner-friendly sessions'
+    ]
   },
   {
     id: 3,
     title: 'Advance Course',
     price: '₹50,000',
     duration: '2 Months',
-    category: 'Masterclass',
+    category: 'Professional Training',
     rating: '5.0',
     students: '500+',
     certified: true,
-    description: 'Elevate your expertise with advanced techniques and specialized beauty artistry skills. Perfect for aspiring professionals.',
-    featured: true
+    description: 'Elevate your expertise with advanced techniques and specialized beauty artistry skills. Perfect for aspiring professionals. Master advanced facials, chemical peels, hair treatments, and bridal makeup.',
+    featured: true,
+    learningPoints: [
+      'Advanced Facials',
+      'Chemical Peels',
+      'Hair Treatments',
+      'Bridal Makeup',
+      'Color Correction',
+      'Advanced Techniques'
+    ],
+    includes: [
+      'Hands-on training',
+      'Professional guidance',
+      'Practice-based learning',
+      'Certificate after completion',
+      'Salon environment exposure',
+      'Beginner-friendly sessions'
+    ]
   },
   {
     id: 4,
     title: 'Nails Course',
     price: '₹25,000',
-    duration: '3 Weeks',
-    category: 'Nail Artistry',
+    duration: '1 Month',
+    category: 'Nail Art & Extensions',
     rating: '4.8',
     students: '180+',
     certified: true,
-    description: 'Learn professional nail art, extensions, and care techniques for stunning nail designs.',
-    featured: false
+    description: 'Learn professional nail art, extensions, and care techniques for stunning nail designs. Master gel nails, acrylics, nail art, and nail health.',
+    featured: false,
+    learningPoints: [
+      'Nail Extensions',
+      'Gel Nails',
+      'Acrylic Nails',
+      'Nail Art Design',
+      'Nail Health Care',
+      'Client Consultation'
+    ],
+    includes: [
+      'Hands-on training',
+      'Professional guidance',
+      'Practice-based learning',
+      'Certificate after completion',
+      'Salon environment exposure',
+      'Beginner-friendly sessions'
+    ]
   },
   {
     id: 5,
     title: 'Hair Course',
     price: '₹50,000',
     duration: '2 Months',
-    category: 'Hair Styling',
+    category: 'Hair Styling & Treatments',
     rating: '4.9',
     students: '310+',
     certified: true,
-    description: 'Master hair styling, cutting, coloring, and treatments for all hair types and textures.',
-    featured: false
+    description: 'Master hair styling, cutting, coloring, and treatments for all hair types and textures. Learn advanced hair techniques including keratin, smoothing, and creative styling.',
+    featured: false,
+    learningPoints: [
+      'Hair Cutting',
+      'Hair Coloring',
+      'Keratin Treatment',
+      'Smoothing Techniques',
+      'Creative Styling',
+      'Hair Health Analysis'
+    ],
+    includes: [
+      'Hands-on training',
+      'Professional guidance',
+      'Practice-based learning',
+      'Certificate after completion',
+      'Salon environment exposure',
+      'Beginner-friendly sessions'
+    ]
   }
 ]
 
@@ -101,6 +182,8 @@ const timelineSteps = [
 ]
 
 const Courses = () => {
+  const navigate = useNavigate()
+
   return (
     <div className="courses-page">
       {/* Hero Section */}
@@ -143,8 +226,8 @@ const Courses = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="hero-buttons"
             >
-              <button className="cta-button primary">Explore Courses</button>
-              <button className="cta-button secondary">Enroll Now</button>
+              <button className="cta-button primary" onClick={() => navigate('/courses')}>Explore Courses</button>
+              <button className="cta-button secondary" onClick={() => navigate('/courses')}>Enroll Now</button>
             </motion.div>
           </div>
 
@@ -230,6 +313,7 @@ const Courses = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="luxury-enroll-btn"
+                    onClick={() => navigate(`/courses/${course.id}`)}
                   >
                     Enroll Now
                     <ArrowRight size={18} />
@@ -360,8 +444,8 @@ const Courses = () => {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="cta-buttons"
           >
-            <button className="cta-button primary">Enroll Now</button>
-            <button className="cta-button secondary">Contact Us</button>
+            <button className="cta-button primary" onClick={() => navigate('/courses')}>Enroll Now</button>
+            <button className="cta-button secondary" onClick={() => navigate('/contact')}>Contact Us</button>
           </motion.div>
         </motion.div>
       </section>
