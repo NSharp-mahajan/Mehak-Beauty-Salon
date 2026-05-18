@@ -5,7 +5,7 @@ import WhatsAppButton from './components/common/WhatsAppButton'
 import Home from './pages/Home'
 import Contact from './pages/Contact'
 import Courses from './pages/Courses'
-
+import About from './pages/About'
 function App() {
   return (
     <Router>
@@ -16,6 +16,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </main>
         <Footer />

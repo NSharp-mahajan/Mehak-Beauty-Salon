@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { GraduationCap, Award, Users, BookOpen, CheckCircle, ArrowRight, Sparkles, TrendingUp, Shield, Clock } from 'lucide-react'
+import { GraduationCap, Award, Users, BookOpen, CheckCircle, ArrowRight, Sparkles, TrendingUp, Shield, Clock, Star } from 'lucide-react'
 import './Courses.css'
 
 const courses = [
@@ -7,7 +7,10 @@ const courses = [
     id: 1,
     title: 'Self Course',
     price: '₹15,000',
-    duration: 'Duration: Flexible',
+    duration: '2 Weeks',
+    category: 'Personal Grooming',
+    rating: '4.8',
+    students: '120+',
     certified: true,
     description: 'Master personal grooming and beauty techniques for self-enhancement with professional guidance.',
     featured: false
@@ -16,7 +19,10 @@ const courses = [
     id: 2,
     title: 'Basic Course',
     price: '₹30,000',
-    duration: 'Duration: Flexible',
+    duration: '1 Month',
+    category: 'Foundation',
+    rating: '4.9',
+    students: '250+',
     certified: true,
     description: 'Build a strong foundation in beauty fundamentals with hands-on training and expert mentorship.',
     featured: false
@@ -25,16 +31,22 @@ const courses = [
     id: 3,
     title: 'Advance Course',
     price: '₹50,000',
-    duration: 'Duration: Flexible',
+    duration: '2 Months',
+    category: 'Masterclass',
+    rating: '5.0',
+    students: '500+',
     certified: true,
-    description: 'Elevate your expertise with advanced techniques and specialized beauty artistry skills.',
+    description: 'Elevate your expertise with advanced techniques and specialized beauty artistry skills. Perfect for aspiring professionals.',
     featured: true
   },
   {
     id: 4,
     title: 'Nails Course',
     price: '₹25,000',
-    duration: 'Duration: Flexible',
+    duration: '3 Weeks',
+    category: 'Nail Artistry',
+    rating: '4.8',
+    students: '180+',
     certified: true,
     description: 'Learn professional nail art, extensions, and care techniques for stunning nail designs.',
     featured: false
@@ -43,7 +55,10 @@ const courses = [
     id: 5,
     title: 'Hair Course',
     price: '₹50,000',
-    duration: 'Duration: Flexible',
+    duration: '2 Months',
+    category: 'Hair Styling',
+    rating: '4.9',
+    students: '310+',
     certified: true,
     description: 'Master hair styling, cutting, coloring, and treatments for all hair types and textures.',
     featured: false
@@ -93,7 +108,7 @@ const Courses = () => {
         <div className="hero-blob blob-1"></div>
         <div className="hero-blob blob-2"></div>
         <div className="hero-blob blob-3"></div>
-        
+
         <div className="hero-container">
           <div className="hero-left">
             <motion.div
@@ -103,7 +118,7 @@ const Courses = () => {
             >
               <span className="hero-badge">Professional Beauty Academy</span>
             </motion.div>
-            
+
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -112,7 +127,7 @@ const Courses = () => {
             >
               Transform Passion Into Profession
             </motion.h1>
-            
+
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -121,7 +136,7 @@ const Courses = () => {
             >
               Join our beauty and grooming programs designed to help you master industry skills with professional guidance.
             </motion.p>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -132,7 +147,7 @@ const Courses = () => {
               <button className="cta-button secondary">Enroll Now</button>
             </motion.div>
           </div>
-          
+
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -149,19 +164,23 @@ const Courses = () => {
       </section>
 
       {/* Course Showcase Section */}
-      <section className="course-showcase">
+      <section className="luxury-showcase-section">
+        <div className="luxury-bg-glow glow-left"></div>
+        <div className="luxury-bg-glow glow-right"></div>
+        
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="showcase-header"
+          className="luxury-showcase-header"
         >
-          <h2 className="showcase-title">Our Professional Courses</h2>
-          <p className="showcase-subtitle">Premium beauty programs designed for aspiring professionals and enthusiasts.</p>
+          <h2 className="luxury-showcase-title">OUR PROFESSIONAL COURSES</h2>
+          <div className="luxury-title-accent"></div>
+          <p className="luxury-showcase-subtitle">Premium beauty programs designed for aspiring professionals and beauty enthusiasts.</p>
         </motion.div>
 
-        <div className="courses-masonry">
+        <div className="luxury-courses-grid">
           {courses.map((course, index) => (
             <motion.div
               key={course.id}
@@ -169,43 +188,53 @@ const Courses = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={`course-card ${course.featured ? 'featured' : ''}`}
+              className={`luxury-course-card ${course.featured ? 'luxury-featured-card' : 'luxury-standard-card'} pos-${index + 1}`}
             >
-              <div className="course-image-container">
-                <div className="course-image-placeholder">
-                  <span>Course Image</span>
+              <div className="luxury-card-image">
+                <div className="luxury-image-placeholder">
+                  <span>{course.title} Image</span>
                 </div>
-                <div className="course-overlay"></div>
+                {course.featured && <span className="luxury-featured-badge"><Sparkles size={14}/> Best Seller</span>}
+                <span className="luxury-category-badge">{course.category}</span>
+                <div className="luxury-card-overlay"></div>
               </div>
               
-              <div className="course-content">
-                <div className="course-badges">
-                  <span className="price-badge">{course.price}</span>
+              <div className="luxury-card-content">
+                <div className="luxury-card-header">
+                  <div className="luxury-rating-box">
+                    <Star size={16} fill="#C6A16E" color="#C6A16E" />
+                    <span className="rating-val">{course.rating}</span>
+                    <span className="rating-students">({course.students} enrolled)</span>
+                  </div>
+                </div>
+                
+                <h3 className="luxury-course-title">{course.title}</h3>
+                <p className="luxury-course-desc">{course.description}</p>
+                
+                <div className="luxury-card-meta">
+                  <div className="meta-item">
+                    <Clock size={16} />
+                    <span>{course.duration}</span>
+                  </div>
                   {course.certified && (
-                    <span className="certified-badge">
-                      <Shield size={14} />
-                      Certified
-                    </span>
+                    <div className="meta-item">
+                      <Shield size={16} />
+                      <span>Certified</span>
+                    </div>
                   )}
                 </div>
                 
-                <h3 className="course-title">{course.title}</h3>
-                
-                <div className="course-duration">
-                  <Clock size={16} />
-                  <span>{course.duration}</span>
+                <div className="luxury-card-footer">
+                  <div className="luxury-price">{course.price}</div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="luxury-enroll-btn"
+                  >
+                    Enroll Now
+                    <ArrowRight size={18} />
+                  </motion.button>
                 </div>
-                
-                <p className="course-description">{course.description}</p>
-                
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="enroll-button"
-                >
-                  Enroll Now
-                  <ArrowRight size={18} />
-                </motion.button>
               </div>
             </motion.div>
           ))}
@@ -286,7 +315,7 @@ const Courses = () => {
         <div className="cta-background">
           <div className="cta-overlay"></div>
         </div>
-        
+
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -303,7 +332,7 @@ const Courses = () => {
           >
             <Sparkles size={48} />
           </motion.div>
-          
+
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -313,7 +342,7 @@ const Courses = () => {
           >
             Start Your Beauty Journey Today
           </motion.h2>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -323,7 +352,7 @@ const Courses = () => {
           >
             Learn, practice and grow with professional beauty education.
           </motion.p>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
