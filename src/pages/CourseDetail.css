@@ -152,7 +152,7 @@
   box-shadow: 0 8px 25px rgba(198, 161, 110, 0.5);
 }
 
-.whatsapp-button {
+.course-actions .whatsapp-button {
   background: transparent;
   color: var(--espresso);
   padding: 14px 32px;
@@ -167,7 +167,7 @@
   transition: all 0.3s ease;
 }
 
-.whatsapp-button:hover {
+.course-actions .whatsapp-button:hover {
   background: var(--gold);
   box-shadow: 0 6px 20px rgba(198, 161, 110, 0.3);
 }
@@ -591,7 +591,7 @@
   }
 
   .enroll-button,
-  .whatsapp-button {
+  .course-actions .whatsapp-button {
     width: 100%;
     justify-content: center;
   }
