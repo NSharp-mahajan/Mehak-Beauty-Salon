@@ -2,7 +2,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useCallback } from 'react'
 import { Sparkles, Shield, GraduationCap, Star, Quote, Users, Award, Calendar, ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react'
 import './Home.css'
-import frontImage from '../assets/images/Front.jpg'
+import frontImage from '../assets/images/front.png'
+import elegantBridalLook from '../assets/images/Elegant Bridal Look.png'
+import modernHairArt from '../assets/images/ModernHairart.jpg'
+import glowingSkinTreatment from '../assets/images/Glowingskintreatment.jpg'
+import relaxingSpaSession from '../assets/images/Relaxingspasession.webp'
+import trainingSession from '../assets/images/Trainingsession.png'
+import premiumSalonSpace from '../assets/images/Premiumsalon space.png'
+import premium2Image from '../assets/images/Premium2.png'
 
 const services = [
   {
@@ -76,36 +83,42 @@ const galleryItems = [
     id: 1,
     category: 'Bridal Makeup',
     title: 'Elegant Bridal Look',
+    image: elegantBridalLook,
     size: 'featured'
   },
   {
     id: 2,
     category: 'Hair Styling',
     title: 'Modern Hair Art',
+    image: modernHairArt,
     size: 'standard'
   },
   {
     id: 3,
     category: 'Skin Care',
     title: 'Glowing Skin Treatment',
+    image: glowingSkinTreatment,
     size: 'standard'
   },
   {
     id: 4,
     category: 'Spa Therapy',
     title: 'Relaxing Spa Session',
+    image: relaxingSpaSession,
     size: 'standard'
   },
   {
     id: 5,
     category: 'Beauty Courses',
     title: 'Training Session',
+    image: trainingSession,
     size: 'standard'
   },
   {
     id: 6,
     category: 'Salon Interior',
     title: 'Premium Salon Space',
+    image: premiumSalonSpace,
     size: 'wide'
   }
 ]
@@ -311,9 +324,11 @@ const Home = () => {
         >
           <div className="about-image">
             <div className="about-image-card">
-              <div className="image-placeholder">
-                <span>Premium Salon Image</span>
-              </div>
+              <img
+                src={premium2Image}
+                alt="Mehak Salon & Spa storefront"
+                className="about-salon-image"
+              />
             </div>
           </div>
 
@@ -467,7 +482,12 @@ const Home = () => {
               return (
                 <div key={item.id} className={`carousel-card ${positionClass}`}>
                   <div className="gallery-placeholder">
-                    <div className="placeholder-gradient"></div>
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="gallery-image"
+                      loading="lazy"
+                    />
                     <div className="gallery-overlay">
                       <span className="gallery-category">{item.category}</span>
                       <h3 className="gallery-item-title">{item.title}</h3>

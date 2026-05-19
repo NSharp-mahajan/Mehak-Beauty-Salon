@@ -2,11 +2,18 @@ import { motion } from 'framer-motion'
 import { GraduationCap, Award, Users, BookOpen, CheckCircle, ArrowRight, Sparkles, TrendingUp, Shield, Clock, Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import './Courses.css'
+import premiumAcademyImage from '../assets/images/premiumacademy.png'
+import selfCourseImage from '../assets/images/Selfcourse.png'
+import basicCourseImage from '../assets/images/Basiccourse.png'
+import advanceCourseImage from '../assets/images/Advance course.png'
+import nailCourseImage from '../assets/images/Nailcourse.png'
+import hairCourseImage from '../assets/images/Haircourse.png'
 
 const courses = [
   {
     id: 'self-course',
     title: 'Self Course',
+    image: selfCourseImage,
     price: '₹15,000',
     duration: '2 Weeks',
     category: 'Personal Grooming',
@@ -35,6 +42,7 @@ const courses = [
   {
     id: 'basic-course',
     title: 'Basic Course',
+    image: basicCourseImage,
     price: '₹30,000',
     duration: '1 Month',
     category: 'Beauty Foundation',
@@ -65,6 +73,7 @@ const courses = [
   {
     id: 'advance-course',
     title: 'Advance Course',
+    image: advanceCourseImage,
     price: '₹50,000',
     duration: '2 Months',
     category: 'Professional Beauty Training',
@@ -98,6 +107,7 @@ const courses = [
   {
     id: 'nails-course',
     title: 'Nails Course',
+    image: nailCourseImage,
     price: '₹25,000',
     duration: '1 Month',
     category: 'Nail Art & Extensions',
@@ -128,6 +138,7 @@ const courses = [
   {
     id: 'hair-course',
     title: 'Hair Course',
+    image: hairCourseImage,
     price: '₹50,000',
     duration: '2 Months',
     category: 'Hair Styling & Treatments',
@@ -253,9 +264,11 @@ const Courses = () => {
             className="hero-right"
           >
             <div className="hero-image-card">
-              <div className="image-placeholder">
-                <span>Premium Academy Image</span>
-              </div>
+              <img
+                src={premiumAcademyImage}
+                alt="Mehak Salon & Spa Premium Academy training space"
+                className="courses-hero-image"
+              />
             </div>
           </motion.div>
         </div>
@@ -289,9 +302,12 @@ const Courses = () => {
               className={`luxury-course-card ${course.featured ? 'luxury-featured-card' : 'luxury-standard-card'} pos-${index + 1}`}
             >
               <div className="luxury-card-image">
-                <div className="luxury-image-placeholder">
-                  <span>{course.title} Image</span>
-                </div>
+                <img
+                  src={course.image}
+                  alt={course.title}
+                  className="luxury-course-image"
+                  loading="lazy"
+                />
                 {course.featured && <span className="luxury-featured-badge"><Sparkles size={14}/> Best Seller</span>}
                 <span className="luxury-category-badge">{course.category}</span>
                 <div className="luxury-card-overlay"></div>
