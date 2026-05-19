@@ -374,7 +374,8 @@
 }
 
 .explore-more-button {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: 8px;
   background: var(--gold);

@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion'
-import { useState } from 'react'
-import { Sparkles, Shield, GraduationCap, Star, Quote, Users, Award, Calendar, ChevronRight, ArrowRight } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react'
+import { Sparkles, Shield, GraduationCap, Star, Quote, Users, Award, Calendar, ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react'
 import './Home.css'
 import frontImage from '../assets/images/Front.jpg'
 
@@ -163,6 +163,23 @@ const stats = [
 
 const Home = () => {
   const [hoveredIndex, setHoveredIndex] = useState(0)
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState(0)
+  const [isGalleryHovered, setIsGalleryHovered] = useState(false)
+
+  const nextSlide = useCallback(() => {
+    setActiveGalleryIndex((prev) => (prev + 1) % galleryItems.length)
+  }, [])
+
+  const prevSlide = useCallback(() => {
+    setActiveGalleryIndex((prev) => (prev - 1 + galleryItems.length) % galleryItems.length)
+  }, [])
+
+  useEffect(() => {
+    if (!isGalleryHovered) {
+      const interval = setInterval(nextSlide, 4000)
+      return () => clearInterval(interval)
+    }
+  }, [isGalleryHovered, nextSlide])
   return (
     <div className="home">
       <section className="hero">
@@ -432,26 +449,51 @@ const Home = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="gallery-grid"
+          className="gallery-carousel-container"
+          onMouseEnter={() => setIsGalleryHovered(true)}
+          onMouseLeave={() => setIsGalleryHovered(false)}
         >
-          {galleryItems.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={`gallery-card ${item.size}`}
-            >
-              <div className="gallery-placeholder">
-                <div className="placeholder-gradient"></div>
-                <div className="gallery-overlay">
-                  <span className="gallery-category">{item.category}</span>
-                  <h3 className="gallery-item-title">{item.title}</h3>
+          <div className="carousel-track">
+            {galleryItems.map((item, index) => {
+              let relativeIndex = index - activeGalleryIndex
+              if (relativeIndex < -2) relativeIndex += galleryItems.length
+              if (relativeIndex > 2) relativeIndex -= galleryItems.length
+
+              let positionClass = 'hidden'
+              if (relativeIndex === 0) positionClass = 'active'
+              else if (relativeIndex === -1 || (activeGalleryIndex === 0 && index === galleryItems.length - 1)) positionClass = 'prev'
+              else if (relativeIndex === 1 || (activeGalleryIndex === galleryItems.length - 1 && index === 0)) positionClass = 'next'
+
+              return (
+                <div key={item.id} className={`carousel-card ${positionClass}`}>
+                  <div className="gallery-placeholder">
+                    <div className="placeholder-gradient"></div>
+                    <div className="gallery-overlay">
+                      <span className="gallery-category">{item.category}</span>
+                      <h3 className="gallery-item-title">{item.title}</h3>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              )
+            })}
+          </div>
+
+          <button className="carousel-nav-btn prev-btn" onClick={prevSlide}>
+            <ChevronLeft size={24} />
+          </button>
+          <button className="carousel-nav-btn next-btn" onClick={nextSlide}>
+            <ChevronRight size={24} />
+          </button>
+
+          <div className="carousel-indicators">
+            {galleryItems.map((_, index) => (
+              <button
+                key={index}
+                className={`indicator-dot ${index === activeGalleryIndex ? 'active' : ''}`}
+                onClick={() => setActiveGalleryIndex(index)}
+              />
+            ))}
+          </div>
         </motion.div>
 
         <motion.div
