@@ -5,7 +5,7 @@ import './Courses.css'
 
 const courses = [
   {
-    id: 1,
+    id: 'self-course',
     title: 'Self Course',
     price: '₹15,000',
     duration: '2 Weeks',
@@ -33,115 +33,130 @@ const courses = [
     ]
   },
   {
-    id: 2,
+    id: 'basic-course',
     title: 'Basic Course',
     price: '₹30,000',
     duration: '1 Month',
     category: 'Beauty Foundation',
     rating: '4.9',
-    students: '250+',
+    students: '80+',
     certified: true,
-    description: 'Build a strong foundation in beauty fundamentals with hands-on training and expert mentorship. Learn essential techniques for facials, waxing, threading, and basic hair care.',
+    description: 'The Basic Course is designed for learners who want to build a strong foundation in beauty, skincare and salon services. The course combines theory, demonstrations and practical learning sessions.',
     featured: false,
     learningPoints: [
-      'Facial Techniques',
-      'Waxing Methods',
-      'Threading Skills',
-      'Basic Hair Care',
-      'Skin Analysis',
-      'Client Consultation'
+      'Basic Makeup Techniques',
+      'Skin Preparation',
+      'Facial Basics',
+      'Product Knowledge',
+      'Salon Hygiene',
+      'Client Handling',
+      'Hair Basics',
+      'Practical Sessions'
     ],
     includes: [
-      'Hands-on training',
-      'Professional guidance',
-      'Practice-based learning',
-      'Certificate after completion',
-      'Salon environment exposure',
-      'Beginner-friendly sessions'
+      'Hands-on Training',
+      'Practice Sessions',
+      'Professional Guidance',
+      'Certification',
+      'Beginner Friendly',
+      'Salon Exposure'
     ]
   },
   {
-    id: 3,
+    id: 'advance-course',
     title: 'Advance Course',
     price: '₹50,000',
     duration: '2 Months',
-    category: 'Professional Training',
-    rating: '5.0',
-    students: '500+',
+    category: 'Professional Beauty Training',
+    rating: '4.9',
+    students: '100+',
     certified: true,
-    description: 'Elevate your expertise with advanced techniques and specialized beauty artistry skills. Perfect for aspiring professionals. Master advanced facials, chemical peels, hair treatments, and bridal makeup.',
+    description: 'The Advance Course is designed for learners who want to build professional-level skills in makeup, skin, salon services and client-ready beauty techniques. This course focuses on advanced practice, service confidence and real salon exposure.',
     featured: true,
     learningPoints: [
-      'Advanced Facials',
-      'Chemical Peels',
-      'Hair Treatments',
-      'Bridal Makeup',
-      'Color Correction',
-      'Advanced Techniques'
+      'Advanced Makeup Techniques',
+      'Bridal Makeup Basics',
+      'Party Makeup Looks',
+      'Skin Analysis',
+      'Facial & Treatment Knowledge',
+      'Product Selection',
+      'Professional Client Handling',
+      'Salon Service Workflow',
+      'Portfolio Practice'
     ],
     includes: [
-      'Hands-on training',
-      'Professional guidance',
-      'Practice-based learning',
-      'Certificate after completion',
-      'Salon environment exposure',
-      'Beginner-friendly sessions'
+      'Advanced Hands-on Training',
+      'Live Demonstrations',
+      'Practice Sessions',
+      'Professional Guidance',
+      'Certification',
+      'Salon Environment Exposure',
+      'Portfolio Building Support',
+      'Client Handling Training'
     ]
   },
   {
-    id: 4,
+    id: 'nails-course',
     title: 'Nails Course',
     price: '₹25,000',
     duration: '1 Month',
     category: 'Nail Art & Extensions',
     rating: '4.8',
-    students: '180+',
+    students: '60+',
     certified: true,
-    description: 'Learn professional nail art, extensions, and care techniques for stunning nail designs. Master gel nails, acrylics, nail art, and nail health.',
+    description: 'Learn professional nail styling, nail art and extension techniques with practical training sessions designed for aspiring nail artists.',
     featured: false,
     learningPoints: [
-      'Nail Extensions',
-      'Gel Nails',
+      'Nail Preparation',
+      'Gel Extensions',
       'Acrylic Nails',
-      'Nail Art Design',
-      'Nail Health Care',
-      'Client Consultation'
+      'Nail Art Basics',
+      'Nail Finishing',
+      'Nail Care',
+      'Client Handling',
+      'Practice Sessions'
     ],
     includes: [
-      'Hands-on training',
-      'Professional guidance',
-      'Practice-based learning',
-      'Certificate after completion',
-      'Salon environment exposure',
-      'Beginner-friendly sessions'
+      'Practical Learning',
+      'Nail Kit Exposure',
+      'Certification',
+      'Extension Techniques',
+      'Salon Environment',
+      'Hands-on Practice'
     ]
   },
   {
-    id: 5,
+    id: 'hair-course',
     title: 'Hair Course',
     price: '₹50,000',
     duration: '2 Months',
     category: 'Hair Styling & Treatments',
-    rating: '4.9',
-    students: '310+',
+    rating: '4.8',
+    students: '70+',
     certified: true,
-    description: 'Master hair styling, cutting, coloring, and treatments for all hair types and textures. Learn advanced hair techniques including keratin, smoothing, and creative styling.',
+    description: 'The Hair Course is created for learners who want to master professional hair styling, hair care, color basics and salon treatment techniques through guided practical training.',
     featured: false,
     learningPoints: [
-      'Hair Cutting',
-      'Hair Coloring',
-      'Keratin Treatment',
-      'Smoothing Techniques',
-      'Creative Styling',
-      'Hair Health Analysis'
+      'Hair Wash & Blow Dry',
+      'Hair Styling Basics',
+      'Hair Spa Techniques',
+      'Hair Treatment Knowledge',
+      'Hair Color Basics',
+      'Root Touch-Up Basics',
+      'Global Color Understanding',
+      'Hair Sectioning',
+      'Client Consultation',
+      'Salon Hygiene'
     ],
     includes: [
-      'Hands-on training',
-      'Professional guidance',
-      'Practice-based learning',
-      'Certificate after completion',
-      'Salon environment exposure',
-      'Beginner-friendly sessions'
+      'Practical Hair Training',
+      'Styling Practice',
+      'Treatment Demonstrations',
+      'Product Knowledge',
+      'Certification',
+      'Salon Exposure',
+      'Beginner to Professional Guidance',
+      'Client Handling Practice'
     ]
   }
 ]

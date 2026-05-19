@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, Scissors, Droplet, Clock, Star, Crown, X, ChevronRight, Gem, Flame, Palette } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import './Services.css'
+import servicesBg from '../assets/images/services.png'
 
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -233,6 +234,7 @@ const Services = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
+        <div className="offer-hero-bg" style={{ backgroundImage: `url(${servicesBg})` }}></div>
         <div className="hero-content">
           <motion.div
             className="badge"

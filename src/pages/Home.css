@@ -187,6 +187,15 @@
   font-family: 'Playfair Display', serif;
 }
 
+.hero-front-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
+  z-index: 2;
+  border-radius: 24px;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .hero h1 {
@@ -957,9 +966,9 @@
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 250px;
-  gap: 1rem;
-  max-width: 1400px;
+  grid-template-rows: repeat(2, 250px) 300px;
+  gap: 1.5rem;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -969,16 +978,29 @@
   position: relative;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 2px solid transparent;
 }
 
-.gallery-card.tall {
+.gallery-card.featured {
+  grid-column: span 2;
   grid-row: span 2;
+}
+
+.gallery-card.standard {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.gallery-card.wide {
+  grid-column: span 4;
+  grid-row: span 1;
 }
 
 .gallery-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 40px rgba(198, 161, 110, 0.3);
-  border: 2px solid var(--gold);
+  border-color: var(--gold);
 }
 
 .gallery-placeholder {
@@ -992,11 +1014,11 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, var(--champagne) 0%, var(--rose) 50%, var(--gold) 100%);
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gallery-card:hover .placeholder-gradient {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .gallery-overlay {
@@ -1005,17 +1027,17 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to top, rgba(43, 30, 27, 0.85) 0%, rgba(43, 30, 27, 0.3) 50%, transparent 100%);
+  background: linear-gradient(to top, rgba(43, 30, 27, 0.85) 0%, rgba(43, 30, 27, 0.2) 60%, transparent 100%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 1.5rem;
-  opacity: 0.9;
+  opacity: 1;
   transition: all 0.4s ease;
 }
 
 .gallery-card:hover .gallery-overlay {
-  opacity: 1;
+  background: linear-gradient(to top, rgba(43, 30, 27, 0.95) 0%, rgba(43, 30, 27, 0.4) 60%, transparent 100%);
 }
 
 .gallery-category {
@@ -1025,7 +1047,7 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
   margin-bottom: 0.5rem;
-  transform: translateY(20px);
+  transform: translateY(10px);
   transition: transform 0.4s ease;
 }
 
@@ -1035,10 +1057,10 @@
 
 .gallery-item-title {
   color: var(--cream);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
-  transform: translateY(20px);
+  transform: translateY(10px);
   transition: transform 0.4s ease 0.1s;
 }
 
@@ -1225,7 +1247,24 @@
 
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    grid-auto-rows: 250px;
     gap: 1rem;
+  }
+
+  .gallery-card.featured {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .gallery-card.standard {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .gallery-card.wide {
+    grid-column: span 2;
+    grid-row: span 1;
   }
 
   .testimonials-section {
@@ -1269,10 +1308,14 @@
 
   .gallery-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
     grid-auto-rows: 250px;
   }
 
-  .gallery-card.tall {
+  .gallery-card.featured,
+  .gallery-card.standard,
+  .gallery-card.wide {
+    grid-column: span 1;
     grid-row: span 1;
   }
 

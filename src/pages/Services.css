@@ -5,11 +5,25 @@
 
 /* Offer Hero Section */
 .offer-hero {
-  background: linear-gradient(135deg, var(--espresso) 0%, #3d2b26 100%);
+  background-color: var(--espresso);
   padding: 60px 20px;
   text-align: center;
   position: relative;
   overflow: hidden;
+}
+
+.offer-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(1px);
+  opacity: 0.4;
+  z-index: 0;
+  transform: scale(1.1);
 }
 
 .offer-hero::before {

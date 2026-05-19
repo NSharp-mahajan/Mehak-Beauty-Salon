@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { Sparkles, Shield, GraduationCap, Star, Quote, Users, Award, Calendar, ChevronRight, ArrowRight } from 'lucide-react'
 import './Home.css'
+import frontImage from '../assets/images/Front.jpg'
 
 const services = [
   {
@@ -75,49 +76,37 @@ const galleryItems = [
     id: 1,
     category: 'Bridal Makeup',
     title: 'Elegant Bridal Look',
-    height: 'tall'
+    size: 'featured'
   },
   {
     id: 2,
     category: 'Hair Styling',
     title: 'Modern Hair Art',
-    height: 'normal'
+    size: 'standard'
   },
   {
     id: 3,
-    category: 'Spa Therapy',
-    title: 'Relaxing Spa Session',
-    height: 'tall'
+    category: 'Skin Care',
+    title: 'Glowing Skin Treatment',
+    size: 'standard'
   },
   {
     id: 4,
-    category: 'Skin Care',
-    title: 'Glowing Skin Treatment',
-    height: 'normal'
+    category: 'Spa Therapy',
+    title: 'Relaxing Spa Session',
+    size: 'standard'
   },
   {
     id: 5,
-    category: 'Salon Interior',
-    title: 'Premium Salon Space',
-    height: 'normal'
+    category: 'Beauty Courses',
+    title: 'Training Session',
+    size: 'standard'
   },
   {
     id: 6,
-    category: 'Beauty Courses',
-    title: 'Training Session',
-    height: 'tall'
-  },
-  {
-    id: 7,
-    category: 'Party Makeup',
-    title: 'Glam Party Look',
-    height: 'normal'
-  },
-  {
-    id: 8,
-    category: 'Future Lehenga Collection',
-    title: 'Bridal Collection',
-    height: 'normal'
+    category: 'Salon Interior',
+    title: 'Premium Salon Space',
+    size: 'wide'
   }
 ]
 
@@ -241,9 +230,7 @@ const Home = () => {
             className="hero-right"
           >
             <div className="hero-image-card">
-              <div className="image-placeholder">
-                <span>Premium Image</span>
-              </div>
+              <img src={frontImage} alt="Mehak Salon & Spa" className="hero-front-image" />
             </div>
           </motion.div>
         </div>
@@ -454,7 +441,7 @@ const Home = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={`gallery-card ${item.height}`}
+              className={`gallery-card ${item.size}`}
             >
               <div className="gallery-placeholder">
                 <div className="placeholder-gradient"></div>
