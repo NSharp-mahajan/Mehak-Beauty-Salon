@@ -10,6 +10,7 @@ import relaxingSpaSession from '../assets/images/Relaxingspasession.webp'
 import trainingSession from '../assets/images/Trainingsession.png'
 import premiumSalonSpace from '../assets/images/Premiumsalon space.png'
 import premium2Image from '../assets/images/Premium2.png'
+import ctaBackgroundImage from '../assets/images/CTA_background.png'
 
 const services = [
   {
@@ -628,6 +629,7 @@ const Home = () => {
           className="cta-container"
         >
           <div className="cta-background">
+            <img src={ctaBackgroundImage} alt="CTA Background" className="cta-bg-img" />
             <div className="cta-overlay"></div>
           </div>
           <div className="cta-content">

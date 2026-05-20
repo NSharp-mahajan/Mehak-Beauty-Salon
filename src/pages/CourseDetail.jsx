@@ -3,6 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Star, Users, Clock, Award, CheckCircle, ArrowRight, Sparkles, MessageCircle, GraduationCap, BookOpen, Target, Zap, Shield, TrendingUp } from 'lucide-react'
 import './CourseDetail.css'
 
+import hairsImg from '../assets/images/hairs.jpeg'
+import makeupPracticeImg from '../assets/images/makeup practice.jpeg'
+import nailArtImg from '../assets/images/nail Artt.jpeg'
+import parlourLearningImg from '../assets/images/parlour learning.jpeg'
+import selfCourseOneImg from '../assets/images/selfCourse_one.png'
+import makeupPracticePng from '../assets/images/makeup practice.png'
+import productLearningImg from '../assets/images/product learning.jpeg'
+import classroomImg from '../assets/images/classroom.jpeg'
+import facialImg from '../assets/images/facial.jpeg'
+
 const courses = [
   {
     id: 'self-course',
@@ -30,7 +40,26 @@ const courses = [
       'Salon environment exposure',
       'Beginner-friendly sessions'
     ],
-    gallery: ['Self Grooming', 'Makeup Practice', 'Hair Training', 'Nails Art', 'Salon Learning'],
+    gallery: [selfCourseOneImg, hairsImg, makeupPracticeImg, nailArtImg, parlourLearningImg],
+    story: {
+      badge: 'Self Grooming',
+      heading: 'Beauty Begins With Confidence',
+      text: 'Self Course is designed to help learners build confidence through personal grooming, beauty understanding and self-care practices.',
+      checklist: ['Skincare Routine', 'Makeup Basics', 'Product Understanding', 'Personal Styling']
+    },
+    learningJourney: [
+      { id: '01', title: 'Makeup Basics', desc: 'Learn everyday makeup essentials.' },
+      { id: '02', title: 'Skin Preparation', desc: 'Understand skincare preparation techniques.' },
+      { id: '03', title: 'Product Knowledge', desc: 'Learn beauty products and usage.' },
+      { id: '04', title: 'Hair Basics', desc: 'Introduction to styling and care.' },
+      { id: '05', title: 'Practice Sessions', desc: 'Hands-on learning sessions.' }
+    ],
+    environment: {
+      heading: 'Learn Inside A Professional Environment',
+      text: 'Gain practical learning experience inside a salon environment with guided sessions and hands-on exposure.',
+      points: ['Professional environment', 'Hands-on practice', 'Salon exposure', 'Guided sessions'],
+      images: [selfCourseOneImg, nailArtImg]
+    },
     timeline: ['Enroll', 'Foundation Learning', 'Practical Training', 'Assessment', 'Certification']
   },
   {
@@ -61,7 +90,26 @@ const courses = [
       'Beginner Friendly',
       'Salon Exposure'
     ],
-    gallery: ['makeup practice', 'facial training', 'product learning', 'salon practice', 'classroom environment'],
+    gallery: [productLearningImg, makeupPracticePng, facialImg, classroomImg, makeupPracticePng],
+    story: {
+      badge: 'Beauty Foundation',
+      heading: 'Build A Strong Foundation',
+      text: 'The Basic Course is designed for learners who want to build a strong foundation in beauty, skincare and salon services. The course combines theory, demonstrations and practical learning sessions.',
+      checklist: ['Hands-on Training', 'Professional Guidance', 'Salon Exposure', 'Certification']
+    },
+    learningJourney: [
+      { id: '01', title: 'Basic Makeup Techniques', desc: 'Learn fundamental makeup application.' },
+      { id: '02', title: 'Skin Preparation', desc: 'Master skincare routines and prep.' },
+      { id: '03', title: 'Facial Basics', desc: 'Understand core facial treatments.' },
+      { id: '04', title: 'Product Knowledge', desc: 'Learn beauty products and usage.' },
+      { id: '05', title: 'Client Handling', desc: 'Develop professional client skills.' }
+    ],
+    environment: {
+      heading: 'Learn Inside A Professional Environment',
+      text: 'Gain practical learning experience inside a salon environment with guided sessions and hands-on exposure.',
+      points: ['Professional environment', 'Hands-on practice', 'Salon exposure', 'Guided sessions'],
+      images: [classroomImg, makeupPracticePng]
+    },
     timeline: ['Enroll', 'Foundation Learning', 'Practical Training', 'Assessment', 'Certification']
   },
   {
@@ -192,45 +240,129 @@ const CourseDetail = () => {
     )
   }
 
+  const story = course.story || {
+    badge: course.category,
+    heading: `Master ${course.title}`,
+    text: course.description,
+    checklist: course.includes.slice(0, 4)
+  }
+
+  const learningJourney = course.learningJourney || course.learningPoints.map((pt, i) => ({
+    id: `0${i + 1}`.slice(-2),
+    title: pt,
+    desc: `Learn professional ${pt.toLowerCase()} techniques.`
+  })).slice(0, 5)
+
+  const environment = course.environment || {
+    heading: 'Professional Salon Training',
+    text: 'Gain practical learning experience inside a professional salon environment.',
+    points: ['Hands-on practice', 'Live demonstrations', 'Professional guidance', 'Salon exposure']
+  }
+
   return (
     <div className="course-detail-page">
-      {/* Course Gallery Hero */}
+      {/* Course Gallery Hero (Editorial 3-Image Layout) */}
       <motion.section
         className="course-gallery-hero"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="gallery-container">
+        <div className="gallery-editorial-container">
           <motion.div
-            className="gallery-main-image"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            className="gallery-large-left"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.01 }}
+            transition={{ duration: 0.8 }}
           >
-            <div className="gallery-placeholder">
-              <Sparkles size={32} />
-              <span>{course.gallery[0]}</span>
-            </div>
+            {course.gallery[0].includes('.') || course.gallery[0].includes('/') ? (
+              <img src={course.gallery[0]} alt="Course Main" className="real-gallery-image parallax-img" />
+            ) : (
+              <div className="gallery-placeholder">
+                <Sparkles size={32} />
+                <span>{course.gallery[0]}</span>
+              </div>
+            )}
           </motion.div>
-          <div className="gallery-grid">
-            {course.gallery.slice(1).map((label, index) => (
+          <div className="gallery-stacked-right">
+            {course.gallery.slice(1, 3).map((item, index) => (
               <motion.div
                 key={index}
-                className="gallery-small-image"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                className="gallery-small-stacked"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
               >
-                <div className="gallery-placeholder small">
-                  <Sparkles size={20} />
-                  <span>{label}</span>
-                </div>
+                {item.includes('.') || item.includes('/') ? (
+                  <img src={item} alt={`Gallery ${index}`} className="real-gallery-image parallax-img" />
+                ) : (
+                  <div className="gallery-placeholder small">
+                    <Sparkles size={20} />
+                    <span>{item}</span>
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
         </div>
       </motion.section>
+
+      {/* Course Story Section (About-inspired) */}
+      <section className="course-story-section">
+        <div className="story-container">
+          <div className="story-images-left single-image">
+            {course.gallery.slice(1, 2).map((item, index) => (
+              <motion.div 
+                key={index}
+                className={`story-img-wrapper img-${index}`}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: index * 0.2 }}
+              >
+                {item.includes('.') || item.includes('/') ? (
+                  <img src={item} alt={`Story ${index}`} className="real-gallery-image" />
+                ) : (
+                  <div className="gallery-placeholder small">
+                    <Sparkles size={20} />
+                    <span>{item}</span>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+          
+          <motion.div 
+            className="story-content-right"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <span className="category-badge">{story.badge}</span>
+            <h2 className="story-heading">{story.heading}</h2>
+            <div className="story-divider"></div>
+            <p className="story-text">{story.text}</p>
+            
+            <ul className="story-checklist">
+              {story.checklist.map((item, index) => (
+                <motion.li 
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.3 + (index * 0.1) }}
+                >
+                  <CheckCircle size={20} className="check-icon" />
+                  <span>{item}</span>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Course Main Information */}
       <section className="course-info-section">
@@ -309,10 +441,10 @@ const CourseDetail = () => {
         </div>
       </section>
 
-      {/* What You Will Learn */}
-      <section className="learn-section">
+      {/* What You Will Learn (Journey) */}
+      <section className="learning-journey-section">
         <motion.div
-          className="section-header"
+          className="section-header center"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -321,52 +453,72 @@ const CourseDetail = () => {
           <GraduationCap size={32} />
           <h2>What You Will Learn</h2>
         </motion.div>
-        <div className="learning-grid">
-          {course.learningPoints.map((point, index) => (
+        
+        <div className="journey-alternating-list">
+          {learningJourney.map((step, index) => (
             <motion.div
               key={index}
-              className="learning-card"
-              initial={{ opacity: 0, y: 30 }}
+              className={`journey-card ${index % 2 === 0 ? 'left' : 'right'}`}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ y: -8, transition: { duration: 0.2 } }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6 }}
+              whileHover={{ y: -8 }}
             >
-              <div className="learning-icon">
-                <Zap size={24} />
+              <div className="journey-number">{step.id}</div>
+              <div className="journey-content">
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
               </div>
-              <span className="learning-text">{point}</span>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Course Includes */}
-      <section className="includes-section">
-        <motion.div
-          className="section-header"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <BookOpen size={32} />
-          <h2>Course Includes</h2>
-        </motion.div>
-        <div className="includes-list">
-          {course.includes.map((item, index) => (
-            <motion.div
-              key={index}
-              className="include-item"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <CheckCircle size={20} className="check-icon" />
-              <span>{item}</span>
-            </motion.div>
-          ))}
+      {/* Learning Environment */}
+      <section className="learning-environment-section">
+        <div className="environment-container">
+          <motion.div 
+            className="environment-content-left"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="env-heading">{environment.heading}</h2>
+            <div className="story-divider"></div>
+            <p className="env-text">{environment.text}</p>
+            <div className="env-points-grid">
+              {environment.points.map((point, index) => (
+                <div key={index} className="env-point">
+                  <div className="point-dot"></div>
+                  <span>{point}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+          
+          <div className="environment-images-right">
+            {(environment.images || course.gallery.slice(3, 5)).map((item, index) => (
+              <motion.div 
+                key={index}
+                className={`env-img-wrapper img-${index}`}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: index * 0.2 }}
+              >
+                {item.includes('.') || item.includes('/') ? (
+                  <img src={item} alt={`Environment ${index}`} className="real-gallery-image" />
+                ) : (
+                  <div className="gallery-placeholder small">
+                    <Sparkles size={20} />
+                    <span>{item}</span>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
