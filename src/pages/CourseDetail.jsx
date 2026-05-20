@@ -12,6 +12,15 @@ import makeupPracticePng from '../assets/images/makeup practice.png'
 import productLearningImg from '../assets/images/product learning.jpeg'
 import classroomImg from '../assets/images/classroom.jpeg'
 import facialImg from '../assets/images/facial.jpeg'
+import advanceMakeupTrainingImg from '../assets/images/advance Makeup training.webp'
+import bridalMakeupImg from '../assets/images/Bridalmakeup.jpg'
+import facialTreatmentImg from '../assets/images/FacialTreatment.jpg'
+import nailsCourseArtImg from '../assets/images/NailArt.jpg'
+import acrylicNailsImg from '../assets/images/AcrylicNails.png'
+import nailExtensionsImg from '../assets/images/extensions.jpg'
+import hairColourImg from '../assets/images/haircolour.jpg'
+import hairStylingPracticeImg from '../assets/images/HairStylingpractice.png'
+import hairSpaTrainingImg from '../assets/images/hairspatraining.jpg'
 
 const courses = [
   {
@@ -143,7 +152,26 @@ const courses = [
       'Portfolio Building Support',
       'Client Handling Training'
     ],
-    gallery: ['bridal makeup practice', 'advanced makeup training', 'facial treatment practice', 'salon service training', 'portfolio shoot practice'],
+    gallery: [bridalMakeupImg, advanceMakeupTrainingImg, facialTreatmentImg],
+    story: {
+      badge: 'Professional Beauty Training',
+      heading: 'Take Your Skills To The Next Level',
+      text: 'The Advance Course is designed for learners who want to build professional-level skills in makeup, skin, salon services and client-ready beauty techniques. This course focuses on advanced practice, service confidence and real salon exposure.',
+      checklist: ['Advanced Hands-on Training', 'Live Demonstrations', 'Portfolio Building', 'Salon Exposure']
+    },
+    learningJourney: [
+      { id: '01', title: 'Advanced Makeup Techniques', desc: 'Master professional makeup application.' },
+      { id: '02', title: 'Bridal & Party Makeup', desc: 'Learn bridal and occasion looks.' },
+      { id: '03', title: 'Skin Care & Facials', desc: 'Advanced facial and skin treatments.' },
+      { id: '04', title: 'Client Handling', desc: 'Professional consultation and service.' },
+      { id: '05', title: 'Portfolio Practice', desc: 'Build your professional portfolio.' }
+    ],
+    environment: {
+      heading: 'Learn Inside A Professional Environment',
+      text: 'Gain practical learning experience inside a salon environment with guided sessions and hands-on exposure.',
+      points: ['Professional environment', 'Hands-on practice', 'Salon exposure', 'Guided sessions'],
+      images: [advanceMakeupTrainingImg, facialTreatmentImg]
+    },
     timeline: ['Enroll', 'Advanced Foundation', 'Professional Practice', 'Portfolio Training', 'Assessment', 'Certification']
   },
   {
@@ -174,7 +202,26 @@ const courses = [
       'Salon Environment',
       'Hands-on Practice'
     ],
-    gallery: ['nail art', 'acrylic nails', 'extensions', 'training', 'manicure practice'],
+    gallery: [nailsCourseArtImg, acrylicNailsImg, nailExtensionsImg],
+    story: {
+      badge: 'Nail Art & Extensions',
+      heading: 'Master Professional Nail Design',
+      text: 'Learn professional nail styling, nail art and extension techniques with practical training sessions designed for aspiring nail artists.',
+      checklist: ['Nail Art Techniques', 'Acrylic & Gel Systems', 'Extensions & Shaping', 'Salon-Ready Finishing']
+    },
+    learningJourney: [
+      { id: '01', title: 'Nail Preparation', desc: 'Sanitation, shaping and natural nail care.' },
+      { id: '02', title: 'Nail Art', desc: 'Designs, finishes and creative application.' },
+      { id: '03', title: 'Acrylic Application', desc: 'Structure, strength and classic sets.' },
+      { id: '04', title: 'Extensions', desc: 'Length, form and professional finishing.' },
+      { id: '05', title: 'Client Practice', desc: 'Hands-on sessions in a salon-style setup.' }
+    ],
+    environment: {
+      heading: 'Learn Inside A Professional Environment',
+      text: 'Train with guided practice on professional techniques in a salon-style learning space.',
+      points: ['Hands-on practice', 'Product exposure', 'Professional guidance', 'Certification support'],
+      images: [acrylicNailsImg, nailExtensionsImg]
+    },
     timeline: ['Enroll', 'Foundation Learning', 'Practical Training', 'Assessment', 'Certification']
   },
   {
@@ -209,7 +256,26 @@ const courses = [
       'Beginner to Professional Guidance',
       'Client Handling Practice'
     ],
-    gallery: ['hair styling practice', 'hair spa training', 'hair color learning', 'blow dry practice', 'salon hair training'],
+    gallery: [hairColourImg, hairStylingPracticeImg, hairSpaTrainingImg],
+    story: {
+      badge: 'Hair Styling & Treatments',
+      heading: 'Build Salon-Ready Hair Skills',
+      text: 'The Hair Course is created for learners who want to master professional hair styling, hair care, color basics and salon treatment techniques through guided practical training.',
+      checklist: ['Colour & Technique', 'Hands-On Styling', 'Spa & Wash Services', 'Salon Professional Standards']
+    },
+    learningJourney: [
+      { id: '01', title: 'Hair Basics & Hygiene', desc: 'Consultation, sectioning and salon safety.' },
+      { id: '02', title: 'Colour Application', desc: 'Foiling, application and colour fundamentals.' },
+      { id: '03', title: 'Styling Practice', desc: 'Cutting, blow-dry and styling on models.' },
+      { id: '04', title: 'Hair Spa & Treatments', desc: 'Wash, care and treatment techniques.' },
+      { id: '05', title: 'Client Readiness', desc: 'Professional finishing and salon workflow.' }
+    ],
+    environment: {
+      heading: 'Learn Inside A Professional Environment',
+      text: 'Train on real techniques with guided practice in a professional salon-style learning space.',
+      points: ['Hands-on practice', 'Live demonstrations', 'Product knowledge', 'Certification support'],
+      images: [hairStylingPracticeImg, hairSpaTrainingImg]
+    },
     timeline: ['Enroll', 'Hair Basics', 'Styling Practice', 'Treatment Learning', 'Assessment', 'Certification']
   }
 ]
@@ -276,13 +342,13 @@ const CourseDetail = () => {
             whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.8 }}
           >
-            {course.gallery[0].includes('.') || course.gallery[0].includes('/') ? (
-              <img src={course.gallery[0]} alt="Course Main" className="real-gallery-image parallax-img" />
-            ) : (
+            {typeof course.gallery[0] === 'string' && !course.gallery[0].includes('.') && !course.gallery[0].includes('/') ? (
               <div className="gallery-placeholder">
                 <Sparkles size={32} />
                 <span>{course.gallery[0]}</span>
               </div>
+            ) : (
+              <img src={course.gallery[0]} alt={`${course.title} — bridal makeup training`} className="real-gallery-image parallax-img" />
             )}
           </motion.div>
           <div className="gallery-stacked-right">
@@ -295,13 +361,17 @@ const CourseDetail = () => {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
               >
-                {item.includes('.') || item.includes('/') ? (
-                  <img src={item} alt={`Gallery ${index}`} className="real-gallery-image parallax-img" />
-                ) : (
+                {typeof item === 'string' && !item.includes('.') && !item.includes('/') ? (
                   <div className="gallery-placeholder small">
                     <Sparkles size={20} />
                     <span>{item}</span>
                   </div>
+                ) : (
+                  <img
+                    src={item}
+                    alt={index === 0 ? `${course.title} — advanced makeup training` : `${course.title} — facial treatment`}
+                    className="real-gallery-image parallax-img"
+                  />
                 )}
               </motion.div>
             ))}
@@ -322,13 +392,13 @@ const CourseDetail = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: index * 0.2 }}
               >
-                {item.includes('.') || item.includes('/') ? (
-                  <img src={item} alt={`Story ${index}`} className="real-gallery-image" />
-                ) : (
+                {typeof item === 'string' && !item.includes('.') && !item.includes('/') ? (
                   <div className="gallery-placeholder small">
                     <Sparkles size={20} />
                     <span>{item}</span>
                   </div>
+                ) : (
+                  <img src={item} alt={`${course.title} story`} className="real-gallery-image" />
                 )}
               </motion.div>
             ))}
@@ -414,7 +484,6 @@ const CourseDetail = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <MessageCircle size={18} />
-                Ask on WhatsApp
               </motion.button>
             </div>
           </motion.div>

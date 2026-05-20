@@ -171,21 +171,21 @@
 .course-actions .whatsapp-button {
   background: transparent;
   color: var(--espresso);
-  padding: 14px 32px;
-  border-radius: 50px;
-  font-size: 16px;
-  font-weight: 600;
-  border: 2px solid var(--gold);
+  padding: 14px 32px4px 32px;
+  border-radius: 55px0px;
+  font-size: 16px6px;
+  font-weight: 66000;
+  border: 2px splid var(--gold)solid var(--gold);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 8pxpx;
   transition: all 0.3s ease;
 }
 
 .course-actions .whatsapp-button:hover {
-  background: var(--gold);
-  box-shadow: 0 6px 20px rgba(198, 161, 110, 0.3);
+  background: transparent;
+  box-shadow: none;
 }
 
 .info-right {
@@ -784,8 +784,7 @@
     flex-direction: column;
   }
 
-  .enroll-button,
-  .course-actions .whatsapp-button {
+  .enroll-button {
     width: 100%;
     justify-content: center;
   }
