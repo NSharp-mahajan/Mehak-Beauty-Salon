@@ -1,23 +1,30 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useAuth } from '../../context/AuthContext'
 import './AdminLogin.css'
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     
-    // Dummy authentication logic
-    if (email === 'admin@mehak.com' && password === 'admin123') {
-      localStorage.setItem('adminAuth', 'true')
+    try {
+      setError('')
+      setLoading(true)
+      await login(email, password)
       navigate('/admin/dashboard')
-    } else {
-      setError('Invalid email or password')
+    } catch (err) {
+      setError('Failed to sign in. Please check your credentials.')
+      console.error(err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -64,8 +71,8 @@ const AdminLogin = () => {
             />
           </div>
 
-          <button type="submit" className="admin-login-button">
-            Sign In
+          <button type="submit" className="admin-login-button" disabled={loading}>
+            {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
       </motion.div>

@@ -1,25 +1,38 @@
-import React, { useState } from 'react'
-import { Search, Eye, Trash2, CheckCircle, PhoneCall, Clock, Mail } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Search, Eye, Trash2, CheckCircle, PhoneCall, Clock, Mail, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import enquiriesService from '../../services/enquiriesService'
 import './AdminEnquiries.css'
 
 const STATUS_FILTERS = ['All', 'New', 'Contacted', 'Completed']
 
-const initialEnquiries = [
-  { id: 1, customerName: 'Aanya Sharma', phone: '+91 9876543210', service: 'Bridal Makeup', message: 'Hi, I want to inquire about bridal packages for December 15th.', date: '2026-05-20', status: 'New' },
-  { id: 2, customerName: 'Riya Verma', phone: '+91 9123456789', service: 'Hair Spa', message: 'Looking for a relaxing hair spa treatment this weekend.', date: '2026-05-19', status: 'Contacted' },
-  { id: 3, customerName: 'Simran Kaur', phone: '+91 9988776655', service: 'Basic Course', message: 'Can you please share the curriculum and fees for the basic beauty course?', date: '2026-05-18', status: 'Completed' },
-  { id: 4, customerName: 'Kriti Ahuja', phone: '+91 9876512345', service: 'Party Makeup', message: 'Need party makeup for 3 people on Friday evening.', date: '2026-05-18', status: 'New' }
-]
-
 const AdminEnquiries = () => {
-  const [enquiries, setEnquiries] = useState(initialEnquiries)
+  const [enquiries, setEnquiries] = useState([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('All')
+  const [error, setError] = useState('')
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [viewingEnquiry, setViewingEnquiry] = useState(null)
+
+  useEffect(() => {
+    loadEnquiries()
+  }, [])
+
+  const loadEnquiries = async () => {
+    try {
+      setLoading(true)
+      const data = await enquiriesService.getAll()
+      setEnquiries(data)
+    } catch (err) {
+      console.error('Failed to load enquiries:', err)
+      setError('Failed to load enquiries.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Handlers
   const handleViewDetails = (enquiry) => {
@@ -32,17 +45,29 @@ const AdminEnquiries = () => {
     setViewingEnquiry(null)
   }
 
-  const updateStatus = (id, newStatus) => {
-    setEnquiries(prev => prev.map(e => e.id === id ? { ...e, status: newStatus } : e))
-    if (viewingEnquiry && viewingEnquiry.id === id) {
-      setViewingEnquiry(prev => ({ ...prev, status: newStatus }))
+  const updateStatus = async (id, newStatus) => {
+    try {
+      await enquiriesService.update(id, { status: newStatus })
+      setEnquiries(prev => prev.map(e => e.id === id ? { ...e, status: newStatus } : e))
+      if (viewingEnquiry && viewingEnquiry.id === id) {
+        setViewingEnquiry(prev => ({ ...prev, status: newStatus }))
+      }
+    } catch (err) {
+      console.error('Failed to update status:', err)
+      alert('Failed to update status.')
     }
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this enquiry? This action cannot be undone.')) {
-      setEnquiries(prev => prev.filter(e => e.id !== id))
-      handleCloseModal()
+      try {
+        await enquiriesService.remove(id)
+        setEnquiries(prev => prev.filter(e => e.id !== id))
+        handleCloseModal()
+      } catch (err) {
+        console.error('Failed to delete enquiry:', err)
+        alert('Failed to delete enquiry.')
+      }
     }
   }
 
@@ -103,6 +128,9 @@ const AdminEnquiries = () => {
 
       {/* Data Table */}
       <div className="admin-table-container">
+        {loading ? (
+          <div className="empty-state">Loading enquiries...</div>
+        ) : (
         <table className="admin-table">
           <thead>
             <tr>
@@ -151,6 +179,7 @@ const AdminEnquiries = () => {
             )}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* View Details Modal */}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import { 
   LayoutDashboard, 
   Scissors, 
@@ -20,10 +21,15 @@ const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
+  const { logout } = useAuth()
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuth')
-    navigate('/admin/login')
+  const handleLogout = async () => {
+    try {
+      await logout()
+      navigate('/admin/login')
+    } catch (error) {
+      console.error('Failed to log out', error)
+    }
   }
 
   const navLinks = [

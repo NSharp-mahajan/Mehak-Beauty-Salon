@@ -1,41 +1,49 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Save, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import contentService from '../../services/contentService'
 import './AdminContent.css'
 
-const initialContentState = {
-  hero: {
-    badgeText: 'Premium Beauty & Wellness',
-    mainHeading: 'Glow Naturally, Feel Beautiful',
-    subHeading: 'Experience luxury salon, spa, bridal and beauty services designed to make every visit unforgettable.',
-    primaryButtonText: 'Book Appointment',
-    secondaryButtonText: 'Explore Services'
-  },
-  about: {
-    sectionBadge: 'The Salon',
-    heading: 'Where Elegance Meets Expertise',
-    description: 'We believe every individual deserves to feel confident and beautiful. Mehak Salon & Spa offers premium services in a luxurious, relaxing atmosphere. Our highly trained professionals use top-tier products to give you the perfect look and an unforgettable experience.'
-  },
-  cta: {
-    badgeText: 'Book Your Experience',
-    heading: 'Your Luxury Beauty Journey Starts Here',
-    description: 'From bridal elegance to relaxing spa therapies, let Mehak Salon & Spa bring out your confidence and beauty.',
-    buttonText: 'Book Appointment'
-  },
-  contact: {
-    phone: '+91 98765 43210',
-    whatsapp: '+91 98765 43210',
-    email: 'info@mehaksalon.com',
-    address: '123 Luxury Lane, Premium Area, New Delhi',
-    openingHours: 'Mon - Sun: 10:00 AM - 8:00 PM',
-    mapLink: 'https://maps.google.com'
-  }
+const DEFAULT_CONTENT = {
+  hero: { badgeText: '', mainHeading: '', subHeading: '', primaryButtonText: '', secondaryButtonText: '' },
+  about: { sectionBadge: '', heading: '', description: '' },
+  cta: { badgeText: '', heading: '', description: '', buttonText: '' },
+  contact: { phone: '', whatsapp: '', email: '', openingHours: '', address: '', mapLink: '' }
 }
 
 const AdminContent = () => {
-  const [content, setContent] = useState(initialContentState)
+  const [content, setContent] = useState(DEFAULT_CONTENT)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  
   const [openSection, setOpenSection] = useState('hero')
   const [showSuccess, setShowSuccess] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadContent()
+  }, [])
+
+  const loadContent = async () => {
+    try {
+      setLoading(true)
+      const data = await contentService.getById('main')
+      if (data) {
+        // Merge with default to ensure no missing nested objects
+        setContent({
+          hero: { ...DEFAULT_CONTENT.hero, ...data.hero },
+          about: { ...DEFAULT_CONTENT.about, ...data.about },
+          cta: { ...DEFAULT_CONTENT.cta, ...data.cta },
+          contact: { ...DEFAULT_CONTENT.contact, ...data.contact }
+        })
+      }
+    } catch (err) {
+      console.error('Failed to load content:', err)
+      setError('Failed to load content.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleInputChange = (section, field, value) => {
     setContent(prev => ({
@@ -47,16 +55,23 @@ const AdminContent = () => {
     }))
   }
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault()
-    // In a real app, this would be an API call to save to Firebase
-    console.log('Saved content:', content)
-    
-    // Show success message briefly
-    setShowSuccess(true)
-    setTimeout(() => {
-      setShowSuccess(false)
-    }, 3000)
+    setSaving(true)
+    setError('')
+    try {
+      // create will use setDoc since we provide 'id'
+      await contentService.create({ ...content, id: 'main' })
+      setShowSuccess(true)
+      setTimeout(() => {
+        setShowSuccess(false)
+      }, 3000)
+    } catch (err) {
+      console.error('Failed to save content:', err)
+      setError('Failed to save content. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const toggleSection = (section) => {
@@ -69,19 +84,23 @@ const AdminContent = () => {
         <label>{label}</label>
         {isTextarea ? (
           <textarea
-            value={content[section][field]}
+            value={content[section][field] || ''}
             onChange={(e) => handleInputChange(section, field, e.target.value)}
             rows="4"
           />
         ) : (
           <input
             type="text"
-            value={content[section][field]}
+            value={content[section][field] || ''}
             onChange={(e) => handleInputChange(section, field, e.target.value)}
           />
         )}
       </div>
     )
+  }
+
+  if (loading) {
+    return <div className="admin-page-container"><div className="admin-page-header"><h2>Loading content...</h2></div></div>
   }
 
   return (
@@ -91,9 +110,9 @@ const AdminContent = () => {
           <h2>Website Content Manager</h2>
           <p>Update text and basic details across the website without coding.</p>
         </div>
-        <button className="admin-btn-primary save-all-btn" onClick={handleSave}>
+        <button className="admin-btn-primary save-all-btn" onClick={handleSave} disabled={saving}>
           <Save size={20} />
-          <span>Save Changes</span>
+          <span>{saving ? 'Saving...' : 'Save Changes'}</span>
         </button>
       </div>
 
@@ -110,6 +129,8 @@ const AdminContent = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {error && <div className="admin-login-error" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
 
       <div className="content-accordion">
         {/* Home Hero Section */}

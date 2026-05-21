@@ -1,17 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X, Star, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import testimonialsService from '../../services/testimonialsService'
 import './AdminTestimonials.css'
 
-const initialTestimonials = [
-  { id: 1, customerName: 'Priya Sharma', serviceUsed: 'Bridal Makeup', rating: 5, text: 'The bridal makeup was absolutely stunning. I felt like a princess on my big day!', imageUrl: '', status: 'Approved', featured: true },
-  { id: 2, customerName: 'Neha Verma', serviceUsed: 'Spa Therapy', rating: 5, text: 'Very relaxing experience. The staff is highly professional and the ambiance is peaceful.', imageUrl: '', status: 'Approved', featured: false },
-  { id: 3, customerName: 'Simran Kaur', serviceUsed: 'Beauty Course', rating: 5, text: 'I completed my basic beauty course here. The trainers are excellent and very supportive.', imageUrl: '', status: 'Approved', featured: false },
-  { id: 4, customerName: 'Aarti Patel', serviceUsed: 'Hair Styling', rating: 4, text: 'Loved my new haircut and the keratin treatment. Will definitely visit again.', imageUrl: '', status: 'Pending', featured: false }
-]
-
 const AdminTestimonials = () => {
-  const [testimonials, setTestimonials] = useState(initialTestimonials)
+  const [testimonials, setTestimonials] = useState([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   
   // Modal State
@@ -29,6 +24,26 @@ const AdminTestimonials = () => {
     featured: false
   })
 
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadTestimonials()
+  }, [])
+
+  const loadTestimonials = async () => {
+    try {
+      setLoading(true)
+      const data = await testimonialsService.getAll()
+      setTestimonials(data)
+    } catch (err) {
+      console.error('Failed to load testimonials:', err)
+      setError('Failed to load testimonials.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Handlers
   const handleOpenModal = (review = null) => {
     if (review) {
@@ -41,6 +56,7 @@ const AdminTestimonials = () => {
         imageUrl: '', status: 'Pending', featured: false 
       })
     }
+    setError('')
     setIsModalOpen(true)
   }
 
@@ -57,29 +73,48 @@ const AdminTestimonials = () => {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setSaving(true)
+    setError('')
     
-    if (editingReview) {
-      setTestimonials(prev => prev.map(t => t.id === editingReview.id ? { ...formData, id: t.id } : t))
-    } else {
-      const newReview = {
-        ...formData,
-        id: Date.now()
+    try {
+      if (editingReview) {
+        await testimonialsService.update(editingReview.id, formData)
+        setTestimonials(prev => prev.map(t => t.id === editingReview.id ? { ...formData, id: t.id } : t))
+      } else {
+        const newTestimonial = await testimonialsService.create(formData)
+        setTestimonials(prev => [...prev, newTestimonial])
       }
-      setTestimonials(prev => [newReview, ...prev])
+      handleCloseModal()
+    } catch (err) {
+      console.error('Error saving testimonial:', err)
+      setError('Failed to save testimonial.')
+    } finally {
+      setSaving(false)
     }
-    handleCloseModal()
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this testimonial?')) {
-      setTestimonials(prev => prev.filter(t => t.id !== id))
+      try {
+        await testimonialsService.remove(id)
+        setTestimonials(prev => prev.filter(t => t.id !== id))
+      } catch (err) {
+        console.error('Failed to delete testimonial:', err)
+        alert('Failed to delete testimonial.')
+      }
     }
   }
 
-  const updateStatus = (id, newStatus) => {
-    setTestimonials(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t))
+  const updateStatus = async (id, newStatus) => {
+    try {
+      await testimonialsService.update(id, { status: newStatus })
+      setTestimonials(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t))
+    } catch (err) {
+      console.error('Failed to update status:', err)
+      alert('Failed to update status.')
+    }
   }
 
   // Filtering
@@ -127,7 +162,9 @@ const AdminTestimonials = () => {
 
       {/* Reviews Grid */}
       <div className="admin-testimonials-grid">
-        {filteredTestimonials.length > 0 ? (
+        {loading ? (
+          <div className="empty-state-card">Loading testimonials...</div>
+        ) : filteredTestimonials.length > 0 ? (
           filteredTestimonials.map((review, index) => (
             <motion.div 
               key={review.id}
@@ -210,6 +247,7 @@ const AdminTestimonials = () => {
               </div>
               
               <form onSubmit={handleSubmit} className="admin-modal-form">
+                {error && <div className="admin-login-error" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
                 <div className="form-row">
                   <div className="form-group">
                     <label>Customer Name</label>
@@ -291,11 +329,11 @@ const AdminTestimonials = () => {
                 </div>
 
                 <div className="admin-modal-footer">
-                  <button type="button" className="admin-btn-secondary" onClick={handleCloseModal}>
+                  <button type="button" className="admin-btn-secondary" onClick={handleCloseModal} disabled={saving}>
                     Cancel
                   </button>
-                  <button type="submit" className="admin-btn-primary">
-                    {editingReview ? 'Save Changes' : 'Add Testimonial'}
+                  <button type="submit" className="admin-btn-primary" disabled={saving}>
+                    {saving ? 'Saving...' : (editingReview ? 'Save Changes' : 'Add Testimonial')}
                   </button>
                 </div>
               </form>

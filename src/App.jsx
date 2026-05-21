@@ -26,10 +26,12 @@ import AdminTestimonials from './pages/admin/AdminTestimonials'
 import AdminContent from './pages/admin/AdminContent'
 import AdminEnquiries from './pages/admin/AdminEnquiries'
 import AdminSettings from './pages/admin/AdminSettings'
+import { AuthProvider } from './context/AuthContext'
 
 function App() {
   return (
-    <Router>
+    <AuthProvider>
+      <Router>
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicLayout />}>
@@ -61,6 +63,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
+    </AuthProvider>
   )
 }
 

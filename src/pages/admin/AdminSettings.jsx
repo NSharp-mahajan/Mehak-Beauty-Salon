@@ -1,40 +1,54 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Save, CheckCircle, Briefcase, Palette, Shield, Globe } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import settingsService from '../../services/settingsService'
 import './AdminSettings.css'
 
-const initialSettings = {
+const DEFAULT_SETTINGS = {
   business: {
-    salonName: 'Mehak Salon & Spa',
-    tagline: 'Premium Beauty & Wellness',
-    phone: '+91 98765 43210',
-    whatsapp: '+91 98765 43210',
-    email: 'info@mehaksalon.com',
-    address: '123 Luxury Lane, Premium Area, New Delhi',
-    openingHours: 'Mon - Sun: 10:00 AM - 8:00 PM'
+    salonName: '', tagline: '', phone: '', whatsapp: '', email: '', address: '', openingHours: ''
   },
   branding: {
-    logoUrl: 'https://example.com/logo.png',
-    primaryColor: '#c6a16e', // Gold
-    accentColor: '#2b2321', // Espresso
-    footerText: '© 2026 Mehak Salon & Spa. All rights reserved.'
+    logoUrl: '', primaryColor: '#000000', accentColor: '#000000', footerText: ''
   },
   admin: {
-    adminName: 'Super Admin',
-    adminEmail: 'admin@mehak.com',
-    password: '' // Placeholder
+    adminName: '', adminEmail: '', password: ''
   },
   website: {
-    enableBooking: true,
-    showOffers: true,
-    showCourses: true,
-    maintenanceMode: false
+    enableBooking: true, showOffers: true, showCourses: true, maintenanceMode: false
   }
 }
 
 const AdminSettings = () => {
-  const [settings, setSettings] = useState(initialSettings)
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadSettings()
+  }, [])
+
+  const loadSettings = async () => {
+    try {
+      setLoading(true)
+      const data = await settingsService.getById('main')
+      if (data) {
+        setSettings({
+          business: { ...DEFAULT_SETTINGS.business, ...data.business },
+          branding: { ...DEFAULT_SETTINGS.branding, ...data.branding },
+          admin: { ...DEFAULT_SETTINGS.admin, ...data.admin },
+          website: { ...DEFAULT_SETTINGS.website, ...data.website }
+        })
+      }
+    } catch (err) {
+      console.error('Failed to load settings:', err)
+      setError('Failed to load settings.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleInputChange = (section, field, value) => {
     setSettings(prev => ({
@@ -56,15 +70,22 @@ const AdminSettings = () => {
     }))
   }
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault()
-    console.log('Saved settings:', settings)
-    
-    // Show success message briefly
-    setShowSuccess(true)
-    setTimeout(() => {
-      setShowSuccess(false)
-    }, 3000)
+    setSaving(true)
+    setError('')
+    try {
+      await settingsService.create({ ...settings, id: 'main' })
+      setShowSuccess(true)
+      setTimeout(() => {
+        setShowSuccess(false)
+      }, 3000)
+    } catch (err) {
+      console.error('Failed to save settings:', err)
+      setError('Failed to save settings. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const renderInput = (section, field, label, type = 'text', placeholder = '') => (
@@ -72,7 +93,7 @@ const AdminSettings = () => {
       <label>{label}</label>
       <input
         type={type}
-        value={settings[section][field]}
+        value={settings[section][field] || ''}
         onChange={(e) => handleInputChange(section, field, e.target.value)}
         placeholder={placeholder}
       />
@@ -88,13 +109,17 @@ const AdminSettings = () => {
       <label className="switch">
         <input 
           type="checkbox" 
-          checked={settings[section][field]} 
+          checked={!!settings[section][field]} 
           onChange={() => handleToggle(section, field)} 
         />
         <span className="slider round"></span>
       </label>
     </div>
   )
+
+  if (loading) {
+    return <div className="admin-page-container"><div className="admin-page-header"><h2>Loading settings...</h2></div></div>
+  }
 
   return (
     <div className="admin-page-container">
@@ -103,9 +128,9 @@ const AdminSettings = () => {
           <h2>Settings</h2>
           <p>Configure business details, branding, and core website functionality.</p>
         </div>
-        <button className="admin-btn-primary save-all-btn" onClick={handleSave}>
+        <button className="admin-btn-primary save-all-btn" onClick={handleSave} disabled={saving}>
           <Save size={20} />
-          <span>Save Settings</span>
+          <span>{saving ? 'Saving...' : 'Save Settings'}</span>
         </button>
       </div>
 
@@ -122,6 +147,8 @@ const AdminSettings = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {error && <div className="admin-login-error" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
 
       <div className="settings-grid">
         {/* Business Profile */}
@@ -159,12 +186,12 @@ const AdminSettings = () => {
                 <div className="color-input-wrapper">
                   <input 
                     type="color" 
-                    value={settings.branding.primaryColor}
+                    value={settings.branding.primaryColor || '#000000'}
                     onChange={(e) => handleInputChange('branding', 'primaryColor', e.target.value)}
                   />
                   <input 
                     type="text" 
-                    value={settings.branding.primaryColor}
+                    value={settings.branding.primaryColor || '#000000'}
                     onChange={(e) => handleInputChange('branding', 'primaryColor', e.target.value)}
                   />
                 </div>
@@ -174,12 +201,12 @@ const AdminSettings = () => {
                 <div className="color-input-wrapper">
                   <input 
                     type="color" 
-                    value={settings.branding.accentColor}
+                    value={settings.branding.accentColor || '#000000'}
                     onChange={(e) => handleInputChange('branding', 'accentColor', e.target.value)}
                   />
                   <input 
                     type="text" 
-                    value={settings.branding.accentColor}
+                    value={settings.branding.accentColor || '#000000'}
                     onChange={(e) => handleInputChange('branding', 'accentColor', e.target.value)}
                   />
                 </div>
@@ -202,7 +229,7 @@ const AdminSettings = () => {
               <label>Change Password</label>
               <input 
                 type="password" 
-                value={settings.admin.password}
+                value={settings.admin.password || ''}
                 onChange={(e) => handleInputChange('admin', 'password', e.target.value)}
                 placeholder="Leave blank to keep current password"
               />

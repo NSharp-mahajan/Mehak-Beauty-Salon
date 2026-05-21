@@ -1,20 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X, Star } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import coursesService from '../../services/coursesService'
 import './AdminCourses.css'
 
 const CATEGORIES = ['All', 'Personal Grooming', 'Beauty Foundation', 'Professional Training', 'Nail Art & Extensions', 'Hair Styling & Treatments']
 
-const initialCourses = [
-  { id: 1, name: 'Self Grooming Course', category: 'Personal Grooming', price: 15000, duration: '2 Weeks', rating: '4.8', enrolledCount: 124, status: 'Active', description: 'Master everyday makeup and styling for yourself.' },
-  { id: 2, name: 'Basic Beauty Course', category: 'Beauty Foundation', price: 35000, duration: '1 Month', rating: '4.9', enrolledCount: 86, status: 'Active', description: 'Fundamental beauty concepts and salon basics.' },
-  { id: 3, name: 'Advance Beauty Course', category: 'Professional Training', price: 65000, duration: '3 Months', rating: '5.0', enrolledCount: 42, status: 'Active', description: 'Comprehensive training for aspiring professionals.' },
-  { id: 4, name: 'Professional Nail Art', category: 'Nail Art & Extensions', price: 20000, duration: '3 Weeks', rating: '4.7', enrolledCount: 56, status: 'Inactive', description: 'Learn acrylics, gel extensions, and advanced 3D art.' },
-  { id: 5, name: 'Hair Chemical & Treatment', category: 'Hair Styling & Treatments', price: 45000, duration: '1.5 Months', rating: '4.8', enrolledCount: 71, status: 'Active', description: 'Specialized training in rebonding, coloring, and keratin.' }
-]
-
 const AdminCourses = () => {
-  const [courses, setCourses] = useState(initialCourses)
+  const [courses, setCourses] = useState([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterCategory, setFilterCategory] = useState('All')
   
@@ -34,6 +28,26 @@ const AdminCourses = () => {
     description: ''
   })
 
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadCourses()
+  }, [])
+
+  const loadCourses = async () => {
+    try {
+      setLoading(true)
+      const data = await coursesService.getAll()
+      setCourses(data)
+    } catch (err) {
+      console.error('Failed to load courses:', err)
+      setError('Failed to load courses.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Handlers
   const handleOpenModal = (course = null) => {
     if (course) {
@@ -46,6 +60,7 @@ const AdminCourses = () => {
         duration: '', rating: '5.0', enrolledCount: '0', status: 'Active', description: '' 
       })
     }
+    setError('')
     setIsModalOpen(true)
   }
 
@@ -59,26 +74,43 @@ const AdminCourses = () => {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setSaving(true)
+    setError('')
     
-    if (editingCourse) {
-      setCourses(prev => prev.map(c => c.id === editingCourse.id ? { ...formData, id: c.id } : c))
-    } else {
-      const newCourse = {
+    try {
+      const courseData = {
         ...formData,
-        id: Date.now(),
         price: Number(formData.price),
         enrolledCount: Number(formData.enrolledCount)
       }
-      setCourses(prev => [...prev, newCourse])
+
+      if (editingCourse) {
+        await coursesService.update(editingCourse.id, courseData)
+        setCourses(prev => prev.map(c => c.id === editingCourse.id ? { ...courseData, id: c.id } : c))
+      } else {
+        const newCourse = await coursesService.create(courseData)
+        setCourses(prev => [...prev, newCourse])
+      }
+      handleCloseModal()
+    } catch (err) {
+      console.error('Error saving course:', err)
+      setError('Failed to save course.')
+    } finally {
+      setSaving(false)
     }
-    handleCloseModal()
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this course?')) {
-      setCourses(prev => prev.filter(c => c.id !== id))
+      try {
+        await coursesService.remove(id)
+        setCourses(prev => prev.filter(c => c.id !== id))
+      } catch (err) {
+        console.error('Failed to delete course:', err)
+        alert('Failed to delete course.')
+      }
     }
   }
 
@@ -129,6 +161,9 @@ const AdminCourses = () => {
 
       {/* Data Table */}
       <div className="admin-table-container">
+        {loading ? (
+          <div className="empty-state">Loading courses...</div>
+        ) : (
         <table className="admin-table">
           <thead>
             <tr>
@@ -153,7 +188,7 @@ const AdminCourses = () => {
                   </td>
                   <td><span className="category-badge">{course.category}</span></td>
                   <td>{course.duration}</td>
-                  <td>₹{course.price.toLocaleString()}</td>
+                  <td>₹{Number(course.price).toLocaleString()}</td>
                   <td>
                     <div className="course-stats-cell">
                       <span className="rating-pill"><Star size={12} className="star-icon"/> {course.rating}</span>
@@ -182,6 +217,7 @@ const AdminCourses = () => {
             )}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* Add/Edit Modal */}

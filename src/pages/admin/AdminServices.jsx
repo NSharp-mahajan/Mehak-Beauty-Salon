@@ -1,20 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import servicesService from '../../services/servicesService'
 import './AdminServices.css'
 
 const CATEGORIES = ['All', 'Hair', 'Makeup', 'Spa', 'Bridal', 'Courses']
 
-const initialServices = [
-  { id: 1, name: 'Bridal Makeup', category: 'Bridal', price: 15000, status: 'Active', description: 'Complete bridal makeup package including hair styling and draping.' },
-  { id: 2, name: 'Advanced Haircut', category: 'Hair', price: 1200, status: 'Active', description: 'Premium haircut by senior stylist.' },
-  { id: 3, name: 'Keratin Treatment', category: 'Hair', price: 4500, status: 'Active', description: 'Smoothing treatment for frizzy hair.' },
-  { id: 4, name: 'Gold Facial', category: 'Spa', price: 2500, status: 'Active', description: 'Luxury facial for glowing skin.' },
-  { id: 5, name: 'Basic Makeup Course', category: 'Courses', price: 30000, status: 'Inactive', description: '1 month basic makeup training.' }
-]
-
 const AdminServices = () => {
-  const [services, setServices] = useState(initialServices)
+  const [services, setServices] = useState([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterCategory, setFilterCategory] = useState('All')
   
@@ -30,6 +24,26 @@ const AdminServices = () => {
     status: 'Active',
     description: ''
   })
+  
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadServices()
+  }, [])
+
+  const loadServices = async () => {
+    try {
+      setLoading(true)
+      const data = await servicesService.getAll()
+      setServices(data)
+    } catch (err) {
+      console.error('Failed to load services:', err)
+      setError('Failed to load services.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Handlers
   const handleOpenModal = (service = null) => {
@@ -40,6 +54,7 @@ const AdminServices = () => {
       setEditingService(null)
       setFormData({ name: '', category: 'Hair', price: '', status: 'Active', description: '' })
     }
+    setError('')
     setIsModalOpen(true)
   }
 
@@ -53,27 +68,44 @@ const AdminServices = () => {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setSaving(true)
+    setError('')
     
-    if (editingService) {
-      // Update existing
-      setServices(prev => prev.map(s => s.id === editingService.id ? { ...formData, id: s.id } : s))
-    } else {
-      // Add new
-      const newService = {
+    try {
+      const serviceData = {
         ...formData,
-        id: Date.now(), // Dummy ID generation
         price: Number(formData.price)
       }
-      setServices(prev => [...prev, newService])
+
+      if (editingService) {
+        // Update existing
+        await servicesService.update(editingService.id, serviceData)
+        setServices(prev => prev.map(s => s.id === editingService.id ? { ...serviceData, id: s.id } : s))
+      } else {
+        // Add new
+        const newService = await servicesService.create(serviceData)
+        setServices(prev => [...prev, newService])
+      }
+      handleCloseModal()
+    } catch (err) {
+      console.error('Error saving service:', err)
+      setError('Failed to save service. Please try again.')
+    } finally {
+      setSaving(false)
     }
-    handleCloseModal()
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this service?')) {
-      setServices(prev => prev.filter(s => s.id !== id))
+      try {
+        await servicesService.remove(id)
+        setServices(prev => prev.filter(s => s.id !== id))
+      } catch (err) {
+        console.error('Failed to delete service:', err)
+        alert('Failed to delete service.')
+      }
     }
   }
 
@@ -124,6 +156,9 @@ const AdminServices = () => {
 
       {/* Data Table */}
       <div className="admin-table-container">
+        {loading ? (
+          <div className="empty-state">Loading services...</div>
+        ) : (
         <table className="admin-table">
           <thead>
             <tr>
@@ -163,6 +198,7 @@ const AdminServices = () => {
             )}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* Add/Edit Modal */}

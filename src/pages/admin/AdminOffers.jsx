@@ -1,21 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X, Calendar, Tag, Percent } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import offersService from '../../services/offersService'
 import './AdminOffers.css'
 
 const CATEGORIES = ['All', 'Seasonal', 'Hair', 'Facial', 'Packages']
 
-const initialOffers = [
-  { id: 1, title: 'Special Summer Offer', category: 'Seasonal', offerPrice: 1999, originalPrice: 3500, status: 'Active', featured: true, startDate: '2026-05-01', endDate: '2026-08-31', description: 'Complete summer refresh package including hydration facial, detan, and basic haircut.' },
-  { id: 2, title: 'Glow Package', category: 'Packages', offerPrice: 699, originalPrice: 1200, status: 'Active', featured: false, startDate: '2026-05-01', endDate: '2026-12-31', description: 'Basic clean up, threading, and arms waxing.' },
-  { id: 3, title: 'Beauty Package', category: 'Packages', offerPrice: 799, originalPrice: 1500, status: 'Active', featured: false, startDate: '2026-05-01', endDate: '2026-12-31', description: 'Advanced facial, full face threading, and half legs waxing.' },
-  { id: 4, title: 'Premium Package', category: 'Packages', offerPrice: 1199, originalPrice: 2200, status: 'Active', featured: false, startDate: '2026-05-01', endDate: '2026-12-31', description: 'O3+ Facial, full body waxing, and basic manicure.' },
-  { id: 5, title: 'Luxury Package', category: 'Packages', offerPrice: 1799, originalPrice: 3000, status: 'Inactive', featured: false, startDate: '2026-01-01', endDate: '2026-04-30', description: 'Bridal glow facial, spa manicure/pedicure, and full body polishing.' },
-  { id: 6, title: 'Hair Spa Offer', category: 'Hair', offerPrice: 999, originalPrice: 1800, status: 'Active', featured: false, startDate: '2026-05-15', endDate: '2026-06-15', description: 'Loreal deep conditioning hair spa with 15 mins relaxing head massage.' }
-]
-
 const AdminOffers = () => {
-  const [offers, setOffers] = useState(initialOffers)
+  const [offers, setOffers] = useState([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterCategory, setFilterCategory] = useState('All')
   
@@ -36,6 +29,26 @@ const AdminOffers = () => {
     featured: false
   })
 
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadOffers()
+  }, [])
+
+  const loadOffers = async () => {
+    try {
+      setLoading(true)
+      const data = await offersService.getAll()
+      setOffers(data)
+    } catch (err) {
+      console.error('Failed to load offers:', err)
+      setError('Failed to load offers.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Handlers
   const handleOpenModal = (offer = null) => {
     if (offer) {
@@ -48,6 +61,7 @@ const AdminOffers = () => {
         description: '', startDate: '', endDate: '', status: 'Active', featured: false 
       })
     }
+    setError('')
     setIsModalOpen(true)
   }
 
@@ -64,38 +78,58 @@ const AdminOffers = () => {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setSaving(true)
+    setError('')
     
-    // If setting as featured, we might want to un-feature others, but for now allow multiple or keep simple
-    
-    if (editingOffer) {
-      setOffers(prev => prev.map(o => o.id === editingOffer.id ? { ...formData, id: o.id } : o))
-    } else {
-      const newOffer = {
+    try {
+      const offerData = {
         ...formData,
-        id: Date.now(),
         offerPrice: Number(formData.offerPrice),
-        originalPrice: Number(formData.originalPrice)
+        originalPrice: formData.originalPrice ? Number(formData.originalPrice) : ''
       }
-      setOffers(prev => [newOffer, ...prev])
+
+      if (editingOffer) {
+        await offersService.update(editingOffer.id, offerData)
+        setOffers(prev => prev.map(o => o.id === editingOffer.id ? { ...offerData, id: o.id } : o))
+      } else {
+        const newOffer = await offersService.create(offerData)
+        setOffers(prev => [...prev, newOffer])
+      }
+      handleCloseModal()
+    } catch (err) {
+      console.error('Error saving offer:', err)
+      setError('Failed to save offer.')
+    } finally {
+      setSaving(false)
     }
-    handleCloseModal()
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this offer?')) {
-      setOffers(prev => prev.filter(o => o.id !== id))
+      try {
+        await offersService.remove(id)
+        setOffers(prev => prev.filter(o => o.id !== id))
+      } catch (err) {
+        console.error('Failed to delete offer:', err)
+        alert('Failed to delete offer.')
+      }
     }
   }
 
-  const toggleStatus = (id) => {
-    setOffers(prev => prev.map(o => {
-      if (o.id === id) {
-        return { ...o, status: o.status === 'Active' ? 'Inactive' : 'Active' }
+  const toggleStatus = async (id) => {
+    const offer = offers.find(o => o.id === id)
+    if (offer) {
+      const newStatus = offer.status === 'Active' ? 'Inactive' : 'Active'
+      try {
+        await offersService.update(id, { status: newStatus })
+        setOffers(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o))
+      } catch (err) {
+        console.error('Failed to toggle status:', err)
+        alert('Failed to update status.')
       }
-      return o
-    }))
+    }
   }
 
   // Filtering
@@ -145,7 +179,9 @@ const AdminOffers = () => {
 
       {/* Offers Grid */}
       <div className="admin-offers-grid">
-        {filteredOffers.length > 0 ? (
+        {loading ? (
+          <div className="empty-state-card">Loading offers...</div>
+        ) : filteredOffers.length > 0 ? (
           filteredOffers.map((offer, index) => (
             <motion.div 
               key={offer.id}
@@ -169,9 +205,9 @@ const AdminOffers = () => {
                 
                 <div className="offer-pricing">
                   <div className="price-tag">
-                    <span className="current-price">₹{offer.offerPrice}</span>
+                    <span className="current-price">₹{Number(offer.offerPrice).toLocaleString()}</span>
                     {offer.originalPrice && (
-                      <span className="original-price">₹{offer.originalPrice}</span>
+                      <span className="original-price">₹{Number(offer.originalPrice).toLocaleString()}</span>
                     )}
                   </div>
                   {offer.originalPrice && offer.offerPrice < offer.originalPrice && (
@@ -232,6 +268,7 @@ const AdminOffers = () => {
               </div>
               
               <form onSubmit={handleSubmit} className="admin-modal-form">
+                {error && <div className="admin-login-error" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
                 <div className="form-row">
                   <div className="form-group">
                     <label>Offer Title</label>
@@ -333,11 +370,11 @@ const AdminOffers = () => {
                 </div>
 
                 <div className="admin-modal-footer">
-                  <button type="button" className="admin-btn-secondary" onClick={handleCloseModal}>
+                  <button type="button" className="admin-btn-secondary" onClick={handleCloseModal} disabled={saving}>
                     Cancel
                   </button>
-                  <button type="submit" className="admin-btn-primary">
-                    {editingOffer ? 'Save Changes' : 'Create Offer'}
+                  <button type="submit" className="admin-btn-primary" disabled={saving}>
+                    {saving ? 'Saving...' : (editingOffer ? 'Save Changes' : 'Create Offer')}
                   </button>
                 </div>
               </form>

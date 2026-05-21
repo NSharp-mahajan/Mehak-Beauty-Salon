@@ -1,20 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X, Image as ImageIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import galleryService from '../../services/galleryService'
 import './AdminGallery.css'
 
 const CATEGORIES = ['All', 'Bridal Makeup', 'Hair Styling', 'Spa Therapy', 'Skin Care', 'Salon Interior', 'Beauty Courses', 'Party Makeup', 'Lehenga Collection']
 
-const initialGallery = [
-  { id: 1, title: 'Classic Bridal Look', category: 'Bridal Makeup', url: 'https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?q=80&w=600&auto=format&fit=crop', alt: 'Bridal makeup', status: 'Active' },
-  { id: 2, title: 'Modern Balayage', category: 'Hair Styling', url: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?q=80&w=600&auto=format&fit=crop', alt: 'Hair styling', status: 'Active' },
-  { id: 3, title: 'Relaxing Spa Setup', category: 'Salon Interior', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600&auto=format&fit=crop', alt: 'Spa interior', status: 'Active' },
-  { id: 4, title: 'Evening Party Glam', category: 'Party Makeup', url: 'https://images.unsplash.com/photo-1512496015851-a1c8b74653cb?q=80&w=600&auto=format&fit=crop', alt: 'Party makeup', status: 'Inactive' },
-  { id: 5, title: 'Advanced Hair Course', category: 'Beauty Courses', url: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=600&auto=format&fit=crop', alt: 'Hair course', status: 'Active' }
-]
-
 const AdminGallery = () => {
-  const [galleryItems, setGalleryItems] = useState(initialGallery)
+  const [galleryItems, setGalleryItems] = useState([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterCategory, setFilterCategory] = useState('All')
   
@@ -31,6 +25,26 @@ const AdminGallery = () => {
     status: 'Active'
   })
 
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadGallery()
+  }, [])
+
+  const loadGallery = async () => {
+    try {
+      setLoading(true)
+      const data = await galleryService.getAll()
+      setGalleryItems(data)
+    } catch (err) {
+      console.error('Failed to load gallery:', err)
+      setError('Failed to load gallery.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Handlers
   const handleOpenModal = (item = null) => {
     if (item) {
@@ -42,6 +56,7 @@ const AdminGallery = () => {
         title: '', category: 'Bridal Makeup', url: '', alt: '', status: 'Active' 
       })
     }
+    setError('')
     setIsModalOpen(true)
   }
 
@@ -55,24 +70,37 @@ const AdminGallery = () => {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setSaving(true)
+    setError('')
     
-    if (editingItem) {
-      setGalleryItems(prev => prev.map(item => item.id === editingItem.id ? { ...formData, id: item.id } : item))
-    } else {
-      const newItem = {
-        ...formData,
-        id: Date.now()
+    try {
+      if (editingItem) {
+        await galleryService.update(editingItem.id, formData)
+        setGalleryItems(prev => prev.map(img => img.id === editingItem.id ? { ...formData, id: img.id } : img))
+      } else {
+        const newImg = await galleryService.create(formData)
+        setGalleryItems(prev => [...prev, newImg])
       }
-      setGalleryItems(prev => [newItem, ...prev])
+      handleCloseModal()
+    } catch (err) {
+      console.error('Error saving image:', err)
+      setError('Failed to save image.')
+    } finally {
+      setSaving(false)
     }
-    handleCloseModal()
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this image?')) {
-      setGalleryItems(prev => prev.filter(item => item.id !== id))
+      try {
+        await galleryService.remove(id)
+        setGalleryItems(prev => prev.filter(img => img.id !== id))
+      } catch (err) {
+        console.error('Failed to delete image:', err)
+        alert('Failed to delete image.')
+      }
     }
   }
 
@@ -123,7 +151,9 @@ const AdminGallery = () => {
 
       {/* Gallery Grid */}
       <div className="admin-gallery-grid">
-        {filteredItems.length > 0 ? (
+        {loading ? (
+          <div className="empty-gallery-state">Loading gallery...</div>
+        ) : filteredItems.length > 0 ? (
           filteredItems.map((item, index) => (
             <motion.div 
               key={item.id}
@@ -184,6 +214,7 @@ const AdminGallery = () => {
               </div>
               
               <form onSubmit={handleSubmit} className="admin-modal-form">
+                {error && <div className="admin-login-error" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
                 <div className="form-group full-width">
                   <label>Image URL</label>
                   <input 
@@ -244,11 +275,11 @@ const AdminGallery = () => {
                 </div>
 
                 <div className="admin-modal-footer">
-                  <button type="button" className="admin-btn-secondary" onClick={handleCloseModal}>
+                  <button type="button" className="admin-btn-secondary" onClick={handleCloseModal} disabled={saving}>
                     Cancel
                   </button>
-                  <button type="submit" className="admin-btn-primary">
-                    {editingItem ? 'Save Changes' : 'Upload Image'}
+                  <button type="submit" className="admin-btn-primary" disabled={saving}>
+                    {saving ? 'Saving...' : (editingItem ? 'Save Changes' : 'Upload Image')}
                   </button>
                 </div>
               </form>
