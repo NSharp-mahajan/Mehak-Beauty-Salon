@@ -47,23 +47,7 @@ const serviceLinks = [
   { label: 'Beauty Courses', to: '/services' },
 ]
 
-<<<<<<< HEAD
-=======
-const contactItems = [
-  { icon: Phone, text: '+91 7009482040', href: 'tel:+91 7009482040' },
-  { icon: Mail, text: 'Mehaksalon029@gmail.com', href: 'mailto:Mehaksalon029@gmail.com' },
-  { icon: MapPin, text: 'Dist. Gurdaspur, Dadwan Road Dhariwal, Near DAV High School', href: null },
-]
 
-const hoursItems = [
-  { day: 'Monday – Sunday', time: '9:00 AM – 8:00 PM' },
-]
-
-const socialLinks = [
-  { icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/mehaksalondhariwal/' },
-]
-
->>>>>>> 55f09ac4090d024f3e6598ef38651936d2b86f11
 const Footer = () => {
   const [settings, setSettings] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -84,10 +68,10 @@ const Footer = () => {
   }, [])
 
   const business = settings?.business || {
-    phone: '+91 98765 43210',
-    email: 'info@mehaksalon.com',
-    address: '123 Beauty Street, City Center',
-    openingHours: 'Mon - Sun: 10:00 AM - 8:00 PM'
+    phone: '+91 7009482040',
+    email: 'Mehaksalon029@gmail.com',
+    address: 'Dist. Gurdaspur, Dadwan Road Dhariwal, Near DAV High School',
+    openingHours: '9:00 AM – 8:00 PM'
   }
 
   const contactItems = [
@@ -101,7 +85,7 @@ const Footer = () => {
   ]
 
   const socialLinks = [
-    { icon: Instagram, label: 'Instagram', href: 'https://instagram.com' },
+    { icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/mehaksalondhariwal/' },
     { icon: Facebook, label: 'Facebook', href: 'https://facebook.com' },
     { icon: MessageCircle, label: 'WhatsApp', href: `https://wa.me/${business.phone?.replace(/[^\d]/g, '')}` },
   ]
