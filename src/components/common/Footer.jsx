@@ -47,6 +47,23 @@ const serviceLinks = [
   { label: 'Beauty Courses', to: '/services' },
 ]
 
+<<<<<<< HEAD
+=======
+const contactItems = [
+  { icon: Phone, text: '+91 7009482040', href: 'tel:+91 7009482040' },
+  { icon: Mail, text: 'Mehaksalon029@gmail.com', href: 'mailto:Mehaksalon029@gmail.com' },
+  { icon: MapPin, text: 'Dist. Gurdaspur, Dadwan Road Dhariwal, Near DAV High School', href: null },
+]
+
+const hoursItems = [
+  { day: 'Monday – Sunday', time: '9:00 AM – 8:00 PM' },
+]
+
+const socialLinks = [
+  { icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/mehaksalondhariwal/' },
+]
+
+>>>>>>> 55f09ac4090d024f3e6598ef38651936d2b86f11
 const Footer = () => {
   const [settings, setSettings] = useState(null)
   const [loading, setLoading] = useState(true)

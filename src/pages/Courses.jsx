@@ -9,6 +9,7 @@ import basicCourseImage from '../assets/images/Basiccourse.png'
 import advanceCourseImage from '../assets/images/Advance course.png'
 import nailCourseImage from '../assets/images/Nailcourse.png'
 import hairCourseImage from '../assets/images/Haircourse.png'
+import ctaBackgroundImage from '../assets/images/CTA_background.png'
 
 import coursesService from '../services/coursesService'
 import Skeleton from '../components/common/Skeleton'
@@ -464,6 +465,7 @@ const Courses = () => {
       {/* Premium CTA Section */}
       <section className="premium-cta">
         <div className="cta-background">
+          <img src={ctaBackgroundImage} alt="Academy Background" />
           <div className="cta-overlay"></div>
         </div>
 

@@ -67,9 +67,22 @@ const About = () => {
     description: 'An elegant sanctuary where artistry meets self-care. Step into a world of refined elegance. At Mehak Salon & Spa, we craft unforgettable beauty experiences tailored to unveil your most confident self.'
   };
 
-  const displayTestimonials = testimonials;
+  const fallbackTestimonials = [
+    { customerName: 'Priya Sharma', serviceUsed: 'Bridal Makeup', rating: 5, text: 'Absolutely loved the bridal makeover experience. The team was professional, friendly and paid attention to every detail.' },
+    { customerName: 'Simran Kaur', serviceUsed: 'Keratin Treatment', rating: 4.8, text: 'My hair became smooth, shiny and manageable. The staff was very polite and professional.' },
+    { customerName: 'Neha Verma', serviceUsed: 'Nail Extensions', rating: 4.7, text: 'The nail extensions were beautiful and cleanly done. The finishing looked premium.' }
+  ];
+  
+  const displayTestimonials = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 
-  const displayGallery = gallery;
+  const fallbackGallery = [
+    { imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80', title: 'Salon Interior' },
+    { imageUrl: 'https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=600&q=80', title: 'Beauty Details' },
+    { imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=600&q=80', title: 'Spa Experience' },
+    { imageUrl: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80', title: 'Makeup Studio' }
+  ];
+  
+  const displayGallery = gallery.length > 3 ? gallery : fallbackGallery;
 
   return (
     <div className="about-page">
@@ -200,11 +213,22 @@ const About = () => {
           <h2 className="section-title">Step Inside Our World</h2>
           <p className="section-desc">Experience the luxurious ambience of Mehak Salon.</p>
         </div>
-        <div className="gallery-masonry">
-          <div className="gallery-item item-wide"><img src={displayGallery[0]?.imageUrl} alt={displayGallery[0]?.title || 'Salon'} /></div>
-          <div className="gallery-item item-tall"><img src={displayGallery[1]?.imageUrl} alt={displayGallery[1]?.title || 'Details'} /></div>
-          <div className="gallery-item"><img src={displayGallery[2]?.imageUrl} alt={displayGallery[2]?.title || 'Spa'} /></div>
-          <div className="gallery-item"><img src={displayGallery[3]?.imageUrl} alt={displayGallery[3]?.title || 'Makeup'} /></div>
+        <div className="premium-gallery-grid">
+          {displayGallery.slice(0, 4).map((item, idx) => {
+            const classes = ['gallery-card large', 'gallery-card medium', 'gallery-card medium', 'gallery-card wide'];
+            return (
+              <div className={classes[idx]} key={idx}>
+                <img 
+                  src={item.imageUrl} 
+                  alt={item.title || fallbackGallery[idx].title} 
+                  onError={(e) => { e.target.onerror = null; e.target.src = fallbackGallery[idx].imageUrl }}
+                />
+                <div className="gallery-overlay">
+                  <h3 className="gallery-title">{item.title || fallbackGallery[idx].title}</h3>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </section>
 
@@ -213,19 +237,24 @@ const About = () => {
         <div className="section-header center">
           <h2 className="section-title">Words of Love</h2>
         </div>
-        <div className="testimonial-carousel">
+        <div className="premium-testimonial-carousel">
           {displayTestimonials.slice(0, 3).map((review, idx) => (
-            <div className="testimonial-card glass-card" key={idx}>
-              <div className="quote-mark">"</div>
-              <p className="review-text">{review.text}</p>
-              <div className="reviewer-info">
-                <div className="stars">
-                  {[...Array(review.rating || 5)].map((_, i) => (
-                    <Star key={i} size={16} fill="currentColor" />
-                  ))}
+            <div className="premium-testimonial-card glass-card" key={idx}>
+              <div className="pt-header">
+                <div className="pt-avatar">
+                   {review.customerName.charAt(0).toUpperCase()}
                 </div>
-                <span className="reviewer-name">- {review.customerName}</span>
+                <div className="pt-info">
+                  <h4>{review.customerName}</h4>
+                  <span className="pt-service">{review.serviceUsed || review.service || 'Beauty Service'}</span>
+                </div>
               </div>
+              <div className="pt-stars">
+                {[...Array(Math.floor(review.rating || 5))].map((_, i) => (
+                  <Star key={i} size={16} fill="var(--about-accent-gold)" color="var(--about-accent-gold)" />
+                ))}
+              </div>
+              <p className="pt-review">"{review.text || review.review}"</p>
             </div>
           ))}
         </div>
