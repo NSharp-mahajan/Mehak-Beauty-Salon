@@ -14,6 +14,11 @@ import premiumSalonSpace from '../assets/images/Premiumsalon space.png'
 import premium2Image from '../assets/images/Premium2.png'
 import ctaBackgroundImage from '../assets/images/CTA_background.png'
 
+import bridalPlaceholder from '../assets/placeholders/bridal.jpg'
+import hairPlaceholder from '../assets/placeholders/hair.jpg'
+import spaPlaceholder from '../assets/placeholders/spa.jpg'
+import coursePlaceholder from '../assets/placeholders/course.jpg'
+
 import servicesService from '../services/servicesService'
 import coursesService from '../services/coursesService'
 import galleryService from '../services/galleryService'
@@ -193,13 +198,24 @@ const Home = () => {
           </div>
           
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="hero-right"
           >
             <div className="hero-image-card">
+              <div className="hero-glow"></div>
               <img src={frontImage} alt="Mehak Salon & Spa" className="hero-front-image" />
+              
+              <div className="hero-floating-card card-1">
+                <Star size={16} color="var(--gold)" /> Premium Salon
+              </div>
+              <div className="hero-floating-card card-2">
+                <Award size={16} color="var(--gold)" /> Bridal Specialist
+              </div>
+              <div className="hero-floating-card card-3">
+                <GraduationCap size={16} color="var(--gold)" /> Certified Training
+              </div>
             </div>
           </motion.div>
         </div>
@@ -217,40 +233,31 @@ const Home = () => {
           <p className="services-subtitle">Premium salon, spa and bridal experiences crafted for your beauty and comfort.</p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="services-cards"
-        >
-          {displayServices.slice(0, 5).map((service, index) => (
-            <div
+        <div className="signature-services-grid">
+          {[
+            { id: 1, title: 'Bridal Makeup', text: 'Luxury bridal looks and event styling.', image: bridalPlaceholder },
+            { id: 2, title: 'Hair Styling', text: 'Cuts, styling, keratin and treatments.', image: hairPlaceholder },
+            { id: 3, title: 'Spa & Wellness', text: 'Relaxing therapies and body care.', image: spaPlaceholder },
+            { id: 4, title: 'Beauty Courses', text: 'Professional salon training programs.', image: coursePlaceholder }
+          ].map((service, index) => (
+            <motion.div
               key={service.id}
-              className={`service-card ${index === hoveredIndex ? 'active' : ''}`}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(0)}
+              className="signature-card"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
             >
-              <div className="service-card-image">
-                <img src={service.imageUrl || service.image || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'} alt={service.title || service.name} />
-                <div className="service-overlay"></div>
+              <img src={service.image} alt={service.title} className="signature-img" />
+              <div className="signature-overlay"></div>
+              <div className="signature-content">
+                <h3 className="signature-title">{service.title}</h3>
+                <p className="signature-text">{service.text}</p>
+                <button className="signature-btn">Explore <ChevronRight size={16} /></button>
               </div>
-              <div className="service-card-content">
-                <h3 className="service-title">{service.title || service.name}</h3>
-                {index === hoveredIndex && (
-                  <motion.button
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                    className="explore-button"
-                  >
-                    Explore Now
-                  </motion.button>
-                )}
-              </div>
-            </div>
+            </motion.div>
           ))}
-        </motion.div>
+        </div>
       </section>
 
       <section className="about-section">
