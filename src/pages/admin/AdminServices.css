@@ -392,3 +392,44 @@
     gap: 1rem;
   }
 }
+
+/* Tabs Styling */
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.admin-tab {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--taupe);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+.admin-tab:hover {
+  color: var(--espresso);
+}
+
+.admin-tab.active {
+  color: var(--gold);
+}
+
+.admin-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--gold);
+  border-radius: 2px 2px 0 0;
+}

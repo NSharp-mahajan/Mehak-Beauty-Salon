@@ -4,119 +4,14 @@ import { useState, useEffect } from 'react'
 import './Services.css'
 import servicesBg from '../assets/images/services.png'
 
-import servicesService from '../services/servicesService'
+// New Services
+import quickOffersService from '../services/quickOffersService'
+import packagesService from '../services/packagesService'
+import hairOffersService from '../services/hairOffersService'
+import regularServicesService from '../services/regularServicesService'
+import servicesPageContentService from '../services/servicesPageContentService'
+
 import Skeleton from '../components/common/Skeleton'
-
-const fallbackRegularServices = {
-  'face-skin': {
-    name: 'Face & Skin',
-    services: [
-      { id: 1, name: 'Face Bleach', price: 100 },
-      { id: 2, name: 'Basic Bleach', price: 150 },
-      { id: 3, name: 'Clean Up', price: 250 },
-      { id: 4, name: 'Basic Facial', price: 700 },
-      { id: 5, name: 'Skin Tightening Facial', price: 1200 },
-      { id: 6, name: 'D-Tan Treatment', price: 800 },
-      { id: 7, name: 'Lotus Facial', price: 1500 },
-      { id: 8, name: 'Biotique Facial', price: 1500 },
-      { id: 9, name: 'Biotique Treatment Facial', price: 2500 },
-      { id: 10, name: 'Potli Facial with Hydra', price: 3500 },
-    ],
-  },
-  threading: {
-    name: 'Threading',
-    services: [
-      { id: 11, name: 'Full Face Threading', price: 60 },
-    ],
-  },
-  'waxing-body': {
-    name: 'Waxing & Body Care',
-    services: [
-      { id: 12, name: 'Full Arms Wax', price: 300 },
-      { id: 13, name: 'Full Legs Wax', price: 500 },
-      { id: 14, name: 'Full Body Wax', price: 3500 },
-      { id: 15, name: 'Body Polishing', price: 1500 },
-    ],
-  },
-  'hands-feet': {
-    name: 'Hands & Feet',
-    services: [
-      { id: 16, name: 'Basic Manicure / Pedicure', price: 800 },
-      { id: 17, name: 'Premium Manicure / Pedicure', price: 1500 },
-    ],
-  },
-  nails: {
-    name: 'Nails',
-    services: [
-      { id: 18, name: 'Full Tip Nail Extensions', price: 1000 },
-      { id: 19, name: 'Gel Nail Extensions', price: 1500 },
-      { id: 20, name: 'Acrylic Nails', price: 2500, trending: true },
-      { id: 21, name: 'Nail Accessories / Nail Art Add-ons', price: 0, extraCharges: true },
-      { id: 22, name: 'Gel Nail Paint (Hands Only)', price: 500 },
-    ],
-  },
-  hair: {
-    name: 'Hair',
-    hasSubCategories: true,
-    subCategories: {
-      treatments: {
-        name: 'Treatments',
-        services: [
-          { id: 23, name: 'Smoothing (Mid Length)', price: 3500 },
-          { id: 24, name: 'Keratin (Mid Length)', price: 2500 },
-          { id: 25, name: 'Botoliss Treatment', price: 5000 },
-          { id: 26, name: 'K9 Botox Treatment', price: 4000, popular: true },
-          { id: 27, name: 'Nanoplasty Treatment', price: 4000, popular: true },
-          { id: 28, name: 'Basic Hair Spa', price: 800 },
-          { id: 29, name: 'Shea Hair Filler Treatment', price: 1500 },
-          { id: 30, name: 'Kanpeki Hair Ritual Therapy', price: 1800 },
-          { id: 31, name: 'Hair Scalp Treatment', price: 1200 },
-        ],
-      },
-      'hair-color': {
-        name: 'Hair Color',
-        services: [
-          { id: 32, name: 'Root Touch-Up Hair Color', price: '₹500 / ₹800' },
-          { id: 33, name: 'Global Hair Color', price: 2500 },
-          { id: 34, name: 'Highlights (Per Foil)', price: 250 },
-          { id: 35, name: 'Fashion Shade Color', price: 3000, startingPrice: true },
-        ],
-      },
-    },
-  },
-}
-
-const quickOffers = [
-  { id: 1, name: 'Only Clean Up', price: 150, icon: <Scissors size={24} /> },
-  { id: 2, name: 'Full Facial', price: 450, icon: <Droplet size={24} /> },
-  { id: 3, name: 'Wax Full Arms', price: 200, icon: <Sparkles size={24} /> },
-  { id: 4, name: 'Wax Full Legs', price: 400, icon: <Sparkles size={24} /> },
-  { id: 5, name: 'Manicure + Pedicure', price: 500, icon: <Crown size={24} /> },
-]
-
-const packages = [
-  { id: 1, price: 599, name: 'Essential Glow', services: ['Bleach', 'Facial', 'Full Threading'], featured: false },
-  { id: 2, price: 799, name: 'Radiance Package', services: ['Bleach', 'Facial', 'D-Tan', 'Anti-aging', 'Whitening', 'Headwash', 'Full Threading'], featured: true },
-  { id: 3, price: 1199, name: 'Luxury Spa', services: ['Bleach', 'Biotique', 'Cosmixia', 'Manicure', 'Pedicure', 'Threading'], featured: false },
-  { id: 4, price: 1799, name: 'Ultimate Pamper', services: ['Bleach', 'O3 Facial', 'Biotique Treatment Facial', 'Hydrox', 'Full Arms Wax', 'Manicure / Pedicure', 'Headwash', 'Full Threading'], featured: false },
-]
-
-const hairOffers = [
-  { id: 1, name: 'Head Wash Shoulder Length', price: 100, detail: '' },
-  { id: 2, name: 'Head Wash Long Length', price: 150, detail: '' },
-  { id: 3, name: 'Hair Spa', price: 400, detail: '' },
-  { id: 4, name: 'Treatment Hair Spa', price: 999, detail: '' },
-  { id: 5, name: 'Smoothing / Rebonding Mid Length', price: 3000, detail: 'Mid Length' },
-  { id: 6, name: 'Keratin Mid Length', price: 2500, detail: 'Mid Length' },
-  { id: 7, name: 'Mano Plastia', price: 3999, detail: 'Mid Length' },
-  { id: 8, name: 'Botox Treatment', price: 3499, detail: 'Mid Length' },
-  { id: 9, name: 'Cutting', price: 299, detail: '' },
-  { id: 10, name: 'Global Hair Color', price: 1799, detail: '' },
-  { id: 11, name: 'Highlights / Streak', price: 150, detail: '' },
-  { id: 12, name: 'Root Touch Up', price: 500, detail: '' },
-]
-
-const featuredHairOffers = hairOffers.slice(0, 4)
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -140,33 +35,69 @@ const overlayVariants = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
 }
 
+// Helper for dynamic icons
+const renderIcon = (type) => {
+  switch (type) {
+    case 'Scissors': return <Scissors size={24} />
+    case 'Droplet': return <Droplet size={24} />
+    case 'Sparkles': return <Sparkles size={24} />
+    case 'Crown': return <Crown size={24} />
+    case 'Star': return <Star size={24} />
+    default: return <Sparkles size={24} />
+  }
+}
+
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [activeCategory, setActiveCategory] = useState('face-skin')
-  const [activeSubCategory, setActiveSubCategory] = useState('treatments')
-  const [servicesData, setServicesData] = useState(null)
+  const [activeCategory, setActiveCategory] = useState('')
   const [loading, setLoading] = useState(true)
 
+  // Data states
+  const [quickOffers, setQuickOffers] = useState([])
+  const [packages, setPackages] = useState([])
+  const [hairOffers, setHairOffers] = useState([])
+  const [regularServices, setRegularServices] = useState([])
+  const [pageContent, setPageContent] = useState(null)
+
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchAllData = async () => {
       try {
-        const data = await servicesService.getAll()
-        const activeServices = data.filter(s => s.status === 'Active')
+        setLoading(true)
+        const [
+          quickOffersData,
+          packagesData,
+          hairOffersData,
+          regularServicesData,
+          contentData
+        ] = await Promise.all([
+          quickOffersService.getAll(),
+          packagesService.getAll(),
+          hairOffersService.getAll(),
+          regularServicesService.getAll(),
+          servicesPageContentService.getContent()
+        ])
+
+        setQuickOffers(quickOffersData.filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0)))
+        setPackages(packagesData.filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0)))
+        setHairOffers(hairOffersData.filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0)))
         
-        if (activeServices.length > 0) {
-          // Determine the first available category to set as active initially
-          const firstCat = activeServices[0].category || 'Other'
-          setActiveCategory(firstCat)
+        const activeRegular = regularServicesData.filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+        setRegularServices(activeRegular)
+        
+        if (activeRegular.length > 0) {
+          setActiveCategory(activeRegular[0].category)
         }
-        
-        setServicesData(activeServices)
+
+        if (contentData) {
+          setPageContent(contentData)
+        }
       } catch (err) {
-        console.error("Failed to load services:", err)
+        console.error("Failed to load services data:", err)
       } finally {
         setLoading(false)
       }
     }
-    fetchServices()
+    fetchAllData()
   }, [])
 
   useEffect(() => {
@@ -188,19 +119,18 @@ const Services = () => {
     }
   }, [isModalOpen])
 
-  // Build display data dynamically
+  // Build display data dynamically for regular services
   let displayServices = {}
-  if (servicesData) {
-    servicesData.forEach(service => {
-      const catName = service.category || 'Other'
-      if (!displayServices[catName]) {
-        displayServices[catName] = { name: catName, services: [] }
-      }
-      displayServices[catName].services.push(service)
-    })
-  }
+  regularServices.forEach(service => {
+    const catName = service.category || 'Other'
+    if (!displayServices[catName]) {
+      displayServices[catName] = { name: catName, services: [] }
+    }
+    displayServices[catName].services.push(service)
+  })
 
   const categories = Object.keys(displayServices)
+  const featuredHairOffers = hairOffers.slice(0, 4)
 
   if (loading) {
     return (
@@ -214,6 +144,8 @@ const Services = () => {
     )
   }
 
+  const bgStyle = pageContent?.heroBgUrl ? { backgroundImage: `url(${pageContent.heroBgUrl})` } : { backgroundImage: `url(${servicesBg})` }
+
   return (
     <div className="services-page">
       {/* Offer Hero Section */}
@@ -223,7 +155,7 @@ const Services = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <div className="offer-hero-bg" style={{ backgroundImage: `url(${servicesBg})` }}></div>
+        <div className="offer-hero-bg" style={bgStyle}></div>
         <div className="hero-content">
           <motion.div
             className="badge"
@@ -232,7 +164,7 @@ const Services = () => {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <Clock size={16} />
-            <span>Limited Time Offer</span>
+            <span>{pageContent?.heroBadge || 'Limited Time Offer'}</span>
           </motion.div>
 
           <motion.h1
@@ -240,7 +172,7 @@ const Services = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            Special Summer Beauty Offers
+            {pageContent?.heroHeading || 'Special Summer Beauty Offers'}
           </motion.h1>
 
           <motion.p
@@ -249,7 +181,7 @@ const Services = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            Enjoy premium salon, facial, waxing, hair and care packages at exclusive seasonal prices.
+            {pageContent?.heroSubtitle || 'Enjoy premium salon, facial, waxing, hair and care packages at exclusive seasonal prices.'}
           </motion.p>
 
           <motion.div
@@ -259,7 +191,7 @@ const Services = () => {
             transition={{ delay: 0.5, duration: 0.6 }}
           >
             <Star size={14} />
-            <span>15 May – 30 May</span>
+            <span>{pageContent?.offerDate || '15 May – 30 May'}</span>
           </motion.div>
 
           <motion.button
@@ -270,141 +202,149 @@ const Services = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Book Offer Now
+            {pageContent?.primaryButtonText || 'Book Offer Now'}
           </motion.button>
         </div>
       </motion.section>
 
       {/* Quick Beauty Offers Section */}
-      <section className="quick-offers-section">
-        <motion.h2
-          className="section-title"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          Quick Beauty Offers
-        </motion.h2>
+      {quickOffers.length > 0 && (
+        <section className="quick-offers-section">
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Quick Beauty Offers
+          </motion.h2>
 
-        <motion.div
-          className="offers-grid"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          {quickOffers.map((offer) => (
-            <motion.div
-              key={offer.id}
-              className="offer-card"
-              variants={itemVariants}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-            >
-              <div className="offer-icon">{offer.icon}</div>
-              <h3 className="offer-name">{offer.name}</h3>
-              <div className="offer-price">₹{offer.price}</div>
-              <button className="book-link">Book Now</button>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+          <motion.div
+            className="offers-grid"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            {quickOffers.map((offer) => (
+              <motion.div
+                key={offer.id}
+                className="offer-card"
+                variants={itemVariants}
+                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              >
+                <div className="offer-icon">{renderIcon(offer.iconType)}</div>
+                <h3 className="offer-name">{offer.title}</h3>
+                <div className="offer-price">₹{offer.price}</div>
+                <button className="book-link">Book Now</button>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+      )}
 
       {/* Full Packages Section */}
-      <section className="packages-section">
-        <motion.h2
-          className="section-title"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          Premium Packages
-        </motion.h2>
+      {packages.length > 0 && (
+        <section className="packages-section">
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Premium Packages
+          </motion.h2>
 
-        <motion.div
-          className="packages-grid"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          {packages.map((pkg) => (
-            <motion.div
-              key={pkg.id}
-              className={`package-card ${pkg.featured ? 'featured' : ''}`}
-              variants={itemVariants}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-            >
-              {pkg.featured && (
-                <div className="popular-badge">
-                  <Star size={14} />
-                  <span>Popular</span>
-                </div>
-              )}
-              <div className="package-price">₹{pkg.price}</div>
-              <h3 className="package-name">{pkg.name}</h3>
-              <ul className="package-services">
-                {pkg.services.map((service, index) => (
-                  <li key={index}>
-                    <Sparkles size={12} />
-                    {service}
-                  </li>
-                ))}
-              </ul>
-              <button className="package-button">Book Package</button>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+          <motion.div
+            className="packages-grid"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            {packages.map((pkg) => (
+              <motion.div
+                key={pkg.id}
+                className={`package-card ${pkg.popular ? 'featured' : ''}`}
+                variants={itemVariants}
+                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              >
+                {pkg.popular && (
+                  <div className="popular-badge">
+                    <Star size={14} />
+                    <span>Popular</span>
+                  </div>
+                )}
+                <div className="package-price">₹{pkg.price}</div>
+                <h3 className="package-name">{pkg.name}</h3>
+                <ul className="package-services">
+                  {Array.isArray(pkg.services) && pkg.services.map((service, index) => (
+                    <li key={index}>
+                      <Sparkles size={12} />
+                      {service}
+                    </li>
+                  ))}
+                </ul>
+                <button className="package-button">Book Package</button>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+      )}
 
       {/* Hair Offers Section */}
-      <section className="hair-offers-section">
-        <motion.h2
-          className="section-title"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          Hair Care Offers
-        </motion.h2>
+      {hairOffers.length > 0 && (
+        <section className="hair-offers-section">
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Hair Care Offers
+          </motion.h2>
 
-        <motion.div
-          className="hair-offers-grid"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          {featuredHairOffers.map((offer) => (
-            <motion.div
-              key={offer.id}
-              className="hair-card"
-              variants={itemVariants}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+          <motion.div
+            className="hair-offers-grid"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            {featuredHairOffers.map((offer) => (
+              <motion.div
+                key={offer.id}
+                className="hair-card"
+                variants={itemVariants}
+                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              >
+                <h3 className="hair-name">{offer.name}</h3>
+                <div className="hair-price">₹{offer.price}</div>
+                <button className="hair-book-button">Book Now</button>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {hairOffers.length > 4 && (
+            <motion.button
+              className="explore-more-button"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsModalOpen(true)}
             >
-              <h3 className="hair-name">{offer.name}</h3>
-              <div className="hair-price">₹{offer.price}</div>
-              <button className="hair-book-button">Book Now</button>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.button
-          className="explore-more-button"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsModalOpen(true)}
-        >
-          Explore More Hair Offers
-          <ChevronRight size={18} />
-        </motion.button>
-      </section>
+              Explore More Hair Offers
+              <ChevronRight size={18} />
+            </motion.button>
+          )}
+        </section>
+      )}
 
       {/* Hair Offers Modal */}
       <AnimatePresence>
@@ -467,25 +407,25 @@ const Services = () => {
       </AnimatePresence>
 
       {/* Regular Salon Services Section */}
-      <section className="regular-services-section">
-        <motion.div
-          className="regular-services-header"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="section-badge">
-            <Sparkles size={16} />
-            <span>Salon Menu</span>
-          </div>
-          <h2 className="section-title">Regular Beauty Services</h2>
-          <p className="section-subheading">
-            Explore our everyday salon, skin, waxing and care services with transparent pricing.
-          </p>
-        </motion.div>
+      {regularServices.length > 0 && (
+        <section className="regular-services-section">
+          <motion.div
+            className="regular-services-header"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="section-badge">
+              <Sparkles size={16} />
+              <span>Salon Menu</span>
+            </div>
+            <h2 className="section-title">Regular Beauty Services</h2>
+            <p className="section-subheading">
+              Explore our everyday salon, skin, waxing and care services with transparent pricing.
+            </p>
+          </motion.div>
 
-        {categories.length > 0 && (
           <motion.div
             className="category-tabs"
             initial={{ opacity: 0, y: 20 }}
@@ -505,94 +445,21 @@ const Services = () => {
               </motion.button>
             ))}
           </motion.div>
-        )}
 
-        <AnimatePresence mode="wait">
-          {activeCategory && displayServices[activeCategory] && (
-            <motion.div
-              key={activeCategory}
-              className="services-list"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {displayServices[activeCategory].hasSubCategories ? (
-                <>
-                  <motion.div
-                    className="sub-category-tabs"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1, duration: 0.3 }}
-                  >
-                    {Object.keys(displayServices[activeCategory].subCategories).map((subCat) => (
-                      <motion.button
-                        key={subCat}
-                        className={`sub-category-tab ${activeSubCategory === subCat ? 'active' : ''}`}
-                        onClick={() => setActiveSubCategory(subCat)}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {subCat === 'treatments' ? <Flame size={14} /> : <Palette size={14} />}
-                        {displayServices[activeCategory].subCategories[subCat].name}
-                      </motion.button>
-                    ))}
-                  </motion.div>
-
-                  <AnimatePresence mode="wait">
-                    {displayServices[activeCategory].subCategories[activeSubCategory] && (
-                      <motion.div
-                        key={activeSubCategory}
-                        className="hair-services-grid"
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -15 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {displayServices[activeCategory].subCategories[activeSubCategory].services.map((service, index) => (
-                          <motion.div
-                            key={service.id}
-                            className="hair-service-card"
-                            initial={{ opacity: 0, y: 15 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.05, duration: 0.3 }}
-                            whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                          >
-                            <div className="hair-service-info">
-                              <div className="hair-service-name-wrapper">
-                                <h3 className="hair-service-name">{service.name}</h3>
-                                {service.popular && (
-                                  <span className="popular-badge">
-                                    <Star size={10} />
-                                    Popular
-                                  </span>
-                                )}
-                              </div>
-                              <span className="hair-service-subcategory">
-                                {displayServices[activeCategory].subCategories[activeSubCategory].name}
-                              </span>
-                            </div>
-                            <div className="hair-service-right">
-                              {service.startingPrice ? (
-                                <span className="starting-price-badge">Starting Price</span>
-                              ) : (
-                                <div className="hair-service-price">
-                                  {typeof service.price === 'string' ? service.price : `₹${service.price}`}
-                                </div>
-                              )}
-                              <button className="hair-service-book-btn">Book Now</button>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </>
-              ) : (
-                displayServices[activeCategory].services.map((service, index) => (
+          <AnimatePresence mode="wait">
+            {activeCategory && displayServices[activeCategory] && (
+              <motion.div
+                key={activeCategory}
+                className="services-list"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {displayServices[activeCategory].services.map((service, index) => (
                   <motion.div
                     key={service.id}
-                    className={`service-row ${activeCategory === 'nails' ? 'nail-service' : ''}`}
+                    className={`service-row ${activeCategory?.toLowerCase() === 'nails' ? 'nail-service' : ''}`}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05, duration: 0.3 }}
@@ -601,30 +468,22 @@ const Services = () => {
                     <div className="service-info">
                       <div className="service-name-wrapper">
                         <h3 className="service-name">{service.name}</h3>
-                        {service.trending && (
-                          <span className="trending-badge">
-                            <Star size={10} />
-                            Trending
-                          </span>
-                        )}
                       </div>
                       <span className="service-category">{displayServices[activeCategory].name || activeCategory}</span>
                     </div>
                     <div className="service-right">
-                      {service.extraCharges ? (
-                        <span className="extra-charges-badge">Extra Charges Apply</span>
-                      ) : (
-                        <div className="service-price-badge">₹{service.price}</div>
-                      )}
+                      <div className="service-price-badge">
+                        {typeof service.price === 'string' && service.price.includes('₹') ? service.price : `₹${service.price}`}
+                      </div>
                       <button className="service-book-btn">Book Now</button>
                     </div>
                   </motion.div>
-                ))
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </section>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+      )}
     </div>
   )
 }
