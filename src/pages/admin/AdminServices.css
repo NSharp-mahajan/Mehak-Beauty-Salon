@@ -268,9 +268,12 @@
   background: white;
   width: 100%;
   max-width: 600px;
+  max-height: 90vh;
   border-radius: 20px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.1);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-modal-header {
@@ -308,6 +311,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .form-row {

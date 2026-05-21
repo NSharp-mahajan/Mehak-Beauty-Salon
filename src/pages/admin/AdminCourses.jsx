@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X, Star } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import coursesService from '../../services/coursesService'
+import ImageUploader from '../../components/admin/ImageUploader'
 import './AdminCourses.css'
 
 const CATEGORIES = ['All', 'Personal Grooming', 'Beauty Foundation', 'Professional Training', 'Nail Art & Extensions', 'Hair Styling & Treatments']
@@ -26,7 +27,8 @@ const AdminCourses = () => {
     enrolledCount: '0',
     status: 'Active',
     description: '',
-    imageUrl: ''
+    imageUrl: '',
+    imagePublicId: ''
   })
 
   const [saving, setSaving] = useState(false)
@@ -58,7 +60,7 @@ const AdminCourses = () => {
       setEditingCourse(null)
       setFormData({ 
         name: '', category: 'Personal Grooming', price: '', 
-        duration: '', rating: '5.0', enrolledCount: '0', status: 'Active', description: '', imageUrl: '' 
+        duration: '', rating: '5.0', enrolledCount: '0', status: 'Active', description: '', imageUrl: '', imagePublicId: '' 
       })
     }
     setError('')
@@ -73,6 +75,14 @@ const AdminCourses = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleImageSelect = (imageData) => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrl: imageData.imageUrl || '',
+      imagePublicId: imageData.publicId || ''
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -329,13 +339,11 @@ const AdminCourses = () => {
                 </div>
 
                 <div className="form-group full-width">
-                  <label>Image URL (Optional)</label>
-                  <input 
-                    type="text" 
-                    name="imageUrl"
-                    value={formData.imageUrl || ''}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/image.jpg"
+                  <ImageUploader
+                    onImageSelect={handleImageSelect}
+                    existingImageUrl={formData.imageUrl}
+                    existingPublicId={formData.imagePublicId}
+                    label="Course Image (Optional)"
                   />
                 </div>
 

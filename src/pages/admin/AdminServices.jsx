@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import servicesService from '../../services/servicesService'
+import ImageUploader from '../../components/admin/ImageUploader'
 import './AdminServices.css'
 
 const CATEGORIES = ['All', 'Hair', 'Makeup', 'Spa', 'Bridal', 'Courses']
@@ -22,7 +23,9 @@ const AdminServices = () => {
     category: 'Hair',
     price: '',
     status: 'Active',
-    description: ''
+    description: '',
+    imageUrl: '',
+    imagePublicId: ''
   })
   
   const [saving, setSaving] = useState(false)
@@ -52,7 +55,7 @@ const AdminServices = () => {
       setFormData(service)
     } else {
       setEditingService(null)
-      setFormData({ name: '', category: 'Hair', price: '', status: 'Active', description: '' })
+      setFormData({ name: '', category: 'Hair', price: '', status: 'Active', description: '', imageUrl: '', imagePublicId: '' })
     }
     setError('')
     setIsModalOpen(true)
@@ -66,6 +69,14 @@ const AdminServices = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleImageSelect = (imageData) => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrl: imageData.imageUrl || '',
+      imagePublicId: imageData.publicId || ''
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -271,6 +282,15 @@ const AdminServices = () => {
                     placeholder="Short description of the service..."
                     rows="3"
                   ></textarea>
+                </div>
+
+                <div className="form-group full-width">
+                  <ImageUploader
+                    onImageSelect={handleImageSelect}
+                    existingImageUrl={formData.imageUrl}
+                    existingPublicId={formData.imagePublicId}
+                    label="Service Image (Optional)"
+                  />
                 </div>
 
                 <div className="admin-modal-footer">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X, Star, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import testimonialsService from '../../services/testimonialsService'
+import ImageUploader from '../../components/admin/ImageUploader'
 import './AdminTestimonials.css'
 
 const AdminTestimonials = () => {
@@ -20,6 +21,7 @@ const AdminTestimonials = () => {
     rating: 5,
     text: '',
     imageUrl: '',
+    imagePublicId: '',
     status: 'Pending',
     featured: false
   })
@@ -53,7 +55,7 @@ const AdminTestimonials = () => {
       setEditingReview(null)
       setFormData({ 
         customerName: '', serviceUsed: '', rating: 5, text: '', 
-        imageUrl: '', status: 'Pending', featured: false 
+        imageUrl: '', imagePublicId: '', status: 'Pending', featured: false 
       })
     }
     setError('')
@@ -70,6 +72,14 @@ const AdminTestimonials = () => {
     setFormData(prev => ({ 
       ...prev, 
       [name]: type === 'checkbox' ? checked : (name === 'rating' ? Number(value) : value)
+    }))
+  }
+
+  const handleImageSelect = (imageData) => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrl: imageData.imageUrl || '',
+      imagePublicId: imageData.publicId || ''
     }))
   }
 
@@ -282,16 +292,15 @@ const AdminTestimonials = () => {
                       ))}
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label>Avatar Image URL (Optional)</label>
-                    <input 
-                      type="url" 
-                      name="imageUrl"
-                      value={formData.imageUrl}
-                      onChange={handleInputChange}
-                      placeholder="https://..."
-                    />
-                  </div>
+                </div>
+
+                <div className="form-group full-width">
+                  <ImageUploader
+                    onImageSelect={handleImageSelect}
+                    existingImageUrl={formData.imageUrl}
+                    existingPublicId={formData.imagePublicId}
+                    label="Customer Avatar (Optional)"
+                  />
                 </div>
 
                 <div className="form-group full-width">

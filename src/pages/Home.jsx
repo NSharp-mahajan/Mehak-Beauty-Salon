@@ -232,7 +232,7 @@ const Home = () => {
               onMouseLeave={() => setHoveredIndex(0)}
             >
               <div className="service-card-image">
-                <img src={service.image || service.imageUrl || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'} alt={service.title || service.name} />
+                <img src={service.imageUrl || service.image || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'} alt={service.title || service.name} />
                 <div className="service-overlay"></div>
               </div>
               <div className="service-card-content">
@@ -366,7 +366,7 @@ const Home = () => {
               className={`course-card ${course.featured ? 'featured' : ''}`}
             >
               <div className="course-image">
-                <img src={course.image || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'} alt={course.title || course.name} />
+                <img src={course.imageUrl || course.image || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'} alt={course.title || course.name} />
                 <div className="course-overlay"></div>
               </div>
               <div className="course-content">
@@ -422,7 +422,7 @@ const Home = () => {
                 <div key={item.id} className={`carousel-card ${positionClass}`}>
                   <div className="gallery-placeholder">
                     <img
-                      src={item.image || item.imageUrl || frontImage}
+                      src={item.url || item.image || item.imageUrl || frontImage}
                       alt={item.title}
                       className="gallery-image"
                       loading="lazy"

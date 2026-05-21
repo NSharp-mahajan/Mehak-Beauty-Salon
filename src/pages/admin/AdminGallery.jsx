@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X, Image as ImageIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import galleryService from '../../services/galleryService'
+import ImageUploader from '../../components/admin/ImageUploader'
 import './AdminGallery.css'
 
 const CATEGORIES = ['All', 'Bridal Makeup', 'Hair Styling', 'Spa Therapy', 'Skin Care', 'Salon Interior', 'Beauty Courses', 'Party Makeup', 'Lehenga Collection']
@@ -21,6 +22,7 @@ const AdminGallery = () => {
     title: '',
     category: 'Bridal Makeup',
     url: '',
+    imagePublicId: '',
     alt: '',
     status: 'Active'
   })
@@ -53,7 +55,7 @@ const AdminGallery = () => {
     } else {
       setEditingItem(null)
       setFormData({ 
-        title: '', category: 'Bridal Makeup', url: '', alt: '', status: 'Active' 
+        title: '', category: 'Bridal Makeup', url: '', imagePublicId: '', alt: '', status: 'Active' 
       })
     }
     setError('')
@@ -68,6 +70,14 @@ const AdminGallery = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleImageSelect = (imageData) => {
+    setFormData(prev => ({
+      ...prev,
+      url: imageData.imageUrl || '',
+      imagePublicId: imageData.publicId || ''
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -216,20 +226,12 @@ const AdminGallery = () => {
               <form onSubmit={handleSubmit} className="admin-modal-form">
                 {error && <div className="admin-login-error" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
                 <div className="form-group full-width">
-                  <label>Image URL</label>
-                  <input 
-                    type="url" 
-                    name="url"
-                    value={formData.url}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/image.jpg"
-                    required
+                  <ImageUploader
+                    onImageSelect={handleImageSelect}
+                    existingImageUrl={formData.url}
+                    existingPublicId={formData.imagePublicId}
+                    label="Gallery Image"
                   />
-                  {formData.url && (
-                    <div className="image-preview-small">
-                      <img src={formData.url} alt="Preview" onError={(e) => e.target.style.display='none'} />
-                    </div>
-                  )}
                 </div>
 
                 <div className="form-row">
