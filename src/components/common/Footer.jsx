@@ -46,20 +46,17 @@ const serviceLinks = [
 ]
 
 const contactItems = [
-  { icon: Phone, text: '+91 98765 43210', href: 'tel:+919876543210' },
-  { icon: Mail, text: 'info@mehaksalon.com', href: 'mailto:info@mehaksalon.com' },
-  { icon: MapPin, text: '123 Beauty Street, City Center', href: null },
+  { icon: Phone, text: '+91 7009482040', href: 'tel:+91 7009482040' },
+  { icon: Mail, text: 'Mehaksalon029@gmail.com', href: 'mailto:Mehaksalon029@gmail.com' },
+  { icon: MapPin, text: 'Dist. Gurdaspur, Dadwan Road Dhariwal, Near DAV High School', href: null },
 ]
 
 const hoursItems = [
-  { day: 'Monday – Saturday', time: '10:00 AM – 8:00 PM' },
-  { day: 'Sunday', time: 'Closed' },
+  { day: 'Monday – Sunday', time: '9:00 AM – 8:00 PM' },
 ]
 
 const socialLinks = [
-  { icon: Instagram, label: 'Instagram', href: 'https://instagram.com' },
-  { icon: Facebook, label: 'Facebook', href: 'https://facebook.com' },
-  { icon: MessageCircle, label: 'WhatsApp', href: 'https://wa.me/' },
+  { icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/mehaksalondhariwal/' },
 ]
 
 const Footer = () => {

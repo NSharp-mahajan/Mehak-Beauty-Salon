@@ -183,7 +183,7 @@
 .hero-floating-card {
   position: absolute;
   background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(2px);
   padding: 0.8rem 1.25rem;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -1641,6 +1641,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: blur(12px);
+  transform: scale(1.05); /* Prevent blurred edges from showing */
 }
 
 .cta-overlay {
@@ -1649,7 +1651,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: transparent;
+  background: transparent; /* var(--espresso) with opacity for readability */
   z-index: 1;
 }
 
