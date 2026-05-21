@@ -3,6 +3,7 @@ import { Sparkles, Scissors, Droplet, Clock, Star, Crown, X, ChevronRight, Gem, 
 import { useState, useEffect } from 'react'
 import './Services.css'
 import servicesBg from '../assets/images/services.png'
+import relaxingSpaSession from '../assets/images/Relaxingspasession.webp'
 
 // New Services
 import quickOffersService from '../services/quickOffersService'
@@ -410,20 +411,40 @@ const Services = () => {
       {regularServices.length > 0 && (
         <section className="regular-services-section">
           <motion.div
-            className="regular-services-header"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            className="regular-services-banner"
+            initial={{ opacity: 0, scale: 0.98 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.8 }}
           >
-            <div className="section-badge">
-              <Sparkles size={16} />
-              <span>Salon Menu</span>
+            <div className="rsb-background">
+              <img src={relaxingSpaSession} alt="Salon Services" />
+              <div className="rsb-overlay"></div>
             </div>
-            <h2 className="section-title">Regular Beauty Services</h2>
-            <p className="section-subheading">
-              Explore our everyday salon, skin, waxing and care services with transparent pricing.
-            </p>
+            
+            <div className="rsb-content">
+              <div className="section-badge rsb-badge">
+                <Sparkles size={16} />
+                <span>Salon Menu</span>
+              </div>
+              <h2 className="rsb-title">Regular Beauty Services</h2>
+              <p className="rsb-subtitle">
+                Explore facial, hair, nails, waxing and beauty treatments crafted for everyday elegance.
+              </p>
+              
+              <div className="rsb-chips">
+                <span className="rsb-chip">💄 Facial Care</span>
+                <span className="rsb-chip">✨ Hair Treatments</span>
+                <span className="rsb-chip">💅 Nail Studio</span>
+                <span className="rsb-chip">🌸 Spa Rituals</span>
+              </div>
+              
+              <div className="rsb-buttons">
+                <button className="book-btn">Explore Services</button>
+                <button className="book-btn outline">Book Appointment</button>
+              </div>
+            </div>
+            <div className="rsb-curved-edge"></div>
           </motion.div>
 
           <motion.div
