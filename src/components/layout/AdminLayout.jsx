@@ -15,6 +15,7 @@ import {
   Menu,
   X
 } from 'lucide-react'
+import logo from '../../assets/logo/logo2.png'
 import './AdminLayout.css'
 
 const AdminLayout = () => {
@@ -61,10 +62,7 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="admin-sidebar-header">
-          <div className="admin-logo-small">
-            M<span>S</span>
-          </div>
-          <h2>Admin Panel</h2>
+          <img src={logo} alt="Mehak Salon" className="admin-brand-logo" />
           <button 
             className="mobile-sidebar-close" 
             onClick={() => setIsSidebarOpen(false)}

@@ -20,35 +20,18 @@
 }
 
 .admin-sidebar-header {
-  padding: 2rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.admin-logo-small {
-  width: 40px;
-  height: 40px;
-  background-color: var(--gold);
-  border-radius: 10px;
+  padding: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  color: var(--espresso);
-  font-family: 'Playfair Display', serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--cream);
 }
 
-.admin-logo-small span {
-  color: white;
-}
-
-.admin-sidebar-header h2 {
-  font-size: 1.1rem;
-  margin: 0;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+.admin-brand-logo {
+  height: 50px;
+  width: auto;
+  display: block;
 }
 
 .admin-nav {
