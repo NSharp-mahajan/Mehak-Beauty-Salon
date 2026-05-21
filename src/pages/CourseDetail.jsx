@@ -25,6 +25,7 @@ import hairSpaTrainingImg from '../assets/images/hairspatraining.jpg'
 
 import coursesService from '../services/coursesService'
 import Skeleton from '../components/common/Skeleton'
+import { createWhatsAppLink } from '../utils/whatsapp'
 
 const fallbackCourses = [
   {
@@ -521,6 +522,7 @@ const CourseDetail = () => {
                 className="enroll-button"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => window.open(createWhatsAppLink({ type: 'course', name: course.title || course.name, price: course.price }), '_blank', 'noopener,noreferrer')}
               >
                 Enroll Now
                 <ArrowRight size={18} />
@@ -529,6 +531,7 @@ const CourseDetail = () => {
                 className="whatsapp-button"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => window.open(createWhatsAppLink({ type: 'course', name: course.title || course.name, price: course.price }), '_blank', 'noopener,noreferrer')}
               >
                 <MessageCircle size={18} />
               </motion.button>
@@ -702,6 +705,7 @@ const CourseDetail = () => {
               className="cta-button primary"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => window.open(createWhatsAppLink({ type: 'course', name: course?.title || course?.name, price: course?.price }), '_blank', 'noopener,noreferrer')}
             >
               Enroll Now
               <ArrowRight size={18} />

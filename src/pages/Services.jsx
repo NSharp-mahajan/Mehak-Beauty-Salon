@@ -11,6 +11,7 @@ import packagesService from '../services/packagesService'
 import hairOffersService from '../services/hairOffersService'
 import regularServicesService from '../services/regularServicesService'
 import servicesPageContentService from '../services/servicesPageContentService'
+import { createWhatsAppLink } from '../utils/whatsapp'
 
 import Skeleton from '../components/common/Skeleton'
 
@@ -238,7 +239,7 @@ const Services = () => {
                 <div className="offer-icon">{renderIcon(offer.iconType)}</div>
                 <h3 className="offer-name">{offer.title}</h3>
                 <div className="offer-price">₹{offer.price}</div>
-                <button className="book-link">Book Now</button>
+                <button className="book-link" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.title, price: offer.price }), '_blank', 'noopener,noreferrer')}>Book Now</button>
               </motion.div>
             ))}
           </motion.div>
@@ -288,7 +289,7 @@ const Services = () => {
                     </li>
                   ))}
                 </ul>
-                <button className="package-button">Book Package</button>
+                <button className="package-button" onClick={() => window.open(createWhatsAppLink({ type: 'package', name: pkg.name, price: pkg.price }), '_blank', 'noopener,noreferrer')}>Book Package</button>
               </motion.div>
             ))}
           </motion.div>
@@ -324,7 +325,7 @@ const Services = () => {
               >
                 <h3 className="hair-name">{offer.name}</h3>
                 <div className="hair-price">₹{offer.price}</div>
-                <button className="hair-book-button">Book Now</button>
+                <button className="hair-book-button" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.name, price: offer.price }), '_blank', 'noopener,noreferrer')}>Book Now</button>
               </motion.div>
             ))}
           </motion.div>
@@ -397,7 +398,7 @@ const Services = () => {
                     </div>
                     <div className="modal-offer-right">
                       <div className="modal-offer-price">₹{offer.price}</div>
-                      <button className="modal-offer-book">Book Now</button>
+                      <button className="modal-offer-book" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.name, price: offer.price }), '_blank', 'noopener,noreferrer')}>Book Now</button>
                     </div>
                   </motion.div>
                 ))}
@@ -441,7 +442,7 @@ const Services = () => {
               
               <div className="rsb-buttons">
                 <button className="book-btn">Explore Services</button>
-                <button className="book-btn outline">Book Appointment</button>
+                <button className="book-btn outline" onClick={() => window.open(createWhatsAppLink({ type: 'general' }), '_blank', 'noopener,noreferrer')}>Book Appointment</button>
               </div>
             </div>
             <div className="rsb-curved-edge"></div>
@@ -496,7 +497,7 @@ const Services = () => {
                       <div className="service-price-badge">
                         {typeof service.price === 'string' && service.price.includes('₹') ? service.price : `₹${service.price}`}
                       </div>
-                      <button className="service-book-btn">Book Now</button>
+                      <button className="service-book-btn" onClick={() => window.open(createWhatsAppLink({ type: 'service', name: service.name, price: service.price, category: displayServices[activeCategory].name || activeCategory }), '_blank', 'noopener,noreferrer')}>Book Now</button>
                     </div>
                   </motion.div>
                 ))}

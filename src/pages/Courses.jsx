@@ -13,6 +13,7 @@ import ctaBackgroundImage from '../assets/images/CTA_background.png'
 
 import coursesService from '../services/coursesService'
 import Skeleton from '../components/common/Skeleton'
+import { createWhatsAppLink } from '../utils/whatsapp'
 
 const fallbackCourses = [
   {
@@ -288,7 +289,7 @@ const Courses = () => {
               className="hero-buttons"
             >
               <button className="cta-button primary" onClick={() => navigate('/courses')}>Explore Courses</button>
-              <button className="cta-button secondary" onClick={() => navigate('/courses')}>Enroll Now</button>
+              <button className="cta-button secondary" onClick={() => window.open(createWhatsAppLink({ type: 'course', name: 'Premium Beauty Courses' }), '_blank', 'noopener,noreferrer')}>Enroll Now</button>
             </motion.div>
           </div>
 
@@ -381,7 +382,10 @@ const Courses = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="luxury-enroll-btn"
-                    onClick={() => navigate(`/courses/${course.id}`)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      window.open(createWhatsAppLink({ type: 'course', name: course.title || course.name, price: course.price }), '_blank', 'noopener,noreferrer')
+                    }}
                   >
                     Enroll Now
                     <ArrowRight size={18} />
@@ -513,7 +517,7 @@ const Courses = () => {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="cta-buttons"
           >
-            <button className="cta-button primary" onClick={() => navigate('/courses')}>Enroll Now</button>
+            <button className="cta-button primary" onClick={() => window.open(createWhatsAppLink({ type: 'course', name: 'Professional Training Program' }), '_blank', 'noopener,noreferrer')}>Enroll Now</button>
             <button className="cta-button secondary" onClick={() => navigate('/contact')}>Contact Us</button>
           </motion.div>
         </motion.div>

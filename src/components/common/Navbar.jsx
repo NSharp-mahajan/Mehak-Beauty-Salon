@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import logo from '../../assets/logo/logo2.png'
 import settingsService from '../../services/settingsService'
+import { createWhatsAppLink } from '../../utils/whatsapp'
 import './Navbar.css'
 
 const Navbar = () => {
@@ -15,6 +16,7 @@ const Navbar = () => {
         const phoneDigits = data.business.phone.replace(/\D/g, '')
         const formattedPhone = phoneDigits.startsWith('91') ? phoneDigits : '91' + phoneDigits
         setWhatsappNumber(formattedPhone)
+        window.__SALON_WHATSAPP_NUMBER__ = formattedPhone
       }
     });
 
@@ -28,7 +30,7 @@ const Navbar = () => {
     setIsOpen(!isOpen)
   }
 
-  const whatsappLink = `https://wa.me/${whatsappNumber}`
+  const whatsappLink = createWhatsAppLink({ type: 'general', phone: whatsappNumber })
 
   return (
     <nav className="navbar">

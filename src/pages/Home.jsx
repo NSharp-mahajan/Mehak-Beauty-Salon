@@ -24,6 +24,7 @@ import coursesService from '../services/coursesService'
 import galleryService from '../services/galleryService'
 import testimonialsService from '../services/testimonialsService'
 import contentService from '../services/contentService'
+import { createWhatsAppLink } from '../utils/whatsapp'
 
 // Fallback Data
 const fallbackServices = [
@@ -132,7 +133,7 @@ const Home = () => {
   }, [displayGallery.length])
 
   const handleBookAppointment = () => {
-    window.open('https://wa.me/917009482040', '_blank', 'noopener,noreferrer')
+    window.open(createWhatsAppLink({ type: 'general' }), '_blank', 'noopener,noreferrer')
   }
 
   const handleExploreServices = () => {
@@ -274,7 +275,7 @@ const Home = () => {
               <div className="signature-content">
                 <h3 className="signature-title">{service.title}</h3>
                 <p className="signature-text">{service.text}</p>
-                <button className="signature-btn">Explore <ChevronRight size={16} /></button>
+                <button className="signature-btn" onClick={() => window.location.href = '/services'}>Explore <ChevronRight size={16} /></button>
               </div>
             </motion.div>
           ))}
@@ -357,8 +358,9 @@ const Home = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.5 }}
               className="about-button"
+              onClick={() => window.location.href = '/about'}
             >
-              Know More About Us
+              Explore more about us
             </motion.button>
           </div>
         </motion.div>
@@ -406,7 +408,7 @@ const Home = () => {
                 </div>
                 <h3 className="course-title">{course.title || course.name}</h3>
                 <p className="course-description">{course.description}</p>
-                <button className="course-button">Enroll Now</button>
+                <button className="course-button" onClick={() => window.location.href = '/courses'}>Enroll Now</button>
               </div>
             </motion.div>
           ))}
@@ -483,15 +485,6 @@ const Home = () => {
           </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="gallery-footer"
-        >
-          <button className="gallery-button">View Full Gallery</button>
-        </motion.div>
       </section>
 
       <section className="testimonials-section">
@@ -638,7 +631,7 @@ const Home = () => {
               className="cta-buttons"
             >
               <button className="cta-button primary" onClick={handleBookAppointment}>{ctaData.buttonText || 'Book Appointment'}</button>
-              <button className="cta-button secondary" onClick={handleExploreServices}>Contact Us</button>
+              <button className="cta-button secondary" onClick={() => window.location.href = '/contact'}>Contact Us</button>
             </motion.div>
           </div>
         </motion.div>

@@ -44,7 +44,7 @@ const serviceLinks = [
   { label: 'Spa Therapy', to: '/services' },
   { label: 'Hair Styling', to: '/services' },
   { label: 'Skin Care', to: '/services' },
-  { label: 'Beauty Courses', to: '/services' },
+  { label: 'Beauty Courses', to: '/courses' },
 ]
 
 
