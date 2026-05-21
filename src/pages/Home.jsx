@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useCallback } from 'react'
 import { Sparkles, Shield, GraduationCap, Star, Quote, Users, Award, Calendar, ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react'
 import './Home.css'
+import Skeleton from '../components/common/Skeleton'
+
 import frontImage from '../assets/images/front.png'
 import elegantBridalLook from '../assets/images/Elegant Bridal Look.png'
 import modernHairArt from '../assets/images/ModernHairart.jpg'
@@ -12,167 +14,48 @@ import premiumSalonSpace from '../assets/images/Premiumsalon space.png'
 import premium2Image from '../assets/images/Premium2.png'
 import ctaBackgroundImage from '../assets/images/CTA_background.png'
 
-const services = [
-  {
-    id: 1,
-    title: 'Bridal Makeup',
-    image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80'
-  },
-  {
-    id: 2,
-    title: 'Hair Styling',
-    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80'
-  },
-  {
-    id: 3,
-    title: 'Spa & Massage',
-    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80'
-  },
-  {
-    id: 4,
-    title: 'Facial & Skin Care',
-    image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80'
-  },
-  {
-    id: 5,
-    title: 'Beauty Courses',
-    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'
-  }
+import servicesService from '../services/servicesService'
+import coursesService from '../services/coursesService'
+import galleryService from '../services/galleryService'
+import testimonialsService from '../services/testimonialsService'
+import contentService from '../services/contentService'
+
+// Fallback Data
+const fallbackServices = [
+  { id: 1, title: 'Bridal Makeup', image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80' },
+  { id: 2, title: 'Hair Styling', image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80' },
+  { id: 3, title: 'Spa & Massage', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80' },
+  { id: 4, title: 'Facial & Skin Care', image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80' },
+  { id: 5, title: 'Beauty Courses', image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80' }
 ]
 
-const courses = [
-  {
-    id: 1,
-    title: 'Professional Makeup Course',
-    description: 'Master the art of professional makeup with hands-on training from industry experts.',
-    duration: '3 Months',
-    certified: true,
-    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80',
-    featured: false
-  },
-  {
-    id: 2,
-    title: 'Hair Styling & Care',
-    description: 'Learn advanced hair cutting, coloring, and styling techniques for all hair types.',
-    duration: '2 Months',
-    certified: true,
-    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80',
-    featured: true
-  },
-  {
-    id: 3,
-    title: 'Spa & Skin Therapy',
-    description: 'Comprehensive training in spa treatments, facials, and advanced skin care therapies.',
-    duration: '3 Months',
-    certified: true,
-    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80',
-    featured: false
-  },
-  {
-    id: 4,
-    title: 'Bridal Artistry',
-    description: 'Specialized bridal makeup and hairstyling for weddings and special occasions.',
-    duration: '4 Months',
-    certified: true,
-    image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80',
-    featured: false
-  }
+const fallbackCourses = [
+  { id: 1, title: 'Professional Makeup Course', description: 'Master the art of professional makeup with hands-on training from industry experts.', duration: '3 Months', certified: true, image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80', featured: false },
+  { id: 2, title: 'Hair Styling & Care', description: 'Learn advanced hair cutting, coloring, and styling techniques for all hair types.', duration: '2 Months', certified: true, image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=80', featured: true },
+  { id: 3, title: 'Spa & Skin Therapy', description: 'Comprehensive training in spa treatments, facials, and advanced skin care therapies.', duration: '3 Months', certified: true, image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80', featured: false },
+  { id: 4, title: 'Bridal Artistry', description: 'Specialized bridal makeup and hairstyling for weddings and special occasions.', duration: '4 Months', certified: true, image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80', featured: false }
 ]
 
-const galleryItems = [
-  {
-    id: 1,
-    category: 'Bridal Makeup',
-    title: 'Elegant Bridal Look',
-    image: elegantBridalLook,
-    size: 'featured'
-  },
-  {
-    id: 2,
-    category: 'Hair Styling',
-    title: 'Modern Hair Art',
-    image: modernHairArt,
-    size: 'standard'
-  },
-  {
-    id: 3,
-    category: 'Skin Care',
-    title: 'Glowing Skin Treatment',
-    image: glowingSkinTreatment,
-    size: 'standard'
-  },
-  {
-    id: 4,
-    category: 'Spa Therapy',
-    title: 'Relaxing Spa Session',
-    image: relaxingSpaSession,
-    size: 'standard'
-  },
-  {
-    id: 5,
-    category: 'Beauty Courses',
-    title: 'Training Session',
-    image: trainingSession,
-    size: 'standard'
-  },
-  {
-    id: 6,
-    category: 'Salon Interior',
-    title: 'Premium Salon Space',
-    image: premiumSalonSpace,
-    size: 'wide'
-  }
+const fallbackGalleryItems = [
+  { id: 1, category: 'Bridal Makeup', title: 'Elegant Bridal Look', image: elegantBridalLook, size: 'featured' },
+  { id: 2, category: 'Hair Styling', title: 'Modern Hair Art', image: modernHairArt, size: 'standard' },
+  { id: 3, category: 'Skin Care', title: 'Glowing Skin Treatment', image: glowingSkinTreatment, size: 'standard' },
+  { id: 4, category: 'Spa Therapy', title: 'Relaxing Spa Session', image: relaxingSpaSession, size: 'standard' },
+  { id: 5, category: 'Beauty Courses', title: 'Training Session', image: trainingSession, size: 'standard' },
+  { id: 6, category: 'Salon Interior', title: 'Premium Salon Space', image: premiumSalonSpace, size: 'wide' }
 ]
 
-const testimonials = [
-  {
-    id: 1,
-    name: 'Priya Sharma',
-    service: 'Bridal Makeup',
-    review: 'Absolutely loved my bridal makeup. The look was elegant, long-lasting and exactly what I wanted.',
-    featured: false
-  },
-  {
-    id: 2,
-    name: 'Neha Verma',
-    service: 'Spa Therapy',
-    review: 'The spa experience was so relaxing and hygienic. The staff made me feel completely comfortable.',
-    featured: true
-  },
-  {
-    id: 3,
-    name: 'Simran Kaur',
-    service: 'Beauty Course',
-    review: 'I joined the makeup course and learned so much with proper guidance and hands-on practice.',
-    featured: false
-  }
+const fallbackTestimonials = [
+  { id: 1, name: 'Priya Sharma', serviceUsed: 'Bridal Makeup', review: 'Absolutely loved my bridal makeup. The look was elegant, long-lasting and exactly what I wanted.', featured: false, rating: 5 },
+  { id: 2, name: 'Neha Verma', serviceUsed: 'Spa Therapy', review: 'The spa experience was so relaxing and hygienic. The staff made me feel completely comfortable.', featured: true, rating: 5 },
+  { id: 3, name: 'Simran Kaur', serviceUsed: 'Beauty Course', review: 'I joined the makeup course and learned so much with proper guidance and hands-on practice.', featured: false, rating: 5 }
 ]
 
 const stats = [
-  {
-    id: 1,
-    number: '500+',
-    label: 'Happy Clients',
-    icon: Users
-  },
-  {
-    id: 2,
-    number: '5+',
-    label: 'Years Experience',
-    icon: Calendar
-  },
-  {
-    id: 3,
-    number: '100%',
-    label: 'Certified Experts',
-    icon: Award
-  },
-  {
-    id: 4,
-    number: '10+',
-    label: 'Beauty Courses',
-    icon: GraduationCap
-  }
+  { id: 1, number: '500+', label: 'Happy Clients', icon: Users },
+  { id: 2, number: '5+', label: 'Years Experience', icon: Calendar },
+  { id: 3, number: '100%', label: 'Certified Experts', icon: Award },
+  { id: 4, number: '10+', label: 'Beauty Courses', icon: GraduationCap }
 ]
 
 const Home = () => {
@@ -180,20 +63,75 @@ const Home = () => {
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(0)
   const [isGalleryHovered, setIsGalleryHovered] = useState(false)
 
-  const nextSlide = useCallback(() => {
-    setActiveGalleryIndex((prev) => (prev + 1) % galleryItems.length)
-  }, [])
-
-  const prevSlide = useCallback(() => {
-    setActiveGalleryIndex((prev) => (prev - 1 + galleryItems.length) % galleryItems.length)
-  }, [])
+  // Firestore Data State
+  const [servicesData, setServicesData] = useState([])
+  const [coursesData, setCoursesData] = useState([])
+  const [galleryData, setGalleryData] = useState([])
+  const [testimonialsData, setTestimonialsData] = useState([])
+  const [contentData, setContentData] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!isGalleryHovered) {
+    const fetchData = async () => {
+      try {
+        const [servicesRes, coursesRes, galleryRes, testimonialsRes, contentRes] = await Promise.all([
+          servicesService.getAll(),
+          coursesService.getAll(),
+          galleryService.getAll(),
+          testimonialsService.getAll(),
+          contentService.getById('main')
+        ])
+
+        setServicesData(servicesRes.filter(s => s.status === 'Active'))
+        setCoursesData(coursesRes.filter(c => c.status === 'Active'))
+        setGalleryData(galleryRes)
+        setTestimonialsData(testimonialsRes.filter(t => t.status === 'Approved'))
+        setContentData(contentRes)
+      } catch (err) {
+        console.error("Failed to load home data:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  const displayServices = servicesData
+  const displayCourses = coursesData
+  const displayGallery = galleryData
+  const displayTestimonials = testimonialsData
+
+  const heroData = contentData?.hero || {}
+  const aboutData = contentData?.about || {}
+  const ctaData = contentData?.cta || {}
+
+  const nextSlide = useCallback(() => {
+    setActiveGalleryIndex((prev) => (prev + 1) % displayGallery.length)
+  }, [displayGallery.length])
+
+  const prevSlide = useCallback(() => {
+    setActiveGalleryIndex((prev) => (prev - 1 + displayGallery.length) % displayGallery.length)
+  }, [displayGallery.length])
+
+  useEffect(() => {
+    if (!isGalleryHovered && displayGallery.length > 0) {
       const interval = setInterval(nextSlide, 4000)
       return () => clearInterval(interval)
     }
-  }, [isGalleryHovered, nextSlide])
+  }, [isGalleryHovered, nextSlide, displayGallery.length])
+
+  if (loading) {
+    return (
+      <div className="home" style={{ paddingTop: '100px', display: 'flex', flexDirection: 'column', gap: '40px', padding: '100px 5%' }}>
+        <Skeleton className="skeleton-card" style={{ height: '70vh' }} />
+        <Skeleton className="skeleton-title" style={{ width: '40%', margin: '0 auto' }} />
+        <div style={{ display: 'flex', gap: '20px' }}>
+          {[1,2,3,4].map(n => <Skeleton key={n} className="skeleton-card" />)}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="home">
       <section className="hero">
@@ -208,7 +146,7 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <span className="hero-badge">Premium Beauty & Wellness</span>
+              <span className="hero-badge">{heroData.badgeText || 'Premium Beauty & Wellness'}</span>
             </motion.div>
             
             <motion.h1
@@ -216,7 +154,7 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              Glow <span className="highlight">Naturally</span>, Feel Beautiful
+              {heroData.mainHeading ? heroData.mainHeading : <>Glow <span className="highlight">Naturally</span>, Feel Beautiful</>}
             </motion.h1>
             
             <motion.p
@@ -225,7 +163,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="hero-subheading"
             >
-              Experience luxury salon, spa, bridal and beauty services designed to make every visit feel special.
+              {heroData.subHeading || 'Experience luxury salon, spa, bridal and beauty services designed to make every visit feel special.'}
             </motion.p>
             
             <motion.div
@@ -234,8 +172,8 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="hero-buttons"
             >
-              <button className="cta-button primary">Book Appointment</button>
-              <button className="cta-button secondary">Explore Services</button>
+              <button className="cta-button primary">{heroData.primaryButtonText || 'Book Appointment'}</button>
+              <button className="cta-button secondary">{heroData.secondaryButtonText || 'Explore Services'}</button>
             </motion.div>
             
             <motion.div
@@ -286,7 +224,7 @@ const Home = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="services-cards"
         >
-          {services.map((service, index) => (
+          {displayServices.slice(0, 5).map((service, index) => (
             <div
               key={service.id}
               className={`service-card ${index === hoveredIndex ? 'active' : ''}`}
@@ -294,11 +232,11 @@ const Home = () => {
               onMouseLeave={() => setHoveredIndex(0)}
             >
               <div className="service-card-image">
-                <img src={service.image} alt={service.title} />
+                <img src={service.image || service.imageUrl || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'} alt={service.title || service.name} />
                 <div className="service-overlay"></div>
               </div>
               <div className="service-card-content">
-                <h3 className="service-title">{service.title}</h3>
+                <h3 className="service-title">{service.title || service.name}</h3>
                 {index === hoveredIndex && (
                   <motion.button
                     initial={{ opacity: 0, y: 10 }}
@@ -341,7 +279,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="about-badge"
             >
-              About Our Salon
+              {aboutData.sectionBadge || 'About Our Salon'}
             </motion.span>
 
             <motion.h2
@@ -351,7 +289,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="about-heading"
             >
-              Where Beauty Meets Comfort
+              {aboutData.heading || 'Where Beauty Meets Comfort'}
             </motion.h2>
 
             <motion.p
@@ -361,7 +299,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="about-text"
             >
-              Mehak Salon & Spa is designed to bring premium beauty, wellness and grooming experiences in a calm, elegant and comfortable environment. From bridal makeup to relaxing spa services and professional beauty courses, every service is delivered with care, hygiene and attention to detail.
+              {aboutData.description || 'Mehak Salon & Spa is designed to bring premium beauty, wellness and grooming experiences in a calm, elegant and comfortable environment. From bridal makeup to relaxing spa services and professional beauty courses, every service is delivered with care, hygiene and attention to detail.'}
             </motion.p>
 
             <motion.div
@@ -418,7 +356,7 @@ const Home = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="courses-grid"
         >
-          {courses.map((course, index) => (
+          {displayCourses.slice(0, 4).map((course, index) => (
             <motion.div
               key={course.id}
               initial={{ opacity: 0, y: 40 }}
@@ -428,17 +366,17 @@ const Home = () => {
               className={`course-card ${course.featured ? 'featured' : ''}`}
             >
               <div className="course-image">
-                <img src={course.image} alt={course.title} />
+                <img src={course.image || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'} alt={course.title || course.name} />
                 <div className="course-overlay"></div>
               </div>
               <div className="course-content">
                 <div className="course-badges">
                   <span className="course-duration">{course.duration}</span>
-                  {course.certified && (
+                  {(course.certified || true) && (
                     <span className="course-certified">Certified Training</span>
                   )}
                 </div>
-                <h3 className="course-title">{course.title}</h3>
+                <h3 className="course-title">{course.title || course.name}</h3>
                 <p className="course-description">{course.description}</p>
                 <button className="course-button">Enroll Now</button>
               </div>
@@ -470,21 +408,21 @@ const Home = () => {
           onMouseLeave={() => setIsGalleryHovered(false)}
         >
           <div className="carousel-track">
-            {galleryItems.map((item, index) => {
+            {displayGallery.map((item, index) => {
               let relativeIndex = index - activeGalleryIndex
-              if (relativeIndex < -2) relativeIndex += galleryItems.length
-              if (relativeIndex > 2) relativeIndex -= galleryItems.length
+              if (relativeIndex < -2) relativeIndex += displayGallery.length
+              if (relativeIndex > 2) relativeIndex -= displayGallery.length
 
               let positionClass = 'hidden'
               if (relativeIndex === 0) positionClass = 'active'
-              else if (relativeIndex === -1 || (activeGalleryIndex === 0 && index === galleryItems.length - 1)) positionClass = 'prev'
-              else if (relativeIndex === 1 || (activeGalleryIndex === galleryItems.length - 1 && index === 0)) positionClass = 'next'
+              else if (relativeIndex === -1 || (activeGalleryIndex === 0 && index === displayGallery.length - 1)) positionClass = 'prev'
+              else if (relativeIndex === 1 || (activeGalleryIndex === displayGallery.length - 1 && index === 0)) positionClass = 'next'
 
               return (
                 <div key={item.id} className={`carousel-card ${positionClass}`}>
                   <div className="gallery-placeholder">
                     <img
-                      src={item.image}
+                      src={item.image || item.imageUrl || frontImage}
                       alt={item.title}
                       className="gallery-image"
                       loading="lazy"
@@ -507,7 +445,7 @@ const Home = () => {
           </button>
 
           <div className="carousel-indicators">
-            {galleryItems.map((_, index) => (
+            {displayGallery.map((_, index) => (
               <button
                 key={index}
                 className={`indicator-dot ${index === activeGalleryIndex ? 'active' : ''}`}
@@ -548,7 +486,7 @@ const Home = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="testimonials-grid"
         >
-          {testimonials.map((testimonial, index) => (
+          {displayTestimonials.slice(0, 3).map((testimonial, index) => (
             <motion.div
               key={testimonial.id}
               initial={{ opacity: 0, y: 40 }}
@@ -566,17 +504,21 @@ const Home = () => {
               </motion.div>
               <div className="testimonial-stars">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="star" />
+                  <Star key={i} className="star" style={{ fill: i < (testimonial.rating || 5) ? 'currentColor' : 'none' }} />
                 ))}
               </div>
-              <p className="testimonial-review">{testimonial.review}</p>
+              <p className="testimonial-review">{testimonial.review || testimonial.text}</p>
               <div className="testimonial-footer">
                 <div className="testimonial-avatar">
-                  <span>{testimonial.name.split(' ').map(n => n[0]).join('')}</span>
+                  {testimonial.imageUrl ? (
+                    <img src={testimonial.imageUrl} alt={testimonial.name || testimonial.customerName} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    <span>{(testimonial.name || testimonial.customerName).split(' ').map(n => n[0]).join('')}</span>
+                  )}
                 </div>
                 <div className="testimonial-info">
-                  <h4 className="testimonial-name">{testimonial.name}</h4>
-                  <span className="testimonial-service">{testimonial.service}</span>
+                  <h4 className="testimonial-name">{testimonial.name || testimonial.customerName}</h4>
+                  <span className="testimonial-service">{testimonial.service || testimonial.serviceUsed}</span>
                 </div>
               </div>
             </motion.div>
@@ -640,7 +582,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="cta-badge"
             >
-              Book Your Experience
+              {ctaData.badgeText || 'Book Your Experience'}
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
@@ -649,7 +591,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="cta-title"
             >
-              Your Luxury Beauty Journey Starts Here
+              {ctaData.heading || 'Your Luxury Beauty Journey Starts Here'}
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 30 }}
@@ -658,7 +600,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="cta-subtitle"
             >
-              From bridal elegance to relaxing spa therapies, let Mehak Salon & Spa bring out your confidence and beauty.
+              {ctaData.description || 'From bridal elegance to relaxing spa therapies, let Mehak Salon & Spa bring out your confidence and beauty.'}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -667,7 +609,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="cta-buttons"
             >
-              <button className="cta-button primary">Book Appointment</button>
+              <button className="cta-button primary">{ctaData.buttonText || 'Book Appointment'}</button>
               <button className="cta-button secondary">Contact Us</button>
             </motion.div>
           </div>

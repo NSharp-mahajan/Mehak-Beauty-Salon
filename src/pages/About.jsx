@@ -1,13 +1,65 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Droplets, ShieldCheck, HeartHandshake, Scissors, UserCheck, Star, Quote } from 'lucide-react';
 import './About.css';
+import contentService from '../services/contentService';
+import galleryService from '../services/galleryService';
+import testimonialsService from '../services/testimonialsService';
+import Skeleton from '../components/common/Skeleton';
 
 const About = () => {
+  const [content, setContent] = useState(null);
+  const [gallery, setGallery] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   // To ensure the page scrolls to top on load
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    const fetchData = async () => {
+      try {
+        const [contentData, galleryData, testimonialsData] = await Promise.all([
+          contentService.getMainContent(),
+          galleryService.getAll(),
+          testimonialsService.getAll()
+        ]);
+        
+        setContent(contentData);
+        setGallery(galleryData);
+        setTestimonials(testimonialsData.filter(t => t.status === 'Approved'));
+      } catch (err) {
+        console.error("Failed to load about data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="about-page" style={{ paddingTop: '100px', display: 'flex', flexDirection: 'column', gap: '40px', padding: '100px 5%' }}>
+        <Skeleton className="skeleton-card" style={{ height: '50vh' }} />
+        <Skeleton className="skeleton-title" style={{ width: '40%', margin: '0 auto' }} />
+        <div style={{ display: 'flex', gap: '20px' }}>
+          {[1,2,3].map(n => <Skeleton key={n} className="skeleton-card" style={{ height: '300px' }} />)}
+        </div>
+      </div>
+    );
+  }
+
+  // Fallbacks
+  const aboutContent = content?.about || {
+    sectionBadge: 'Since 1997',
+    heading: 'Redefining Beauty & Confidence Since 1997',
+    description: 'An elegant sanctuary where artistry meets self-care. Step into a world of refined elegance. At Mehak Salon & Spa, we craft unforgettable beauty experiences tailored to unveil your most confident self.'
+  };
+
+  const displayTestimonials = testimonials;
+
+  const displayGallery = gallery;
 
   return (
     <div className="about-page">
@@ -20,11 +72,10 @@ const About = () => {
         
         <div className="about-hero-container">
           <div className="hero-left-content">
-            <span className="luxury-badge">Since 1997</span>
-            <h1 className="hero-heading">Redefining Beauty & Confidence Since 1997</h1>
-            <h2 className="hero-subheading">An elegant sanctuary where artistry meets self-care.</h2>
+            <span className="luxury-badge">{aboutContent.sectionBadge || 'About Us'}</span>
+            <h1 className="hero-heading">{aboutContent.heading || 'Redefining Beauty & Confidence'}</h1>
             <p className="hero-intro">
-              Step into a world of refined elegance. At Mehak Salon & Spa, we craft unforgettable beauty experiences tailored to unveil your most confident self.
+              {aboutContent.description}
             </p>
             <div className="hero-cta-group">
               <Link to="/contact" className="premium-btn primary">
@@ -38,7 +89,7 @@ const About = () => {
           
           <div className="hero-right-visuals">
             <div className="hero-image-wrapper primary-image">
-              <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80" alt="Founder Neeraj Bala - Mehak Salon" />
+              <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80" alt="Mehak Salon" />
             </div>
             <div className="hero-image-wrapper secondary-image">
               <img src="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=600&q=80" alt="Luxury Spa Setup" />
@@ -133,8 +184,6 @@ const About = () => {
         </div>
       </section>
 
-
-
       {/* 7. GALLERY SECTION */}
       <section className="about-gallery">
         <div className="section-header center">
@@ -142,10 +191,10 @@ const About = () => {
           <p className="section-desc">Experience the luxurious ambience of Mehak Salon.</p>
         </div>
         <div className="gallery-masonry">
-          <div className="gallery-item item-wide"><img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80" alt="Salon" /></div>
-          <div className="gallery-item item-tall"><img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80" alt="Details" /></div>
-          <div className="gallery-item"><img src="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=600&q=80" alt="Spa" /></div>
-          <div className="gallery-item"><img src="https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=600&q=80" alt="Makeup" /></div>
+          <div className="gallery-item item-wide"><img src={displayGallery[0]?.imageUrl} alt={displayGallery[0]?.title || 'Salon'} /></div>
+          <div className="gallery-item item-tall"><img src={displayGallery[1]?.imageUrl} alt={displayGallery[1]?.title || 'Details'} /></div>
+          <div className="gallery-item"><img src={displayGallery[2]?.imageUrl} alt={displayGallery[2]?.title || 'Spa'} /></div>
+          <div className="gallery-item"><img src={displayGallery[3]?.imageUrl} alt={displayGallery[3]?.title || 'Makeup'} /></div>
         </div>
       </section>
 
@@ -155,30 +204,22 @@ const About = () => {
           <h2 className="section-title">Words of Love</h2>
         </div>
         <div className="testimonial-carousel">
-          {[
-            { name: "Priya Sharma", text: "The bridal makeup was phenomenal. I felt like a queen on my special day. The team at Mehak truly knows how to make you shine." },
-            { name: "Simran Kaur", text: "Best spa experience in Dhariwal! The ambience is incredibly relaxing and the staff is so professional and polite." },
-            { name: "Aarti Verma", text: "I've been a regular since 2015. Their dedication to hygiene and premium quality has never dropped. Absolutely love it here." }
-          ].map((review, idx) => (
+          {displayTestimonials.slice(0, 3).map((review, idx) => (
             <div className="testimonial-card glass-card" key={idx}>
               <div className="quote-mark">"</div>
               <p className="review-text">{review.text}</p>
               <div className="reviewer-info">
                 <div className="stars">
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
+                  {[...Array(review.rating || 5)].map((_, i) => (
+                    <Star key={i} size={16} fill="currentColor" />
+                  ))}
                 </div>
-                <span className="reviewer-name">- {review.name}</span>
+                <span className="reviewer-name">- {review.customerName}</span>
               </div>
             </div>
           ))}
         </div>
       </section>
-
-
 
     </div>
   );

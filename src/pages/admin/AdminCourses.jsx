@@ -25,7 +25,8 @@ const AdminCourses = () => {
     rating: '5.0',
     enrolledCount: '0',
     status: 'Active',
-    description: ''
+    description: '',
+    imageUrl: ''
   })
 
   const [saving, setSaving] = useState(false)
@@ -57,7 +58,7 @@ const AdminCourses = () => {
       setEditingCourse(null)
       setFormData({ 
         name: '', category: 'Personal Grooming', price: '', 
-        duration: '', rating: '5.0', enrolledCount: '0', status: 'Active', description: '' 
+        duration: '', rating: '5.0', enrolledCount: '0', status: 'Active', description: '', imageUrl: '' 
       })
     }
     setError('')
@@ -325,6 +326,17 @@ const AdminCourses = () => {
                     rows="3"
                     required
                   ></textarea>
+                </div>
+
+                <div className="form-group full-width">
+                  <label>Image URL (Optional)</label>
+                  <input 
+                    type="text" 
+                    name="imageUrl"
+                    value={formData.imageUrl || ''}
+                    onChange={handleInputChange}
+                    placeholder="https://example.com/image.jpg"
+                  />
                 </div>
 
                 <div className="admin-modal-footer">

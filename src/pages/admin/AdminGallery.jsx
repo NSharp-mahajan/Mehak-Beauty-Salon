@@ -170,8 +170,8 @@ const AdminGallery = () => {
                     <ImageIcon size={40} />
                   </div>
                 )}
-                <div className={`gallery-card-status ${item.status.toLowerCase()}`}>
-                  {item.status}
+                <div className={`gallery-card-status ${(item.status || 'Active').toLowerCase()}`}>
+                  {item.status || 'Active'}
                 </div>
                 <div className="gallery-card-actions">
                   <button className="action-btn edit-solid" onClick={() => handleOpenModal(item)}>

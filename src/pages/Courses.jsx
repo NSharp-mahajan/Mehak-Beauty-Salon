@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { GraduationCap, Award, Users, BookOpen, CheckCircle, ArrowRight, Sparkles, TrendingUp, Shield, Clock, Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import './Courses.css'
 import premiumAcademyImage from '../assets/images/premiumacademy.png'
 import selfCourseImage from '../assets/images/Selfcourse.png'
@@ -9,7 +10,10 @@ import advanceCourseImage from '../assets/images/Advance course.png'
 import nailCourseImage from '../assets/images/Nailcourse.png'
 import hairCourseImage from '../assets/images/Haircourse.png'
 
-const courses = [
+import coursesService from '../services/coursesService'
+import Skeleton from '../components/common/Skeleton'
+
+const fallbackCourses = [
   {
     id: 'self-course',
     title: 'Self Course',
@@ -209,6 +213,36 @@ const timelineSteps = [
 
 const Courses = () => {
   const navigate = useNavigate()
+  const [coursesData, setCoursesData] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const data = await coursesService.getAll()
+        setCoursesData(data.filter(c => c.status === 'Active'))
+      } catch (error) {
+        console.error("Failed to load courses:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCourses()
+  }, [])
+
+  const displayCourses = coursesData
+
+  if (loading) {
+    return (
+      <div className="courses-page" style={{ paddingTop: '100px', display: 'flex', flexDirection: 'column', gap: '40px', padding: '100px 5%' }}>
+        <Skeleton className="skeleton-card" style={{ height: '50vh' }} />
+        <Skeleton className="skeleton-title" style={{ width: '30%', margin: '0 auto' }} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+          {[1,2,3].map(n => <Skeleton key={n} className="skeleton-card" style={{ height: '400px' }} />)}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="courses-page">
@@ -292,19 +326,19 @@ const Courses = () => {
         </motion.div>
 
         <div className="luxury-courses-grid">
-          {courses.map((course, index) => (
+          {displayCourses.map((course, index) => (
             <motion.div
               key={course.id}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={`luxury-course-card ${course.featured ? 'luxury-featured-card' : 'luxury-standard-card'} pos-${index + 1}`}
+              className={`luxury-course-card ${course.featured ? 'luxury-featured-card' : 'luxury-standard-card'} pos-${(index % 5) + 1}`}
             >
               <div className="luxury-card-image">
                 <img
-                  src={course.image}
-                  alt={course.title}
+                  src={course.image || course.imageUrl || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80'}
+                  alt={course.title || course.name}
                   className="luxury-course-image"
                   loading="lazy"
                 />
@@ -317,20 +351,20 @@ const Courses = () => {
                 <div className="luxury-card-header">
                   <div className="luxury-rating-box">
                     <Star size={16} fill="#C6A16E" color="#C6A16E" />
-                    <span className="rating-val">{course.rating}</span>
-                    <span className="rating-students">({course.students} enrolled)</span>
+                    <span className="rating-val">{course.rating || '5.0'}</span>
+                    <span className="rating-students">({course.enrolledCount || course.students || '0'} enrolled)</span>
                   </div>
                 </div>
                 
-                <h3 className="luxury-course-title">{course.title}</h3>
+                <h3 className="luxury-course-title">{course.title || course.name}</h3>
                 <p className="luxury-course-desc">{course.description}</p>
                 
                 <div className="luxury-card-meta">
                   <div className="meta-item">
                     <Clock size={16} />
-                    <span>{course.duration}</span>
+                    <span>{course.duration || 'N/A'}</span>
                   </div>
-                  {course.certified && (
+                  {(course.certified || true) && (
                     <div className="meta-item">
                       <Shield size={16} />
                       <span>Certified</span>
@@ -339,7 +373,9 @@ const Courses = () => {
                 </div>
                 
                 <div className="luxury-card-footer">
-                  <div className="luxury-price">{course.price}</div>
+                  <div className="luxury-price">
+                    {typeof course.price === 'string' ? course.price : `₹${course.price}`}
+                  </div>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}

@@ -1,8 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 import './Contact.css';
+import settingsService from '../services/settingsService';
+import Skeleton from '../components/common/Skeleton';
 
 const Contact = () => {
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const data = await settingsService.getMainSettings();
+        setSettings(data);
+      } catch (error) {
+        console.error("Failed to load settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const business = settings?.business || {
+    address: 'X84C+X2 Dhariwal, Punjab, India',
+    phone: '+91 98765 43210',
+    whatsapp: '+91 98765 43211',
+    email: 'info@mehakbeautysalon.com',
+    openingHours: 'Mon - Sun: 10:00 AM - 8:00 PM'
+  };
+
+  if (loading) {
+    return (
+      <div className="contact-page" style={{ paddingTop: '100px', display: 'flex', gap: '40px', padding: '100px 5%' }}>
+        <div style={{ flex: 1 }}>
+          <Skeleton className="skeleton-card" style={{ height: '100px', marginBottom: '20px' }} />
+          <Skeleton className="skeleton-card" style={{ height: '100px', marginBottom: '20px' }} />
+          <Skeleton className="skeleton-card" style={{ height: '100px', marginBottom: '20px' }} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Skeleton className="skeleton-card" style={{ height: '400px' }} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="contact-page">
       {/* Hero Section */}
@@ -33,7 +75,7 @@ const Contact = () => {
                 </div>
                 <div className="info-text">
                   <h3>Visit Us</h3>
-                  <p>X84C+X2 Dhariwal<br/>Punjab, India</p>
+                  <p>{business.address}</p>
                 </div>
               </div>
               
@@ -43,7 +85,7 @@ const Contact = () => {
                 </div>
                 <div className="info-text">
                   <h3>Call Us</h3>
-                  <p>+91 98765 43210<br/>+91 98765 43211</p>
+                  <p>{business.phone}<br/>{business.whatsapp && business.whatsapp !== business.phone ? business.whatsapp : ''}</p>
                 </div>
               </div>
 
@@ -53,7 +95,7 @@ const Contact = () => {
                 </div>
                 <div className="info-text">
                   <h3>Email Us</h3>
-                  <p>info@mehakbeautysalon.com</p>
+                  <p>{business.email}</p>
                 </div>
               </div>
 
@@ -63,7 +105,7 @@ const Contact = () => {
                 </div>
                 <div className="info-text">
                   <h3>Working Hours</h3>
-                  <p>Mon - Sun: 10:00 AM - 8:00 PM</p>
+                  <p>{business.openingHours}</p>
                 </div>
               </div>
             </div>

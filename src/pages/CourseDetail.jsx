@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Star, Users, Clock, Award, CheckCircle, ArrowRight, Sparkles, MessageCircle, GraduationCap, BookOpen, Target, Zap, Shield, TrendingUp } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Star, Users, Clock, Award, CheckCircle, ArrowRight, Sparkles, MessageCircle, GraduationCap, BookOpen, Target, Shield, TrendingUp } from 'lucide-react'
 import './CourseDetail.css'
 
 import hairsImg from '../assets/images/hairs.jpeg'
@@ -22,7 +23,10 @@ import hairColourImg from '../assets/images/haircolour.jpg'
 import hairStylingPracticeImg from '../assets/images/HairStylingpractice.png'
 import hairSpaTrainingImg from '../assets/images/hairspatraining.jpg'
 
-const courses = [
+import coursesService from '../services/coursesService'
+import Skeleton from '../components/common/Skeleton'
+
+const fallbackCourses = [
   {
     id: 'self-course',
     title: 'Self Course',
@@ -291,7 +295,49 @@ const trainingSteps = [
 const CourseDetail = () => {
   const { courseId } = useParams()
   const navigate = useNavigate()
-  const course = courses.find(c => c.id === courseId)
+  const [course, setCourse] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        setLoading(true)
+        // First try to find in fallback
+        let found = fallbackCourses.find(c => c.id === courseId)
+        if (!found) {
+          // If not in fallback, check Firestore
+          const firestoreCourse = await coursesService.getById(courseId)
+          if (firestoreCourse) {
+            found = {
+              ...firestoreCourse,
+              title: firestoreCourse.name,
+              learningPoints: firestoreCourse.learningPoints || ['Foundation Training', 'Practical Exposure', 'Professional Guidance', 'Live Demo', 'Certification'],
+              includes: firestoreCourse.includes || ['Hands-on Training', 'Certificate', 'Professional Tools', 'Live Models'],
+              gallery: [firestoreCourse.imageUrl || classroomImg, makeupPracticePng, productLearningImg, selfCourseOneImg, hairsImg],
+              timeline: ['Enroll', 'Foundation Learning', 'Practical Training', 'Assessment', 'Certification']
+            }
+          }
+        }
+        setCourse(found)
+      } catch (err) {
+        console.error("Failed to load course details:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCourse()
+  }, [courseId])
+
+  if (loading) {
+    return (
+      <div className="course-detail-page" style={{ paddingTop: '100px', padding: '100px 5%' }}>
+        <Skeleton className="skeleton-card" style={{ height: '400px', marginBottom: '40px' }} />
+        <Skeleton className="skeleton-title" style={{ width: '60%' }} />
+        <Skeleton className="skeleton-text" style={{ width: '80%' }} />
+        <Skeleton className="skeleton-text" style={{ width: '70%' }} />
+      </div>
+    )
+  }
 
   if (!course) {
     return (
@@ -308,12 +354,12 @@ const CourseDetail = () => {
 
   const story = course.story || {
     badge: course.category,
-    heading: `Master ${course.title}`,
+    heading: `Master ${course.title || course.name}`,
     text: course.description,
-    checklist: course.includes.slice(0, 4)
+    checklist: (course.includes || []).slice(0, 4)
   }
 
-  const learningJourney = course.learningJourney || course.learningPoints.map((pt, i) => ({
+  const learningJourney = course.learningJourney || (course.learningPoints || []).map((pt, i) => ({
     id: `0${i + 1}`.slice(-2),
     title: pt,
     desc: `Learn professional ${pt.toLowerCase()} techniques.`
@@ -322,7 +368,8 @@ const CourseDetail = () => {
   const environment = course.environment || {
     heading: 'Professional Salon Training',
     text: 'Gain practical learning experience inside a professional salon environment.',
-    points: ['Hands-on practice', 'Live demonstrations', 'Professional guidance', 'Salon exposure']
+    points: ['Hands-on practice', 'Live demonstrations', 'Professional guidance', 'Salon exposure'],
+    images: course.gallery ? course.gallery.slice(1, 3) : []
   }
 
   return (
@@ -342,13 +389,13 @@ const CourseDetail = () => {
             whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.8 }}
           >
-            {typeof course.gallery[0] === 'string' && !course.gallery[0].includes('.') && !course.gallery[0].includes('/') ? (
+            {typeof course.gallery[0] === 'string' && !course.gallery[0].includes('.') && !course.gallery[0].includes('/') && !course.gallery[0].startsWith('http') ? (
               <div className="gallery-placeholder">
                 <Sparkles size={32} />
                 <span>{course.gallery[0]}</span>
               </div>
             ) : (
-              <img src={course.gallery[0]} alt={`${course.title} — bridal makeup training`} className="real-gallery-image parallax-img" />
+              <img src={course.gallery[0]} alt={`${course.title} — training`} className="real-gallery-image parallax-img" />
             )}
           </motion.div>
           <div className="gallery-stacked-right">
@@ -361,7 +408,7 @@ const CourseDetail = () => {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
               >
-                {typeof item === 'string' && !item.includes('.') && !item.includes('/') ? (
+                {typeof item === 'string' && !item.includes('.') && !item.includes('/') && !item.startsWith('http') ? (
                   <div className="gallery-placeholder small">
                     <Sparkles size={20} />
                     <span>{item}</span>
@@ -369,7 +416,7 @@ const CourseDetail = () => {
                 ) : (
                   <img
                     src={item}
-                    alt={index === 0 ? `${course.title} — advanced makeup training` : `${course.title} — facial treatment`}
+                    alt={`${course.title} — detail`}
                     className="real-gallery-image parallax-img"
                   />
                 )}
@@ -392,7 +439,7 @@ const CourseDetail = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: index * 0.2 }}
               >
-                {typeof item === 'string' && !item.includes('.') && !item.includes('/') ? (
+                {typeof item === 'string' && !item.includes('.') && !item.includes('/') && !item.startsWith('http') ? (
                   <div className="gallery-placeholder small">
                     <Sparkles size={20} />
                     <span>{item}</span>
@@ -451,17 +498,17 @@ const CourseDetail = () => {
             <div className="course-stats">
               <div className="stat-item">
                 <Star size={18} fill="#C6A16E" color="#C6A16E" />
-                <span>{course.rating} Rating</span>
+                <span>{course.rating || '5.0'} Rating</span>
               </div>
               <div className="stat-item">
                 <Users size={18} />
-                <span>{course.students} Enrolled</span>
+                <span>{course.students || course.enrolledCount || '0'} Enrolled</span>
               </div>
               <div className="stat-item">
                 <Clock size={18} />
-                <span>{course.duration}</span>
+                <span>{course.duration || 'N/A'}</span>
               </div>
-              {course.certified && (
+              {(course.certified || true) && (
                 <div className="stat-item">
                   <Award size={18} />
                   <span>Certified</span>
@@ -497,9 +544,9 @@ const CourseDetail = () => {
           >
             <div className="price-card">
               <div className="price-label">Course Price</div>
-              <div className="price-value">{course.price}</div>
-              <div className="price-duration">{course.duration}</div>
-              {course.certified && (
+              <div className="price-value">{typeof course.price === 'string' ? course.price : `₹${course.price}`}</div>
+              <div className="price-duration">{course.duration || 'N/A'}</div>
+              {(course.certified || true) && (
                 <div className="certification-badge">
                   <Award size={20} />
                   <span>Certified Course</span>
@@ -577,7 +624,7 @@ const CourseDetail = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: index * 0.2 }}
               >
-                {item.includes('.') || item.includes('/') ? (
+                {item.includes('.') || item.includes('/') || item.startsWith('http') ? (
                   <img src={item} alt={`Environment ${index}`} className="real-gallery-image" />
                 ) : (
                   <div className="gallery-placeholder small">
@@ -604,7 +651,7 @@ const CourseDetail = () => {
           <h2>Training Process</h2>
         </motion.div>
         <div className="timeline">
-          {course.timeline.map((stepTitle, index) => {
+          {(course.timeline || ['Enroll', 'Foundation Learning', 'Practical Training', 'Assessment', 'Certification']).map((stepTitle, index) => {
             const icons = [MessageCircle, BookOpen, Target, Shield, Award, TrendingUp]
             const StepIcon = icons[index % icons.length]
             return (
@@ -623,7 +670,7 @@ const CourseDetail = () => {
                   </div>
                   <h3 className="timeline-title">{stepTitle}</h3>
                 </div>
-                {index < course.timeline.length - 1 && <div className="timeline-connector"></div>}
+                {index < (course.timeline ? course.timeline.length - 1 : 4) && <div className="timeline-connector"></div>}
               </motion.div>
             )
           })}
