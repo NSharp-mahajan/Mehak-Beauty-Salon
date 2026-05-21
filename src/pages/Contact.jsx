@@ -1,33 +1,108 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import './Contact.css';
 import settingsService from '../services/settingsService';
+import enquiriesService from '../services/enquiriesService';
 import Skeleton from '../components/common/Skeleton';
 
 const Contact = () => {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    customerName: '',
+    email: '',
+    phone: '',
+    service: '',
+    message: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', or null
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const data = await settingsService.getMainSettings();
+    // Subscribe to real-time settings updates
+    const unsubscribe = settingsService.subscribeToDocument('main', (data) => {
+      if (data) {
         setSettings(data);
-      } catch (error) {
-        console.error("Failed to load settings:", error);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      if (unsubscribe) unsubscribe();
     };
-    fetchSettings();
   }, []);
 
   const business = settings?.business || {
     address: 'X84C+X2 Dhariwal, Punjab, India',
-    phone: '+91 98765 43210',
-    whatsapp: '+91 98765 43211',
-    email: 'info@mehakbeautysalon.com',
+    phone: '+91 7009482040',
+    whatsapp: '+91 7009482040',
+    email: 'Mehaksalon029@gmail.com',
     openingHours: 'Mon - Sun: 10:00 AM - 8:00 PM'
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    console.log(`Field updated: ${id} = ${value}`);
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Log current form data
+    console.log('Form data on submit:', formData);
+    
+    // Validate form data with trimmed values
+    const customerName = formData.customerName?.trim() || '';
+    const email = formData.email?.trim() || '';
+    const message = formData.message?.trim() || '';
+    
+    console.log('Validation check:', { customerName: !!customerName, email: !!email, message: !!message });
+    
+    if (!customerName || !email || !message) {
+      console.log('Validation failed - showing error');
+      setSubmitStatus('error');
+      setTimeout(() => setSubmitStatus(null), 5000);
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const enquiryData = {
+        customerName: customerName,
+        email: email,
+        phone: (formData.phone?.trim()) || 'Not provided',
+        service: (formData.service?.trim()) || 'General Inquiry',
+        message: message,
+        status: 'New',
+        createdAt: new Date().toISOString()
+      };
+
+      console.log('Submitting enquiry:', enquiryData);
+      await enquiriesService.create(enquiryData);
+      console.log('Enquiry submitted successfully');
+      
+      // Reset form and show success message
+      setFormData({
+        customerName: '',
+        email: '',
+        phone: '',
+        service: '',
+        message: ''
+      });
+      setSubmitStatus('success');
+      setTimeout(() => setSubmitStatus(null), 5000);
+    } catch (error) {
+      console.error('Failed to submit enquiry:', error);
+      setSubmitStatus('error');
+      setTimeout(() => setSubmitStatus(null), 5000);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -131,41 +206,94 @@ const Contact = () => {
               <p>Fill out the form below and we will get back to you shortly.</p>
             </div>
             
-            <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
+            {submitStatus && (
+              <div className={`submit-message ${submitStatus}`}>
+                <div className="message-content">
+                  {submitStatus === 'success' ? (
+                    <>
+                      <CheckCircle size={20} />
+                      <span>Thank you! Your enquiry has been sent successfully. We'll get back to you soon.</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle size={20} />
+                      <span>Please fill in all required fields (Name, Email, Message).</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="name">Full Name</label>
-                <input type="text" id="name" placeholder="Enter your full name" required />
+                <label htmlFor="customerName">Full Name</label>
+                <input 
+                  type="text" 
+                  id="customerName" 
+                  placeholder="Enter your full name" 
+                  value={formData.customerName}
+                  onChange={handleInputChange}
+                  required 
+                />
               </div>
               
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>
-                <input type="email" id="email" placeholder="Enter your email" required />
+                <input 
+                  type="email" 
+                  id="email" 
+                  placeholder="Enter your email" 
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required 
+                />
               </div>
 
               <div className="form-group">
                 <label htmlFor="phone">Phone Number</label>
-                <input type="tel" id="phone" placeholder="Enter your phone number" />
+                <input 
+                  type="tel" 
+                  id="phone" 
+                  placeholder="Enter your phone number" 
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                />
               </div>
 
               <div className="form-group">
                 <label htmlFor="service">Interested Service</label>
-                <select id="service">
+                <select 
+                  id="service"
+                  value={formData.service}
+                  onChange={handleInputChange}
+                >
                   <option value="">Select a service</option>
-                  <option value="bridal">Bridal Makeup</option>
-                  <option value="hair">Hair Styling & Color</option>
-                  <option value="skin">Skin Care & Facials</option>
-                  <option value="nails">Nail Art & Extensions</option>
-                  <option value="other">Other</option>
+                  <option value="Bridal Makeup">Bridal Makeup</option>
+                  <option value="Hair Styling & Color">Hair Styling & Color</option>
+                  <option value="Skin Care & Facials">Skin Care & Facials</option>
+                  <option value="Nail Art & Extensions">Nail Art & Extensions</option>
+                  <option value="General Inquiry">General Inquiry</option>
                 </select>
               </div>
 
               <div className="form-group">
                 <label htmlFor="message">Your Message</label>
-                <textarea id="message" rows="5" placeholder="How can we help you?" required></textarea>
+                <textarea 
+                  id="message" 
+                  rows="5" 
+                  placeholder="How can we help you?" 
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  required
+                ></textarea>
               </div>
 
-              <button type="submit" className="submit-button">
-                <span>Send Message</span>
+              <button 
+                type="submit" 
+                className="submit-button"
+                disabled={submitting}
+              >
+                <span>{submitting ? 'Sending...' : 'Send Message'}</span>
                 <Send className="submit-icon" size={18} />
               </button>
             </form>

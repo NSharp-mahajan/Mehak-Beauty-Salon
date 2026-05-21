@@ -52,12 +52,12 @@ const dummyContent = {
   hero: { badgeText: 'Premium Beauty Services', mainHeading: 'Unveil Your True Beauty', subHeading: 'Experience luxury salon and spa services tailored just for you.', primaryButtonText: 'Book Appointment', secondaryButtonText: 'Our Services' },
   about: { sectionBadge: 'About Us', heading: 'Expert Care For You', description: 'With over 10 years of experience, our professional team is dedicated to providing the best beauty and wellness treatments.' },
   cta: { badgeText: 'Ready to Transform?', heading: 'Book Your Session Today', description: 'Join thousands of happy clients who trust us with their beauty needs.', buttonText: 'Contact Us Now' },
-  contact: { phone: '+91 98765 43210', whatsapp: '+91 98765 43210', email: 'hello@mehakbeauty.com', openingHours: 'Mon-Sun: 10:00 AM - 8:00 PM', address: '123 Beauty Lane, Fashion District, City - 400001', mapLink: 'https://maps.google.com' }
+  contact: { phone: '+91 7009482040', whatsapp: '+91 7009482040', email: 'Mehaksalon029@gmail.com', openingHours: 'Mon-Sun: 10:00 AM - 8:00 PM', address: '123 Beauty Lane, Fashion District, City - 400001', mapLink: 'https://maps.google.com' }
 };
 
 const dummySettings = {
   id: 'main',
-  business: { salonName: 'Mehak Beauty Salon', tagline: 'Your Beauty, Our Passion', phone: '+91 98765 43210', whatsapp: '+91 98765 43210', email: 'hello@mehakbeauty.com', address: '123 Beauty Lane, Fashion District, City - 400001', openingHours: 'Mon-Sun: 10:00 AM - 8:00 PM' },
+  business: { salonName: 'Mehak Beauty Salon', tagline: 'Your Beauty, Our Passion', phone: '+91 7009482040', whatsapp: '+91 7009482040', email: 'Mehaksalon029@gmail.com', address: '123 Beauty Lane, Fashion District, City - 400001', openingHours: 'Mon-Sun: 10:00 AM - 8:00 PM' },
   branding: { logoUrl: '', primaryColor: '#d4a373', accentColor: '#faedcd', footerText: '© 2024 Mehak Beauty Salon. All rights reserved.' },
   admin: { adminName: 'Admin', adminEmail: 'admin@mehakbeauty.com', password: '' },
   website: { enableBooking: true, showOffers: true, showCourses: true, maintenanceMode: false }

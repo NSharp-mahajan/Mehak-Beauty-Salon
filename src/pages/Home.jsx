@@ -98,7 +98,20 @@ const Home = () => {
         setLoading(false)
       }
     }
+    
     fetchData()
+
+    // Subscribe to real-time content updates
+    const unsubscribeContent = contentService.subscribeToDocument('main', (contentRes) => {
+      if (contentRes) {
+        setContentData(contentRes)
+      }
+    })
+
+    // Cleanup subscription on unmount
+    return () => {
+      if (unsubscribeContent) unsubscribeContent()
+    }
   }, [])
 
   const displayServices = servicesData
@@ -117,6 +130,14 @@ const Home = () => {
   const prevSlide = useCallback(() => {
     setActiveGalleryIndex((prev) => (prev - 1 + displayGallery.length) % displayGallery.length)
   }, [displayGallery.length])
+
+  const handleBookAppointment = () => {
+    window.open('https://wa.me/917009482040', '_blank', 'noopener,noreferrer')
+  }
+
+  const handleExploreServices = () => {
+    window.location.href = '/services'
+  }
 
   useEffect(() => {
     if (!isGalleryHovered && displayGallery.length > 0) {
@@ -177,8 +198,8 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="hero-buttons"
             >
-              <button className="cta-button primary">{heroData.primaryButtonText || 'Book Appointment'}</button>
-              <button className="cta-button secondary">{heroData.secondaryButtonText || 'Explore Services'}</button>
+              <button className="cta-button primary" onClick={handleBookAppointment}>{heroData.primaryButtonText || 'Book Appointment'}</button>
+              <button className="cta-button secondary" onClick={handleExploreServices}>{heroData.secondaryButtonText || 'Explore Services'}</button>
             </motion.div>
             
             <motion.div
@@ -616,8 +637,8 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="cta-buttons"
             >
-              <button className="cta-button primary">{ctaData.buttonText || 'Book Appointment'}</button>
-              <button className="cta-button secondary">Contact Us</button>
+              <button className="cta-button primary" onClick={handleBookAppointment}>{ctaData.buttonText || 'Book Appointment'}</button>
+              <button className="cta-button secondary" onClick={handleExploreServices}>Contact Us</button>
             </motion.div>
           </div>
         </motion.div>

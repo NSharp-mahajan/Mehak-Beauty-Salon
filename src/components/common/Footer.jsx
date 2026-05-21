@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import {
   Instagram,
   Facebook,
@@ -9,6 +10,7 @@ import {
   MapPin,
 } from 'lucide-react'
 import logo from '../../assets/logo/logo2.png'
+import settingsService from '../../services/settingsService'
 import './Footer.css'
 
 const easeLuxury = [0.22, 1, 0.36, 1]
@@ -45,24 +47,47 @@ const serviceLinks = [
   { label: 'Beauty Courses', to: '/services' },
 ]
 
-const contactItems = [
-  { icon: Phone, text: '+91 98765 43210', href: 'tel:+919876543210' },
-  { icon: Mail, text: 'info@mehaksalon.com', href: 'mailto:info@mehaksalon.com' },
-  { icon: MapPin, text: '123 Beauty Street, City Center', href: null },
-]
-
-const hoursItems = [
-  { day: 'Monday – Saturday', time: '10:00 AM – 8:00 PM' },
-  { day: 'Sunday', time: 'Closed' },
-]
-
-const socialLinks = [
-  { icon: Instagram, label: 'Instagram', href: 'https://instagram.com' },
-  { icon: Facebook, label: 'Facebook', href: 'https://facebook.com' },
-  { icon: MessageCircle, label: 'WhatsApp', href: 'https://wa.me/' },
-]
-
 const Footer = () => {
+  const [settings, setSettings] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Subscribe to real-time settings updates
+    const unsubscribe = settingsService.subscribeToDocument('main', (data) => {
+      if (data) {
+        setSettings(data);
+      }
+      setLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [])
+
+  const business = settings?.business || {
+    phone: '+91 98765 43210',
+    email: 'info@mehaksalon.com',
+    address: '123 Beauty Street, City Center',
+    openingHours: 'Mon - Sun: 10:00 AM - 8:00 PM'
+  }
+
+  const contactItems = [
+    { icon: Phone, text: business.phone, href: `tel:${business.phone?.replace(/\s/g, '')}` },
+    { icon: Mail, text: business.email, href: `mailto:${business.email}` },
+    { icon: MapPin, text: business.address, href: null },
+  ]
+
+  const hoursItems = [
+    { day: 'Monday – Sunday', time: business.openingHours },
+  ]
+
+  const socialLinks = [
+    { icon: Instagram, label: 'Instagram', href: 'https://instagram.com' },
+    { icon: Facebook, label: 'Facebook', href: 'https://facebook.com' },
+    { icon: MessageCircle, label: 'WhatsApp', href: `https://wa.me/${business.phone?.replace(/[^\d]/g, '')}` },
+  ]
   return (
     <footer className="site-footer" aria-label="Site footer">
       <div className="site-footer__body">

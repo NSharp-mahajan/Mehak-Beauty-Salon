@@ -1,14 +1,34 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import logo from '../../assets/logo/logo2.png'
+import settingsService from '../../services/settingsService'
 import './Navbar.css'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const [whatsappNumber, setWhatsappNumber] = useState('+917009482040')
+
+  useEffect(() => {
+    // Subscribe to real-time settings updates
+    const unsubscribe = settingsService.subscribeToDocument('main', (data) => {
+      if (data?.business?.phone) {
+        const phoneDigits = data.business.phone.replace(/\D/g, '')
+        const formattedPhone = phoneDigits.startsWith('91') ? phoneDigits : '91' + phoneDigits
+        setWhatsappNumber(formattedPhone)
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [])
 
   const toggleMenu = () => {
     setIsOpen(!isOpen)
   }
+
+  const whatsappLink = `https://wa.me/${whatsappNumber}`
 
   return (
     <nav className="navbar">
@@ -27,7 +47,7 @@ const Navbar = () => {
           <li><a href="/about">About</a></li>
           <li><a href="/courses">Courses</a></li>
           <li><a href="/contact">Contact</a></li>
-          <li className="navbar-cta"><a href="/contact" className="book-button">Book Appointment</a></li>
+          <li className="navbar-cta"><a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="book-button">Book Appointment</a></li>
         </ul>
       </div>
     </nav>

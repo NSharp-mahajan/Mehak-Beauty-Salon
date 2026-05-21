@@ -17,25 +17,35 @@ const About = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     
-    const fetchData = async () => {
+    // Subscribe to real-time content updates
+    const unsubscribe = contentService.subscribeToDocument('main', (contentData) => {
+      if (contentData) {
+        setContent(contentData);
+      }
+      setLoading(false);
+    });
+
+    // Fetch gallery and testimonials (not real-time for now)
+    const fetchGalleryData = async () => {
       try {
-        const [contentData, galleryData, testimonialsData] = await Promise.all([
-          contentService.getMainContent(),
+        const [galleryData, testimonialsData] = await Promise.all([
           galleryService.getAll(),
           testimonialsService.getAll()
         ]);
         
-        setContent(contentData);
         setGallery(galleryData);
         setTestimonials(testimonialsData.filter(t => t.status === 'Approved'));
       } catch (err) {
-        console.error("Failed to load about data:", err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to load gallery data:", err);
       }
     };
     
-    fetchData();
+    fetchGalleryData();
+
+    // Cleanup subscription on unmount
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   if (loading) {

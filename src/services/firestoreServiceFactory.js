@@ -6,7 +6,8 @@ import {
   updateDoc, 
   deleteDoc, 
   doc,
-  setDoc
+  setDoc,
+  onSnapshot
 } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 
@@ -51,11 +52,28 @@ export const createFirestoreService = (collectionName) => {
     return id.toString();
   };
 
+  // Real-time listener for a specific document
+  const subscribeToDocument = (id, callback) => {
+    const docRef = doc(db, collectionName, id.toString());
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        callback({ id: docSnap.id, ...docSnap.data() });
+      } else {
+        callback(null);
+      }
+    }, (error) => {
+      console.error('Real-time listener error:', error);
+      callback(null);
+    });
+    return unsubscribe;
+  };
+
   return {
     getAll,
     getById,
     create,
     update,
-    remove
+    remove,
+    subscribeToDocument
   };
 };
