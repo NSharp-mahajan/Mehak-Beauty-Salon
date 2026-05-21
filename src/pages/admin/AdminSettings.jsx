@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Save, CheckCircle, Briefcase, Palette, Shield, Globe } from 'lucide-react'
+import { Save, CheckCircle, Briefcase, Palette, Shield, Globe, Lock, X, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import settingsService from '../../services/settingsService'
+import { useAuth } from '../../context/AuthContext'
 import './AdminSettings.css'
 
 const DEFAULT_SETTINGS = {
@@ -24,7 +25,15 @@ const AdminSettings = () => {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('Settings saved successfully!')
   const [error, setError] = useState('')
+  
+  // Re-authentication state
+  const [showReauthModal, setShowReauthModal] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [reauthError, setReauthError] = useState('')
+
+  const { currentUser, reauthenticate, updateUserEmail, updateUserPassword } = useAuth()
 
   useEffect(() => {
     loadSettings()
@@ -38,7 +47,12 @@ const AdminSettings = () => {
         setSettings({
           business: { ...DEFAULT_SETTINGS.business, ...data.business },
           branding: { ...DEFAULT_SETTINGS.branding, ...data.branding },
-          admin: { ...DEFAULT_SETTINGS.admin, ...data.admin },
+          admin: { 
+            ...DEFAULT_SETTINGS.admin, 
+            ...data.admin,
+            adminEmail: data.admin?.adminEmail || currentUser?.email || '',
+            password: '' 
+          },
           website: { ...DEFAULT_SETTINGS.website, ...data.website }
         })
       }
@@ -70,19 +84,93 @@ const AdminSettings = () => {
     }))
   }
 
-  const handleSave = async (e) => {
-    e.preventDefault()
+  const performSensitiveUpdates = async () => {
     setSaving(true)
     setError('')
     try {
-      await settingsService.create({ ...settings, id: 'main' })
+      let emailChanged = false
+      let passwordChanged = false
+
+      // 1. Update Auth Email if changed
+      if (settings.admin.adminEmail && settings.admin.adminEmail !== currentUser?.email) {
+        await updateUserEmail(settings.admin.adminEmail)
+        emailChanged = true
+      }
+
+      // 2. Update Auth Password if provided
+      if (settings.admin.password) {
+        await updateUserPassword(settings.admin.password)
+        passwordChanged = true
+      }
+
+      // 3. Save all settings to Firestore
+      const settingsToSave = {
+        ...settings,
+        id: 'main',
+        admin: {
+          ...settings.admin,
+          password: '' 
+        }
+      }
+      
+      await settingsService.create(settingsToSave)
+      
+      let msg = 'Settings saved successfully!'
+      if (emailChanged) msg = 'A verification link has been sent to your new email. Please verify it to complete the change.'
+      if (passwordChanged && !emailChanged) msg = 'Password updated and settings saved successfully!'
+      
+      setSuccessMessage(msg)
       setShowSuccess(true)
-      setTimeout(() => {
-        setShowSuccess(false)
-      }, 3000)
+      
+      setSettings(prev => ({
+        ...prev,
+        admin: { ...prev.admin, password: '' }
+      }))
+      
+      setTimeout(() => setShowSuccess(false), 5000)
     } catch (err) {
       console.error('Failed to save settings:', err)
-      setError('Failed to save settings. Please try again.')
+      setError(err.message || 'Failed to save settings.')
+    } finally {
+      setSaving(false)
+      setShowReauthModal(false)
+      setCurrentPassword('')
+      setReauthError('')
+    }
+  }
+
+  const handleReauthSubmit = async (e) => {
+    e.preventDefault()
+    setReauthError('')
+    try {
+      await reauthenticate(currentPassword)
+      await performSensitiveUpdates()
+    } catch (err) {
+      setReauthError('Invalid password. Please try again.')
+    }
+  }
+
+  const handleSave = async (e) => {
+    e.preventDefault()
+    
+    const isEmailChanging = settings.admin.adminEmail && settings.admin.adminEmail !== currentUser?.email
+    const isPasswordChanging = !!settings.admin.password
+
+    if (isEmailChanging || isPasswordChanging) {
+      setShowReauthModal(true)
+      return
+    }
+
+    // Regular save if no sensitive fields changed
+    setSaving(true)
+    setError('')
+    try {
+      await settingsService.create({ ...settings, id: 'main', admin: { ...settings.admin, password: '' } })
+      setSuccessMessage('Settings saved successfully!')
+      setShowSuccess(true)
+      setTimeout(() => setShowSuccess(false), 3000)
+    } catch (err) {
+      setError('Failed to save settings.')
     } finally {
       setSaving(false)
     }
@@ -143,12 +231,17 @@ const AdminSettings = () => {
             exit={{ opacity: 0, y: -20, x: '-50%' }}
           >
             <CheckCircle size={20} />
-            Settings saved successfully!
+            {successMessage}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {error && <div className="admin-login-error" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
+      {error && (
+        <div className="admin-settings-error-banner">
+          <AlertCircle size={20} />
+          <span>{error}</span>
+        </div>
+      )}
 
       <div className="settings-grid">
         {/* Business Profile */}
@@ -273,8 +366,58 @@ const AdminSettings = () => {
             )}
           </div>
         </div>
-
       </div>
+
+      {/* Re-authentication Modal */}
+      <AnimatePresence>
+        {showReauthModal && (
+          <div className="admin-modal-overlay">
+            <motion.div 
+              className="admin-modal-content reauth-modal"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <div className="admin-modal-header">
+                <div className="header-icon-title">
+                  <Lock size={20} />
+                  <h3>Verify Identity</h3>
+                </div>
+                <button onClick={() => setShowReauthModal(false)} className="close-modal">
+                  <X size={20} />
+                </button>
+              </div>
+              <form onSubmit={handleReauthSubmit}>
+                <div className="admin-modal-body">
+                  <p>To change your email or password, please enter your <strong>current password</strong> for security.</p>
+                  
+                  <div className="settings-form-group">
+                    <label>Current Password</label>
+                    <input 
+                      type="password" 
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter your current password"
+                      autoFocus
+                      required
+                    />
+                  </div>
+                  
+                  {reauthError && <div className="reauth-error-msg">{reauthError}</div>}
+                </div>
+                <div className="admin-modal-footer">
+                  <button type="button" onClick={() => setShowReauthModal(false)} className="admin-btn-secondary">
+                    Cancel
+                  </button>
+                  <button type="submit" className="admin-btn-primary" disabled={saving}>
+                    {saving ? 'Verifying...' : 'Confirm & Update'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

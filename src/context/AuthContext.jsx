@@ -2,7 +2,12 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   signInWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  updateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  verifyBeforeUpdateEmail
 } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
 
@@ -24,6 +29,23 @@ export function AuthProvider({ children }) {
     return signOut(auth);
   }
 
+  function reauthenticate(password) {
+    if (!currentUser || !currentUser.email) throw new Error('No user logged in');
+    const credential = EmailAuthProvider.credential(currentUser.email, password);
+    return reauthenticateWithCredential(currentUser, credential);
+  }
+
+  function updateUserEmail(email) {
+    if (!currentUser) throw new Error('No user logged in');
+    // Using verifyBeforeUpdateEmail is safer and often required by Firebase now
+    return verifyBeforeUpdateEmail(currentUser, email);
+  }
+
+  function updateUserPassword(password) {
+    if (!currentUser) throw new Error('No user logged in');
+    return updatePassword(currentUser, password);
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -36,7 +58,10 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     login,
-    logout
+    logout,
+    reauthenticate,
+    updateUserEmail,
+    updateUserPassword
   };
 
   return (

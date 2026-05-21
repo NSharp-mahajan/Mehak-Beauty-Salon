@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import settingsService from '../../services/settingsService'
 import { 
   LayoutDashboard, 
   Scissors, 
@@ -20,9 +21,24 @@ import './AdminLayout.css'
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [adminName, setAdminName] = useState('Admin')
   const navigate = useNavigate()
   const location = useLocation()
   const { logout } = useAuth()
+
+  useEffect(() => {
+    const loadAdminData = async () => {
+      try {
+        const settings = await settingsService.getById('main')
+        if (settings?.admin?.adminName) {
+          setAdminName(settings.admin.adminName)
+        }
+      } catch (error) {
+        console.error('Failed to load admin settings:', error)
+      }
+    }
+    loadAdminData()
+  }, [location.pathname]) // Re-load when navigating to potentially catch updates
 
   const handleLogout = async () => {
     try {
@@ -109,8 +125,8 @@ const AdminLayout = () => {
           
           <div className="topbar-right">
             <div className="admin-profile">
-              <div className="admin-avatar">A</div>
-              <span>Admin User</span>
+              <div className="admin-avatar">{adminName.charAt(0).toUpperCase()}</div>
+              <span>{adminName}</span>
             </div>
           </div>
         </header>

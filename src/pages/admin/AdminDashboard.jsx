@@ -1,11 +1,27 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Scissors, BookOpen, ImageIcon, Tag, MessageSquare } from 'lucide-react'
 import { motion } from 'framer-motion'
+import settingsService from '../../services/settingsService'
 import './AdminDashboard.css'
 
 const AdminDashboard = () => {
   const navigate = useNavigate()
+  const [adminName, setAdminName] = useState('Admin')
+
+  useEffect(() => {
+    const loadAdminData = async () => {
+      try {
+        const settings = await settingsService.getById('main')
+        if (settings?.admin?.adminName) {
+          setAdminName(settings.admin.adminName)
+        }
+      } catch (error) {
+        console.error('Failed to load admin settings:', error)
+      }
+    }
+    loadAdminData()
+  }, [])
 
   const stats = [
     { title: 'Total Services', value: '24', icon: Scissors, color: '#f3a683' },
@@ -25,7 +41,7 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       <div className="dashboard-header">
-        <h2>Welcome Back, Admin</h2>
+        <h2>Welcome Back, {adminName}</h2>
         <p>Here is what's happening at Mehak Salon & Spa today.</p>
       </div>
 
