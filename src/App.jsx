@@ -28,11 +28,26 @@ import AdminEnquiries from './pages/admin/AdminEnquiries'
 import AdminSettings from './pages/admin/AdminSettings'
 import { AuthProvider } from './context/AuthContext'
 
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { pageView } from "./utils/analytics";
+
+function AnalyticsTracker() {
+   const location = useLocation();
+
+   useEffect(() => {
+      pageView();
+   }, [location]);
+
+   return null;
+}
+
 function App() {
   return (
     <AuthProvider>
       <Router>
-      <Routes>
+        <AnalyticsTracker />
+        <Routes>
         {/* Public Routes */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
