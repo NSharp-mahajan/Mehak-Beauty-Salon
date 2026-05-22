@@ -6,6 +6,7 @@ import contentService from '../services/contentService';
 import galleryService from '../services/galleryService';
 import testimonialsService from '../services/testimonialsService';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
 
 import premiumSalonSpace from '../assets/images/Premiumsalon space.png';
 import relaxingSpaSession from '../assets/images/Relaxingspasession.webp';
@@ -108,6 +109,12 @@ const About = () => {
 
   return (
     <div className="about-page">
+      <SEO
+        title="About Us - Mehak Salon & Spa"
+        description="Learn about Mehak Salon & Spa, our premium beauty services, expert staff, and our luxurious space."
+        image="https://mehaksalonandspa.in/og-image.jpg"
+        url="https://mehaksalonandspa.in/about"
+      />
       {/* 1. HERO SECTION */}
       <section className="about-hero">
         <div className="about-hero-bg">

@@ -14,6 +14,7 @@ import servicesPageContentService from '../services/servicesPageContentService'
 import { createWhatsAppLink } from '../utils/whatsapp'
 
 import Skeleton from '../components/common/Skeleton'
+import SEO from '../components/common/SEO'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -150,6 +151,12 @@ const Services = () => {
 
   return (
     <div className="services-page">
+      <SEO
+        title="Our Services - Mehak Salon & Spa"
+        description="Explore our wide range of premium beauty services including bridal makeup, hair styling, spa, and more."
+        image="https://mehaksalonandspa.in/og-image.jpg"
+        url="https://mehaksalonandspa.in/services"
+      />
       {/* Offer Hero Section */}
       <motion.section
         className="offer-hero"

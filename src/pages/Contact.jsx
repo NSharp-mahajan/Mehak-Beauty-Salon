@@ -4,6 +4,7 @@ import './Contact.css';
 import settingsService from '../services/settingsService';
 import enquiriesService from '../services/enquiriesService';
 import Skeleton from '../components/common/Skeleton';
+import SEO from '../components/common/SEO';
 
 const Contact = () => {
   const [settings, setSettings] = useState(null);
@@ -122,6 +123,12 @@ const Contact = () => {
 
   return (
     <div className="contact-page">
+      <SEO
+        title="Contact Us - Mehak Salon & Spa"
+        description="Get in touch with Mehak Salon & Spa for appointments, inquiries, and more."
+        image="https://mehaksalonandspa.in/og-image.jpg"
+        url="https://mehaksalonandspa.in/contact"
+      />
       {/* Hero Section */}
       <section className="contact-hero">
         <div className="contact-blob contact-blob-1"></div>

@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Sparkles, Shield, GraduationCap, Star, Quote, Users, Award, Calendar, ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react'
 import './Home.css'
 import Skeleton from '../components/common/Skeleton'
+import SEO from '../components/common/SEO'
 
 import frontImage from '../assets/images/front.png'
 import elegantBridalLook from '../assets/images/Elegant Bridal Look.png'
@@ -161,6 +162,12 @@ const Home = () => {
 
   return (
     <div className="home">
+      <SEO
+        title="Mehak Salon & Spa | Premium Beauty Salon"
+        description="Premium salon, spa, bridal makeup, beauty courses and grooming services at Mehak Salon & Spa."
+        image="https://mehaksalonandspa.in/og-image.jpg"
+        url="https://mehaksalonandspa.in"
+      />
       <section className="hero">
         <div className="hero-blob blob-1"></div>
         <div className="hero-blob blob-2"></div>

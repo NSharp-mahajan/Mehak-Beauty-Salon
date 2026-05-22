@@ -13,6 +13,7 @@ import ctaBackgroundImage from '../assets/images/CTA_background.png'
 
 import coursesService from '../services/coursesService'
 import Skeleton from '../components/common/Skeleton'
+import SEO from '../components/common/SEO'
 import { createWhatsAppLink } from '../utils/whatsapp'
 
 const fallbackCourses = [
@@ -248,6 +249,12 @@ const Courses = () => {
 
   return (
     <div className="courses-page">
+      <SEO
+        title="Beauty Courses - Mehak Salon & Spa"
+        description="Join our professional beauty courses. Learn makeup, hair styling, nail art, and more from industry experts."
+        image="https://mehaksalonandspa.in/og-image.jpg"
+        url="https://mehaksalonandspa.in/courses"
+      />
       {/* Hero Section */}
       <section className="courses-hero">
         <div className="hero-blob blob-1"></div>
