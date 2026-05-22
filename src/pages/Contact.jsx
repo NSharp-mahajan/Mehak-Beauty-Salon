@@ -194,7 +194,7 @@ const Contact = () => {
                 allowFullScreen="" 
                 loading="lazy" 
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Mehak Beauty Salon Location"
+                title="Mehak Salon And Spa Location"
               ></iframe>
             </div>
           </div>

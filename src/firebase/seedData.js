@@ -57,9 +57,9 @@ const dummyContent = {
 
 const dummySettings = {
   id: 'main',
-  business: { salonName: 'Mehak Beauty Salon', tagline: 'Your Beauty, Our Passion', phone: '+91 7009482040', whatsapp: '+91 7009482040', email: 'Mehaksalon029@gmail.com', address: '123 Beauty Lane, Fashion District, City - 400001', openingHours: 'Mon-Sun: 10:00 AM - 8:00 PM' },
-  branding: { logoUrl: '', primaryColor: '#d4a373', accentColor: '#faedcd', footerText: '© 2024 Mehak Beauty Salon. All rights reserved.' },
-  admin: { adminName: 'Admin', adminEmail: 'admin@mehakbeauty.com', password: '' },
+  business: { salonName: 'Mehak Salon And Spa', tagline: 'Your Beauty, Our Passion', phone: '+91 7009482040', whatsapp: '+91 7009482040', email: 'Mehaksalon029@gmail.com', address: '123 Beauty Lane, Fashion District, City - 400001', openingHours: 'Mon-Sun: 10:00 AM - 8:00 PM' },
+  branding: { logoUrl: '', primaryColor: '#d4a373', accentColor: '#faedcd', footerText: '© 2024 Mehak Salon And Spa. All rights reserved.' },
+  admin: { adminName: 'Admin', adminEmail: 'admin@mehaksalon.com', password: '' },
   website: { enableBooking: true, showOffers: true, showCourses: true, maintenanceMode: false }
 };
 

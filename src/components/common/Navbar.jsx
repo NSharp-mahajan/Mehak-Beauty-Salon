@@ -36,7 +36,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-logo">
-          <img src={logo} alt="Mehak Beauty Salon & Spa" className="logo-image" />
+          <img src={logo} alt="Mehak Salon And Spa" className="logo-image" />
         </div>
 
         <button className="navbar-toggle" onClick={toggleMenu} aria-label="Toggle menu">
