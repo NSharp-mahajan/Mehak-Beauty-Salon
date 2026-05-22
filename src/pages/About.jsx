@@ -7,6 +7,28 @@ import galleryService from '../services/galleryService';
 import testimonialsService from '../services/testimonialsService';
 import Skeleton from '../components/common/Skeleton';
 
+import premiumSalonSpace from '../assets/images/Premiumsalon space.png';
+import relaxingSpaSession from '../assets/images/Relaxingspasession.webp';
+import trainingSession from '../assets/images/Trainingsession.png';
+import elegantBridalLook from '../assets/images/Elegant Bridal Look.png';
+import premium2Image from '../assets/images/Premium2.png';
+
+const premiumGradient = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I0M2QTE2RTtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMyQzJDMkM7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4=';
+
+const getValidImageUrl = (url, title) => {
+  if (!url) return premiumGradient;
+  const lowerUrl = url.toLowerCase();
+  const lowerTitle = (title || '').toLowerCase();
+  
+  if (lowerUrl.includes('elegant') || lowerTitle.includes('elegant')) return elegantBridalLook;
+  if (lowerUrl.includes('relaxing') || lowerTitle.includes('relaxing')) return relaxingSpaSession;
+  if (lowerUrl.includes('training') || lowerTitle.includes('training')) return trainingSession;
+  if (lowerUrl.includes('premium2') || lowerTitle.includes('premium2')) return premium2Image;
+  if (lowerUrl.includes('salon') || lowerTitle.includes('salon')) return premiumSalonSpace;
+  
+  return url;
+};
+
 const About = () => {
   const [content, setContent] = useState(null);
   const [gallery, setGallery] = useState([]);
@@ -112,10 +134,10 @@ const About = () => {
           
           <div className="hero-right-visuals">
             <div className="hero-image-wrapper primary-image">
-              <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80" alt="Mehak Salon" />
+              <img src={premium2Image} alt="Mehak Salon" onError={(e) => { e.target.onerror = null; e.target.src = premiumGradient; }} style={{ objectFit: 'cover' }} />
             </div>
             <div className="hero-image-wrapper secondary-image">
-              <img src="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=600&q=80" alt="Luxury Spa Setup" />
+              <img src={relaxingSpaSession} alt="Luxury Spa Setup" onError={(e) => { e.target.onerror = null; e.target.src = premiumGradient; }} style={{ objectFit: 'cover' }} />
             </div>
             <div className="floating-card experience-card">
               <Sparkles className="icon-gold" size={24} />
@@ -133,7 +155,7 @@ const About = () => {
         <div className="founder-container">
           <div className="founder-image-col">
             <div className="founder-portrait-wrapper">
-              <img src="https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=800&q=80" alt="Neeraj Bala - Founder" className="founder-img" />
+              <img src={premiumSalonSpace} alt="Neeraj Bala - Founder" className="founder-img" onError={(e) => { e.target.onerror = null; e.target.src = premiumGradient; }} style={{ objectFit: 'cover' }} />
               <div className="glass-card founder-label">
                 <span className="name">Neeraj Bala</span>
                 <span className="title">Founder & Beauty Expert</span>
@@ -161,9 +183,9 @@ const About = () => {
       <section className="about-salon">
         <div className="about-salon-container">
           <div className="about-masonry-gallery">
-            <img src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=600&q=80" alt="Salon Interior" className="masonry-img img-1" />
-            <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=600&q=80" alt="Spa Ambience" className="masonry-img img-2" />
-            <img src="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=600&q=80" alt="Beauty Treatment" className="masonry-img img-3" />
+            <img src={premiumSalonSpace} alt="Salon Interior" className="masonry-img img-1" onError={(e) => { e.target.onerror = null; e.target.src = premiumGradient; }} style={{ objectFit: 'cover' }} />
+            <img src={relaxingSpaSession} alt="Spa Ambience" className="masonry-img img-2" onError={(e) => { e.target.onerror = null; e.target.src = premiumGradient; }} style={{ objectFit: 'cover' }} />
+            <img src={elegantBridalLook} alt="Beauty Treatment" className="masonry-img img-3" onError={(e) => { e.target.onerror = null; e.target.src = premiumGradient; }} style={{ objectFit: 'cover' }} />
           </div>
           
           <div className="about-text-content">
@@ -219,9 +241,10 @@ const About = () => {
             return (
               <div className={classes[idx]} key={idx}>
                 <img 
-                  src={item.imageUrl} 
-                  alt={item.title || fallbackGallery[idx].title} 
-                  onError={(e) => { e.target.onerror = null; e.target.src = fallbackGallery[idx].imageUrl }}
+                  src={getValidImageUrl(item.imageUrl || fallbackGallery[idx]?.imageUrl, item.title || fallbackGallery[idx]?.title)} 
+                  alt={item.title || fallbackGallery[idx]?.title || 'Gallery Image'} 
+                  onError={(e) => { e.target.onerror = null; e.target.src = premiumGradient; }}
+                  style={{ objectFit: 'cover' }}
                 />
                 <div className="gallery-overlay">
                   <h3 className="gallery-title">{item.title || fallbackGallery[idx].title}</h3>
