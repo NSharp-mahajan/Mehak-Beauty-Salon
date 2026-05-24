@@ -11,6 +11,7 @@ import Contact from './pages/Contact'
 import Courses from './pages/Courses'
 import About from './pages/About'
 import Services from './pages/Services'
+import Gallery from './pages/Gallery'
 import CourseDetail from './pages/CourseDetail'
 
 // Admin Pages
@@ -56,6 +57,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/gallery" element={<Gallery />} />
         </Route>
 
         {/* Admin Login */}
