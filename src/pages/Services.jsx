@@ -6,9 +6,7 @@ import servicesBg from '../assets/images/services.png'
 import relaxingSpaSession from '../assets/images/Relaxingspasession.webp'
 
 // New Services
-import quickOffersService from '../services/quickOffersService'
-import packagesService from '../services/packagesService'
-import hairOffersService from '../services/hairOffersService'
+import offersService from '../services/offersService'
 import regularServicesService from '../services/regularServicesService'
 import servicesPageContentService from '../services/servicesPageContentService'
 import { createWhatsAppLink } from '../utils/whatsapp'
@@ -56,9 +54,7 @@ const Services = () => {
   const [loading, setLoading] = useState(true)
 
   // Data states
-  const [quickOffers, setQuickOffers] = useState([])
-  const [packages, setPackages] = useState([])
-  const [hairOffers, setHairOffers] = useState([])
+  const [offers, setOffers] = useState([])
   const [regularServices, setRegularServices] = useState([])
   const [pageContent, setPageContent] = useState(null)
 
@@ -67,24 +63,19 @@ const Services = () => {
       try {
         setLoading(true)
         const [
-          quickOffersData,
-          packagesData,
-          hairOffersData,
+          offersData,
           regularServicesData,
           contentData
         ] = await Promise.all([
-          quickOffersService.getAll(),
-          packagesService.getAll(),
-          hairOffersService.getAll(),
+          offersService.getAll(),
           regularServicesService.getAll(),
           servicesPageContentService.getContent()
         ])
 
-        setQuickOffers(quickOffersData.filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0)))
-        setPackages(packagesData.filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0)))
-        setHairOffers(hairOffersData.filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0)))
+        const activeOffers = (offersData || []).filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+        setOffers(activeOffers)
         
-        const activeRegular = regularServicesData.filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+        const activeRegular = (regularServicesData || []).filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0))
         setRegularServices(activeRegular)
         
         if (activeRegular.length > 0) {
@@ -133,6 +124,12 @@ const Services = () => {
   })
 
   const categories = Object.keys(displayServices)
+
+  // Filter offers by category
+  const seasonalFeaturedOffer = offers.find(o => o.category === 'Seasonal' && o.featured === true)
+  const facialOffers = offers.filter(o => o.category === 'Facial')
+  const hairOffers = offers.filter(o => o.category === 'Hair')
+  const packageOffers = offers.filter(o => o.category === 'Packages')
   const featuredHairOffers = hairOffers.slice(0, 4)
 
   if (loading) {
@@ -157,67 +154,72 @@ const Services = () => {
         image="https://mehaksalonandspa.in/og-image.jpg"
         url="https://mehaksalonandspa.in/services"
       />
-      {/* Offer Hero Section */}
-      <motion.section
-        className="offer-hero"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-      >
-        <div className="offer-hero-bg" style={bgStyle}></div>
-        <div className="hero-content">
-          <motion.div
-            className="badge"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            <Clock size={16} />
-            <span>{pageContent?.heroBadge || 'Limited Time Offer'}</span>
-          </motion.div>
+      {/* Offer Hero Section - Only show if seasonal featured offer exists */}
+      {seasonalFeaturedOffer && (
+        <motion.section
+          className="offer-hero"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        >
+          <div className="offer-hero-bg" style={bgStyle}></div>
+          <div className="hero-content">
+            <motion.div
+              className="badge"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >
+              <Clock size={16} />
+              <span>Limited Time Offer</span>
+            </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            {pageContent?.heroHeading || 'Special Summer Beauty Offers'}
-          </motion.h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              {seasonalFeaturedOffer.title}
+            </motion.h1>
 
-          <motion.p
-            className="hero-subheading"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          >
-            {pageContent?.heroSubtitle || 'Enjoy premium salon, facial, waxing, hair and care packages at exclusive seasonal prices.'}
-          </motion.p>
+            <motion.p
+              className="hero-subheading"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            >
+              {seasonalFeaturedOffer.description}
+            </motion.p>
 
-          <motion.div
-            className="date-pill"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
-            <Star size={14} />
-            <span>{pageContent?.offerDate || '15 May – 30 May'}</span>
-          </motion.div>
+            {seasonalFeaturedOffer.startDate && seasonalFeaturedOffer.endDate && (
+              <motion.div
+                className="date-pill"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+              >
+                <Star size={14} />
+                <span>{seasonalFeaturedOffer.startDate} – {seasonalFeaturedOffer.endDate}</span>
+              </motion.div>
+            )}
 
-          <motion.button
-            className="hero-button"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {pageContent?.primaryButtonText || 'Book Offer Now'}
-          </motion.button>
-        </div>
-      </motion.section>
+            <motion.button
+              className="hero-button"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: seasonalFeaturedOffer.title, price: seasonalFeaturedOffer.offerPrice }), '_blank', 'noopener,noreferrer')}
+            >
+              Book Offer Now - ₹{seasonalFeaturedOffer.offerPrice}
+            </motion.button>
+          </div>
+        </motion.section>
+      )}
 
-      {/* Quick Beauty Offers Section */}
-      {quickOffers.length > 0 && (
+      {/* Quick Beauty Offers Section - Facial Offers */}
+      {facialOffers.length > 0 && (
         <section className="quick-offers-section">
           <motion.h2
             className="section-title"
@@ -236,17 +238,17 @@ const Services = () => {
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {quickOffers.map((offer) => (
+            {facialOffers.map((offer) => (
               <motion.div
                 key={offer.id}
                 className="offer-card"
                 variants={itemVariants}
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
               >
-                <div className="offer-icon">{renderIcon(offer.iconType)}</div>
+                <div className="offer-icon">{renderIcon('Sparkles')}</div>
                 <h3 className="offer-name">{offer.title}</h3>
-                <div className="offer-price">₹{offer.price}</div>
-                <button className="book-link" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.title, price: offer.price }), '_blank', 'noopener,noreferrer')}>Book Now</button>
+                <div className="offer-price">₹{offer.offerPrice}</div>
+                <button className="book-link" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.title, price: offer.offerPrice }), '_blank', 'noopener,noreferrer')}>Book Now</button>
               </motion.div>
             ))}
           </motion.div>
@@ -254,7 +256,7 @@ const Services = () => {
       )}
 
       {/* Full Packages Section */}
-      {packages.length > 0 && (
+      {packageOffers.length > 0 && (
         <section className="packages-section">
           <motion.h2
             className="section-title"
@@ -273,30 +275,26 @@ const Services = () => {
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {packages.map((pkg) => (
+            {packageOffers.map((pkg) => (
               <motion.div
                 key={pkg.id}
-                className={`package-card ${pkg.popular ? 'featured' : ''}`}
+                className={`package-card ${pkg.featured ? 'featured' : ''}`}
                 variants={itemVariants}
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
               >
-                {pkg.popular && (
+                {pkg.featured && (
                   <div className="popular-badge">
                     <Star size={14} />
-                    <span>Popular</span>
+                    <span>Featured</span>
                   </div>
                 )}
-                <div className="package-price">₹{pkg.price}</div>
-                <h3 className="package-name">{pkg.name}</h3>
-                <ul className="package-services">
-                  {Array.isArray(pkg.services) && pkg.services.map((service, index) => (
-                    <li key={index}>
-                      <Sparkles size={12} />
-                      {service}
-                    </li>
-                  ))}
-                </ul>
-                <button className="package-button" onClick={() => window.open(createWhatsAppLink({ type: 'package', name: pkg.name, price: pkg.price }), '_blank', 'noopener,noreferrer')}>Book Package</button>
+                <div className="package-price">₹{pkg.offerPrice}</div>
+                <h3 className="package-name">{pkg.title}</h3>
+                <p className="package-description">{pkg.description}</p>
+                {pkg.originalPrice && pkg.offerPrice < pkg.originalPrice && (
+                  <div className="package-original-price">₹{pkg.originalPrice}</div>
+                )}
+                <button className="package-button" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: pkg.title, price: pkg.offerPrice }), '_blank', 'noopener,noreferrer')}>Book Package</button>
               </motion.div>
             ))}
           </motion.div>
@@ -330,9 +328,9 @@ const Services = () => {
                 variants={itemVariants}
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
               >
-                <h3 className="hair-name">{offer.name}</h3>
-                <div className="hair-price">₹{offer.price}</div>
-                <button className="hair-book-button" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.name, price: offer.price }), '_blank', 'noopener,noreferrer')}>Book Now</button>
+                <h3 className="hair-name">{offer.title}</h3>
+                <div className="hair-price">₹{offer.offerPrice}</div>
+                <button className="hair-book-button" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.title, price: offer.offerPrice }), '_blank', 'noopener,noreferrer')}>Book Now</button>
               </motion.div>
             ))}
           </motion.div>
@@ -398,14 +396,14 @@ const Services = () => {
                     transition={{ delay: index * 0.05, duration: 0.3 }}
                   >
                     <div className="modal-offer-info">
-                      <h3 className="modal-offer-name">{offer.name}</h3>
-                      {offer.detail && (
-                        <span className="modal-offer-detail">{offer.detail}</span>
+                      <h3 className="modal-offer-name">{offer.title}</h3>
+                      {offer.description && (
+                        <span className="modal-offer-detail">{offer.description}</span>
                       )}
                     </div>
                     <div className="modal-offer-right">
-                      <div className="modal-offer-price">₹{offer.price}</div>
-                      <button className="modal-offer-book" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.name, price: offer.price }), '_blank', 'noopener,noreferrer')}>Book Now</button>
+                      <div className="modal-offer-price">₹{offer.offerPrice}</div>
+                      <button className="modal-offer-book" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.title, price: offer.offerPrice }), '_blank', 'noopener,noreferrer')}>Book Now</button>
                     </div>
                   </motion.div>
                 ))}

@@ -1,5 +1,6 @@
 import { db } from './firebaseConfig.js';
 import { collection, writeBatch, doc } from 'firebase/firestore';
+import { initialOffers } from '../data/admin/offersData.js';
 
 // Dummy Data
 const dummyServices = [
@@ -25,14 +26,7 @@ const dummyGallery = [
   { title: 'Acrylic Extensions', category: 'Nails', imageUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&q=80', description: 'Long acrylic nails with french tip.' }
 ];
 
-const dummyOffers = [
-  { title: 'Special Summer Offer', category: 'Seasonal', offerPrice: 999, originalPrice: 1500, description: 'Beat the heat with our refreshing summer care package.', startDate: '2024-05-01', endDate: '2024-06-30', status: 'Active', featured: true },
-  { title: 'Glow Package', category: 'Packages', offerPrice: 699, originalPrice: 1000, description: 'Basic clean up and glow treatment.', startDate: '', endDate: '', status: 'Active', featured: false },
-  { title: 'Beauty Package', category: 'Packages', offerPrice: 799, originalPrice: 1200, description: 'Full body waxing and threading.', startDate: '', endDate: '', status: 'Active', featured: false },
-  { title: 'Premium Package', category: 'Packages', offerPrice: 1199, originalPrice: 1800, description: 'Advanced facial, pedicure, and manicure.', startDate: '', endDate: '', status: 'Active', featured: false },
-  { title: 'Luxury Package', category: 'Packages', offerPrice: 1799, originalPrice: 2500, description: 'Complete head-to-toe pampering session.', startDate: '', endDate: '', status: 'Inactive', featured: false },
-  { title: 'Hair Spa Offer', category: 'Hair', offerPrice: 999, originalPrice: 1499, description: 'Loreal professional hair spa with head massage.', startDate: '', endDate: '', status: 'Active', featured: true }
-];
+const dummyOffers = initialOffers;
 
 const dummyTestimonials = [
   { customerName: 'Sneha Patel', serviceUsed: 'Bridal Makeup', rating: 5, text: 'Absolutely loved my bridal look! The team was so professional and made me feel like a princess on my big day.', imageUrl: '', status: 'Approved', featured: true },

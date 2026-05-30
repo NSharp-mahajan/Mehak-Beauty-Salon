@@ -39,11 +39,13 @@ const AdminOffers = () => {
   const loadOffers = async () => {
     try {
       setLoading(true)
+      setError('')
       const data = await offersService.getAll()
-      setOffers(data)
+      setOffers(data || [])
     } catch (err) {
       console.error('Failed to load offers:', err)
-      setError('Failed to load offers.')
+      setError('Failed to load offers. Please check your connection.')
+      setOffers([])
     } finally {
       setLoading(false)
     }
