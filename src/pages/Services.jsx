@@ -76,9 +76,11 @@ const Services = () => {
     }
 
     // Subscribe to seasonal offers
-    const unsubSeasonalOffers = offersService.subscribeToAll((data) => {
+    const unsubSeasonalOffers = seasonalOffersService.subscribeToAll((data) => {
       const filtered = processOffers(data)
       setSeasonalOffers(filtered)
+    }, (error) => {
+      console.error('Error loading seasonal offers:', error)
     })
     unsubscribers.push(unsubSeasonalOffers)
 

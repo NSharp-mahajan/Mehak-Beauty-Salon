@@ -6,7 +6,7 @@ import settingsService from '../../services/settingsService'
 import regularServicesService from '../../services/regularServicesService'
 import coursesService from '../../services/coursesService'
 import galleryService from '../../services/galleryService'
-import offersService from '../../services/offersService'
+import seasonalOffersService from '../../services/seasonalOffersService'
 import enquiriesService from '../../services/enquiriesService'
 import './AdminDashboard.css'
 
@@ -39,7 +39,7 @@ const AdminDashboard = () => {
           regularServicesService.getAll().catch(() => []),
           coursesService.getAll().catch(() => []),
           galleryService.getAll().catch(() => []),
-          offersService.getAll().catch(() => []),
+          seasonalOffersService.getAll().catch(() => []),
           enquiriesService.getAll().catch(() => [])
         ])
 

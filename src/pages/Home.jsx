@@ -25,7 +25,7 @@ import coursesService from '../services/coursesService'
 import galleryService from '../services/galleryService'
 import testimonialsService from '../services/testimonialsService'
 import contentService from '../services/contentService'
-import offersService from '../services/offersService'
+import seasonalOffersService from '../services/seasonalOffersService'
 import { createWhatsAppLink } from '../utils/whatsapp'
 
 // Fallback Data
@@ -89,7 +89,7 @@ const Home = () => {
           galleryService.getAll(),
           testimonialsService.getAll(),
           contentService.getById('main'),
-          offersService.getAll()
+          seasonalOffersService.getAll()
         ])
 
         setServicesData(servicesRes.filter(s => s.status === 'Active'))
@@ -114,8 +114,8 @@ const Home = () => {
       }
     })
 
-    // Subscribe to real-time offers updates
-    const unsubscribeOffers = offersService.subscribeToAll((offersRes) => {
+    // Subscribe to real-time seasonal offers updates
+    const unsubscribeOffers = seasonalOffersService.subscribeToAll((offersRes) => {
       if (offersRes) {
         setOffersData(offersRes.filter(o => o.status === 'Active'))
       }

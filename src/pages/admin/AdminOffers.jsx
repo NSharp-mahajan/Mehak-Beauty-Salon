@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Plus, Search, Edit2, Trash2, X, Calendar, Tag, Percent } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import offersService from '../../services/offersService'
+import seasonalOffersService from '../../services/seasonalOffersService'
 import './AdminOffers.css'
 
 // AdminOffers is for Seasonal/Promotional offers ONLY
@@ -36,13 +36,24 @@ const AdminOffers = () => {
     setLoading(true)
     setError('')
     
-    const unsub = offersService.subscribeToAll((data) => {
-      const seasonalOffers = (data || []).filter(o => !o.category || o.category === 'Seasonal')
-      setOffers(seasonalOffers)
+    try {
+      const unsub = seasonalOffersService.subscribeToAll((data) => {
+        console.log('Raw seasonal offers data from Firestore:', data)
+        console.log('Seasonal offer IDs:', data.map(o => o.id))
+        setOffers(data || [])
+        setLoading(false)
+      }, (error) => {
+        console.error('Firestore subscription error:', error)
+        setError('Failed to load offers. Please refresh the page.')
+        setLoading(false)
+      })
+      
+      return () => unsub && unsub()
+    } catch (err) {
+      console.error('Error setting up offers subscription:', err)
+      setError('Failed to connect to database.')
       setLoading(false)
-    })
-    
-    return () => unsub && unsub()
+    }
   }, [])
 
   // Handlers
@@ -108,11 +119,27 @@ const AdminOffers = () => {
         category: 'Seasonal'
       }
 
+      // If editing, verify the document exists in current offers list
       if (editingOffer && editingOffer.id) {
-        await offersService.update(editingOffer.id, offerData)
+        const offerExists = offers.find(o => o.id === editingOffer.id)
+        if (!offerExists) {
+          throw new Error('Offer not found. It may have been deleted. Please refresh the page.')
+        }
+      }
+
+      // If marking as featured, first unfeature all other seasonal offers
+      if (formData.featured) {
+        const otherOffers = offers.filter(o => o.id !== editingOffer?.id && o.featured === true)
+        for (const otherOffer of otherOffers) {
+          await seasonalOffersService.update(otherOffer.id, { featured: false })
+        }
+      }
+
+      if (editingOffer && editingOffer.id) {
+        await seasonalOffersService.update(editingOffer.id, offerData)
         setSuccess('Offer updated successfully!')
       } else {
-        await offersService.create(offerData)
+        await seasonalOffersService.create(offerData)
         setSuccess('Offer created successfully!')
       }
       
@@ -131,29 +158,40 @@ const AdminOffers = () => {
   }
 
   const handleDelete = async (id) => {
+    console.log('Deleting offer with ID:', id)
+    
+    // Verify the offer exists in current list
+    const offerExists = offers.find(o => o.id === id)
+    if (!offerExists) {
+      setError('Offer not found. It may have already been deleted. Please refresh the page.')
+      return
+    }
+    
     if (window.confirm('Are you sure you want to delete this offer?')) {
       try {
-        await offersService.remove(id)
+        await seasonalOffersService.remove(id)
       } catch (err) {
         console.error('Failed to delete offer:', err)
-        alert('Failed to delete offer.')
+        setError('Failed to delete offer. Please try again.')
       }
     }
   }
 
   const toggleStatus = async (id) => {
+    console.log('Toggling status for offer ID:', id)
     const offer = offers.find(o => o.id === id)
-    if (offer) {
-      const newStatus = offer.status === 'Active' ? 'Inactive' : 'Active'
-      try {
-        console.log('Toggling status for ID:', id, 'New Status:', newStatus);
-        // Ensure id is a string as required by the service
-        await offersService.update(id.toString(), { status: newStatus })
-        console.log('Status toggle successful');
-      } catch (err) {
-        console.error('Failed to toggle status:', err)
-        alert('Failed to update status: ' + err.message)
-      }
+    if (!offer) {
+      setError('Offer not found. It may have been deleted. Please refresh the page.')
+      return
+    }
+    
+    const newStatus = offer.status === 'Active' ? 'Inactive' : 'Active'
+    console.log('Current offer:', offer, 'New status:', newStatus)
+    try {
+      await seasonalOffersService.update(id, { status: newStatus })
+    } catch (err) {
+      console.error('Failed to toggle status:', err)
+      setError('Failed to update status. Please try again.')
     }
   }
 
@@ -162,6 +200,20 @@ const AdminOffers = () => {
     const matchesSearch = offer.title.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesSearch
   })
+
+  const handleClearAllSeasonalOffers = async () => {
+    if (window.confirm('Are you sure you want to delete ALL seasonal offers? This action cannot be undone.')) {
+      try {
+        console.log('Clearing all seasonal offers using service function')
+        const result = await seasonalOffersService.clearAllSeasonalOffers()
+        setSuccess(`Cleared ${result.count} seasonal offers successfully!`)
+        setTimeout(() => setSuccess(''), 2000)
+      } catch (err) {
+        console.error('Failed to clear seasonal offers:', err)
+        setError('Failed to clear seasonal offers. Please try again.')
+      }
+    }
+  }
 
   return (
     <div className="admin-page-container">
@@ -187,6 +239,13 @@ const AdminOffers = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+        <button 
+          className="admin-btn-secondary" 
+          style={{ backgroundColor: '#ef4444', color: 'white', border: 'none' }}
+          onClick={handleClearAllSeasonalOffers}
+        >
+          Clear Seasonal Offers
+        </button>
       </div>
 
       {/* Offers Grid */}
@@ -205,7 +264,6 @@ const AdminOffers = () => {
               {offer.featured && <div className="featured-badge"><Tag size={12} /> Featured Offer</div>}
               
               <div className="offer-card-header">
-                <span className="category-badge">{offer.category}</span>
                 <span className={`status-badge ${offer.status.toLowerCase()}`}>
                   {offer.status}
                 </span>
