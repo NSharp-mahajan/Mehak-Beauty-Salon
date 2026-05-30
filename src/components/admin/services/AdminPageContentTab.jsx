@@ -18,22 +18,15 @@ const AdminPageContentTab = () => {
   })
 
   useEffect(() => {
-    loadContent()
-  }, [])
-
-  const loadContent = async () => {
-    try {
-      setLoading(true)
-      const data = await servicesPageContentService.getContent()
+    const unsub = servicesPageContentService.subscribe((data) => {
       if (data) {
         setFormData(prev => ({ ...prev, ...data }))
       }
-    } catch (err) {
-      console.error('Failed to load page content:', err)
-    } finally {
       setLoading(false)
-    }
-  }
+    })
+    
+    return () => unsub && unsub()
+  }, [])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target

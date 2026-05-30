@@ -1276,6 +1276,233 @@
   box-shadow: 0 4px 12px rgba(198, 161, 110, 0.4);
 }
 
+/* Offers Section */
+.offers-section {
+  padding: 6rem 2rem;
+  background-color: white;
+}
+
+.offers-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.offers-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.offers-badge {
+  display: inline-block;
+  background-color: var(--gold);
+  color: var(--espresso);
+  padding: 0.5rem 1.25rem;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.offers-title {
+  font-size: 2.5rem;
+  color: var(--espresso);
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.offers-subtitle {
+  font-size: 1.125rem;
+  color: var(--taupe);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.offer-card {
+  background: var(--cream);
+  border-radius: 24px;
+  padding: 2.5rem;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(198, 161, 110, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+.offer-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(43, 30, 27, 0.1);
+  border-color: var(--gold);
+}
+
+.offer-card.featured {
+  background: var(--espresso);
+  color: var(--cream);
+  border-color: var(--gold);
+}
+
+.offer-card.featured .offer-title,
+.offer-card.featured .offer-description {
+  color: var(--cream);
+}
+
+.offer-card.featured .offer-icon {
+  background: var(--gold);
+  color: var(--espresso);
+}
+
+.offer-card.featured .offer-price {
+  color: var(--gold);
+}
+
+.offer-card.featured .original-price {
+  color: rgba(248, 244, 238, 0.5);
+}
+
+.offer-featured-tag {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--gold);
+  color: var(--espresso);
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+}
+
+.offer-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--champagne);
+  color: var(--gold);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.offer-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--espresso);
+}
+
+.offer-description {
+  font-size: 1rem;
+  color: var(--taupe);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  flex-grow: 1;
+}
+
+.offer-pricing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(198, 161, 110, 0.2);
+}
+
+.price-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.original-price {
+  font-size: 1rem;
+  text-decoration: line-through;
+  color: var(--taupe);
+  opacity: 0.7;
+}
+
+.offer-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--espresso);
+}
+
+.discount-badge {
+  background: #e11d48;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.offer-validity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--taupe);
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+.offer-btn {
+  width: 100%;
+  padding: 1rem;
+  background: var(--gold);
+  color: var(--espresso);
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.offer-btn:hover {
+  background: var(--espresso);
+  color: var(--gold);
+}
+
+.offer-card.featured .offer-btn {
+  background: var(--gold);
+  color: var(--espresso);
+}
+
+.offer-card.featured .offer-btn:hover {
+  background: var(--cream);
+  color: var(--espresso);
+}
+
+@media (max-width: 768px) {
+  .offers-section {
+    padding: 4rem 1.5rem;
+  }
+  
+  .offers-title {
+    font-size: 2rem;
+  }
+  
+  .offer-card {
+    padding: 2rem;
+  }
+}
+
 /* Testimonials Section */
 .testimonials-section {
   padding: 6rem 2rem;

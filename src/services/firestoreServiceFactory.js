@@ -52,6 +52,18 @@ export const createFirestoreService = (collectionName) => {
     return id.toString();
   };
 
+  // Real-time listener for entire collection
+  const subscribeToAll = (callback) => {
+    const unsubscribe = onSnapshot(colRef, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      callback(data);
+    }, (error) => {
+      console.error('Real-time listener error:', error);
+      callback([]);
+    });
+    return unsubscribe;
+  };
+
   // Real-time listener for a specific document
   const subscribeToDocument = (id, callback) => {
     const docRef = doc(db, collectionName, id.toString());
@@ -74,6 +86,7 @@ export const createFirestoreService = (collectionName) => {
     create,
     update,
     remove,
+    subscribeToAll,
     subscribeToDocument
   };
 };

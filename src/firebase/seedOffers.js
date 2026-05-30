@@ -3,6 +3,10 @@ import { collection, writeBatch, doc, getDocs, query, where } from 'firebase/fir
 import { initialOffers } from '../data/admin/offersData.js';
 
 export const seedOffers = async () => {
+  console.log('seedOffers: Disabled - Admin should create offers through UI');
+  return { success: true, message: 'Offers seeding is disabled. Admin should create offers through UI.' };
+  
+  /* DISABLED - Do not auto-seed offers
   console.log('Starting offers seed...');
   
   try {
@@ -30,6 +34,7 @@ export const seedOffers = async () => {
     console.error('Error seeding offers:', error);
     return { success: false, message: error.message };
   }
+  */
 };
 
 // Run seed if this file is executed directly

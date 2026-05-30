@@ -5,8 +5,11 @@ import './Services.css'
 import servicesBg from '../assets/images/services.png'
 import relaxingSpaSession from '../assets/images/Relaxingspasession.webp'
 
-// New Services
+// Services - each manages its own collection
 import offersService from '../services/offersService'
+import quickOffersService from '../services/quickOffersService'
+import packagesService from '../services/packagesService'
+import hairOffersService from '../services/hairOffersService'
 import regularServicesService from '../services/regularServicesService'
 import servicesPageContentService from '../services/servicesPageContentService'
 import { createWhatsAppLink } from '../utils/whatsapp'
@@ -53,45 +56,78 @@ const Services = () => {
   const [activeCategory, setActiveCategory] = useState('')
   const [loading, setLoading] = useState(true)
 
-  // Data states
-  const [offers, setOffers] = useState([])
+  // Data states - each for its own service
+  const [seasonalOffers, setSeasonalOffers] = useState([])
+  const [quickOffers, setQuickOffers] = useState([])
+  const [packages, setPackages] = useState([])
+  const [hairOffers, setHairOffers] = useState([])
   const [regularServices, setRegularServices] = useState([])
   const [pageContent, setPageContent] = useState(null)
 
   useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        setLoading(true)
-        const [
-          offersData,
-          regularServicesData,
-          contentData
-        ] = await Promise.all([
-          offersService.getAll(),
-          regularServicesService.getAll(),
-          servicesPageContentService.getContent()
-        ])
+    setLoading(true)
+    const unsubscribers = []
 
-        const activeOffers = (offersData || []).filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-        setOffers(activeOffers)
-        
-        const activeRegular = (regularServicesData || []).filter(i => i.status === 'Active').sort((a,b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-        setRegularServices(activeRegular)
-        
-        if (activeRegular.length > 0) {
-          setActiveCategory(activeRegular[0].category)
-        }
-
-        if (contentData) {
-          setPageContent(contentData)
-        }
-      } catch (err) {
-        console.error("Failed to load services data:", err)
-      } finally {
-        setLoading(false)
-      }
+    // Helper to filter and sort data
+    const processOffers = (data) => {
+      return (data || [])
+        .filter(item => item.status === 'Active')
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
     }
-    fetchAllData()
+
+    // Subscribe to seasonal offers
+    const unsubSeasonalOffers = offersService.subscribeToAll((data) => {
+      const filtered = processOffers(data)
+      setSeasonalOffers(filtered)
+    })
+    unsubscribers.push(unsubSeasonalOffers)
+
+    // Subscribe to quick offers
+    const unsubQuickOffers = quickOffersService.subscribeToAll((data) => {
+      const filtered = processOffers(data)
+      setQuickOffers(filtered)
+    })
+    unsubscribers.push(unsubQuickOffers)
+
+    // Subscribe to packages
+    const unsubPackages = packagesService.subscribeToAll((data) => {
+      const filtered = processOffers(data)
+      setPackages(filtered)
+    })
+    unsubscribers.push(unsubPackages)
+
+    // Subscribe to hair offers
+    const unsubHairOffers = hairOffersService.subscribeToAll((data) => {
+      const filtered = processOffers(data)
+      setHairOffers(filtered)
+    })
+    unsubscribers.push(unsubHairOffers)
+
+    // Subscribe to regular services
+    const unsubRegularServices = regularServicesService.subscribeToAll((data) => {
+      const filtered = processOffers(data)
+      setRegularServices(filtered)
+      if (filtered.length > 0) {
+        setActiveCategory(filtered[0].category)
+      }
+    })
+    unsubscribers.push(unsubRegularServices)
+
+    // Fetch page content
+    servicesPageContentService.getContent().then(data => {
+      if (data) {
+        setPageContent(data)
+      }
+      setLoading(false)
+    }).catch(err => {
+      console.error("Failed to load page content:", err)
+      setLoading(false)
+    })
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      unsubscribers.forEach(unsub => unsub())
+    }
   }, [])
 
   useEffect(() => {
@@ -125,11 +161,10 @@ const Services = () => {
 
   const categories = Object.keys(displayServices)
 
-  // Filter offers by category
-  const seasonalFeaturedOffer = offers.find(o => o.category === 'Seasonal' && o.featured === true)
-  const facialOffers = offers.filter(o => o.category === 'Facial')
-  const hairOffers = offers.filter(o => o.category === 'Hair')
-  const packageOffers = offers.filter(o => o.category === 'Packages')
+  // Get the featured seasonal offer (for top banner)
+  const seasonalFeaturedOffer = seasonalOffers.find(o => o.featured === true)
+  
+  // For hair offers modal, limit to 4 for initial display
   const featuredHairOffers = hairOffers.slice(0, 4)
 
   if (loading) {
@@ -154,15 +189,18 @@ const Services = () => {
         image="https://mehaksalonandspa.in/og-image.jpg"
         url="https://mehaksalonandspa.in/services"
       />
-      {/* Offer Hero Section - Only show if seasonal featured offer exists */}
-      {seasonalFeaturedOffer && (
-        <motion.section
-          className="offer-hero"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-        >
-          <div className="offer-hero-bg" style={bgStyle}></div>
+      
+      {/* Top Banner - Background image always visible, text only when seasonal offer exists */}
+      <motion.section
+        className="offer-hero"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
+        <div className="offer-hero-bg" style={bgStyle}></div>
+        
+        {/* Show offer content only if seasonal featured offer exists */}
+        {seasonalFeaturedOffer && (
           <div className="hero-content">
             <motion.div
               className="badge"
@@ -215,11 +253,11 @@ const Services = () => {
               Book Offer Now - ₹{seasonalFeaturedOffer.offerPrice}
             </motion.button>
           </div>
-        </motion.section>
-      )}
+        )}
+      </motion.section>
 
-      {/* Quick Beauty Offers Section - Facial Offers */}
-      {facialOffers.length > 0 && (
+      {/* Quick Beauty Offers Section - from quickOffersService */}
+      {quickOffers.length > 0 && (
         <section className="quick-offers-section">
           <motion.h2
             className="section-title"
@@ -238,25 +276,25 @@ const Services = () => {
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {facialOffers.map((offer) => (
+            {quickOffers.map((offer) => (
               <motion.div
                 key={offer.id}
                 className="offer-card"
                 variants={itemVariants}
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
               >
-                <div className="offer-icon">{renderIcon('Sparkles')}</div>
+                <div className="offer-icon">{renderIcon(offer.iconType || 'Sparkles')}</div>
                 <h3 className="offer-name">{offer.title}</h3>
-                <div className="offer-price">₹{offer.offerPrice}</div>
-                <button className="book-link" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.title, price: offer.offerPrice }), '_blank', 'noopener,noreferrer')}>Book Now</button>
+                <div className="offer-price">₹{offer.price}</div>
+                <button className="book-link" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.title, price: offer.price }), '_blank', 'noopener,noreferrer')}>Book Now</button>
               </motion.div>
             ))}
           </motion.div>
         </section>
       )}
 
-      {/* Full Packages Section */}
-      {packageOffers.length > 0 && (
+      {/* Premium Packages Section - from packagesService */}
+      {packages.length > 0 && (
         <section className="packages-section">
           <motion.h2
             className="section-title"
@@ -275,33 +313,46 @@ const Services = () => {
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {packageOffers.map((pkg) => (
+            {packages.map((pkg) => (
               <motion.div
                 key={pkg.id}
-                className={`package-card ${pkg.featured ? 'featured' : ''}`}
+                className={`package-card ${pkg.popular ? 'featured' : ''}`}
                 variants={itemVariants}
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
               >
-                {pkg.featured && (
+                {pkg.popular && (
                   <div className="popular-badge">
-                    <Star size={14} />
-                    <span>Featured</span>
+                    <Star size={14} fill="currentColor" />
+                    <span>Popular</span>
                   </div>
                 )}
-                <div className="package-price">₹{pkg.offerPrice}</div>
-                <h3 className="package-name">{pkg.title}</h3>
-                <p className="package-description">{pkg.description}</p>
-                {pkg.originalPrice && pkg.offerPrice < pkg.originalPrice && (
-                  <div className="package-original-price">₹{pkg.originalPrice}</div>
-                )}
-                <button className="package-button" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: pkg.title, price: pkg.offerPrice }), '_blank', 'noopener,noreferrer')}>Book Package</button>
+                <div className="package-price">₹{pkg.price}</div>
+                <h3 className="package-name">{pkg.name}</h3>
+                <ul className="package-services">
+                  {pkg.services && Array.isArray(pkg.services) ? (
+                    pkg.services.map((service, idx) => (
+                      <li key={idx}>
+                        <Sparkles size={14} />
+                        {service}
+                      </li>
+                    ))
+                  ) : (
+                    pkg.services && pkg.services.split(',').map((service, idx) => (
+                      <li key={idx}>
+                        <Sparkles size={14} />
+                        {service.trim()}
+                      </li>
+                    ))
+                  )}
+                </ul>
+                <button className="package-button" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: pkg.name, price: pkg.price }), '_blank', 'noopener,noreferrer')}>Book Package</button>
               </motion.div>
             ))}
           </motion.div>
         </section>
       )}
 
-      {/* Hair Offers Section */}
+      {/* Hair Offers Section - from hairOffersService */}
       {hairOffers.length > 0 && (
         <section className="hair-offers-section">
           <motion.h2
@@ -328,9 +379,9 @@ const Services = () => {
                 variants={itemVariants}
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
               >
-                <h3 className="hair-name">{offer.title}</h3>
-                <div className="hair-price">₹{offer.offerPrice}</div>
-                <button className="hair-book-button" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.title, price: offer.offerPrice }), '_blank', 'noopener,noreferrer')}>Book Now</button>
+                <h3 className="hair-name">{offer.name || offer.title}</h3>
+                <div className="hair-price">₹{offer.price}</div>
+                <button className="hair-book-button" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.name || offer.title, price: offer.price }), '_blank', 'noopener,noreferrer')}>Book Now</button>
               </motion.div>
             ))}
           </motion.div>
@@ -396,14 +447,14 @@ const Services = () => {
                     transition={{ delay: index * 0.05, duration: 0.3 }}
                   >
                     <div className="modal-offer-info">
-                      <h3 className="modal-offer-name">{offer.title}</h3>
-                      {offer.description && (
-                        <span className="modal-offer-detail">{offer.description}</span>
+                      <h3 className="modal-offer-name">{offer.name || offer.title}</h3>
+                      {(offer.detail || offer.description) && (
+                        <span className="modal-offer-detail">{offer.detail || offer.description}</span>
                       )}
                     </div>
                     <div className="modal-offer-right">
-                      <div className="modal-offer-price">₹{offer.offerPrice}</div>
-                      <button className="modal-offer-book" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.title, price: offer.offerPrice }), '_blank', 'noopener,noreferrer')}>Book Now</button>
+                      <div className="modal-offer-price">₹{offer.price}</div>
+                      <button className="modal-offer-book" onClick={() => window.open(createWhatsAppLink({ type: 'offer', name: offer.name || offer.title, price: offer.price }), '_blank', 'noopener,noreferrer')}>Book Now</button>
                     </div>
                   </motion.div>
                 ))}

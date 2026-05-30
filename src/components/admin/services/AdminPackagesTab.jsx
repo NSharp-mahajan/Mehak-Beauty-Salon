@@ -5,35 +5,26 @@ import packagesService from '../../../services/packagesService'
 
 const AdminPackagesTab = () => {
   const [packages, setPackages] = useState([])
-  const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingPackage, setEditingPackage] = useState(null)
   
   const [formData, setFormData] = useState({
     name: '',
     price: '',
-    services: '', // will be parsed from/to array
+    services: '',
     popular: false,
     status: 'Active',
     displayOrder: 0
   })
 
   useEffect(() => {
-    loadPackages()
+    const unsub = packagesService.subscribeToAll((data) => {
+      const sorted = (data || []).sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+      setPackages(sorted)
+    })
+    
+    return () => unsub && unsub()
   }, [])
-
-  const loadPackages = async () => {
-    try {
-      setLoading(true)
-      const data = await packagesService.getAll()
-      data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-      setPackages(data)
-    } catch (err) {
-      console.error('Failed to load packages:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleOpenModal = (pkg = null) => {
     if (pkg) {
@@ -78,7 +69,6 @@ const AdminPackagesTab = () => {
         await packagesService.create(packageData)
       }
       handleCloseModal()
-      loadPackages()
     } catch (err) {
       console.error('Error saving package:', err)
     }
@@ -88,7 +78,6 @@ const AdminPackagesTab = () => {
     if (window.confirm('Delete this package?')) {
       try {
         await packagesService.remove(id)
-        loadPackages()
       } catch (err) {
         console.error('Failed to delete:', err)
       }
@@ -109,9 +98,7 @@ const AdminPackagesTab = () => {
       </div>
 
       <div className="admin-table-container">
-        {loading ? (
-          <div className="empty-state">Loading...</div>
-        ) : (
+        {packages.length > 0 ? (
           <table className="admin-table">
             <thead>
               <tr>
@@ -124,35 +111,31 @@ const AdminPackagesTab = () => {
               </tr>
             </thead>
             <tbody>
-              {packages.length > 0 ? (
-                packages.map(pkg => (
-                  <tr key={pkg.id}>
-                    <td>{pkg.displayOrder}</td>
-                    <td className="font-medium">{pkg.name}</td>
-                    <td>₹{pkg.price}</td>
-                    <td>{pkg.popular ? 'Yes' : 'No'}</td>
-                    <td>
-                      <span className={`status-badge ${pkg.status.toLowerCase()}`}>
-                        {pkg.status}
-                      </span>
-                    </td>
-                    <td className="actions-col">
-                      <button className="action-btn edit" onClick={() => handleOpenModal(pkg)}>
-                        <Edit2 size={18} />
-                      </button>
-                      <button className="action-btn delete" onClick={() => handleDelete(pkg.id)}>
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="empty-state">No packages found.</td>
+              {packages.map(pkg => (
+                <tr key={pkg.id}>
+                  <td>{pkg.displayOrder}</td>
+                  <td className="font-medium">{pkg.name}</td>
+                  <td>₹{pkg.price}</td>
+                  <td>{pkg.popular ? 'Yes' : 'No'}</td>
+                  <td>
+                    <span className={`status-badge ${pkg.status.toLowerCase()}`}>
+                      {pkg.status}
+                    </span>
+                  </td>
+                  <td className="actions-col">
+                    <button className="action-btn edit" onClick={() => handleOpenModal(pkg)}>
+                      <Edit2 size={18} />
+                    </button>
+                    <button className="action-btn delete" onClick={() => handleDelete(pkg.id)}>
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
+        ) : (
+          <div className="empty-state">No packages found.</div>
         )}
       </div>
 

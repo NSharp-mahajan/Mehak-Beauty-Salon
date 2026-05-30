@@ -7,7 +7,6 @@ const ICON_TYPES = ['Scissors', 'Droplet', 'Sparkles', 'Crown', 'Star']
 
 const AdminQuickOffersTab = () => {
   const [offers, setOffers] = useState([])
-  const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingOffer, setEditingOffer] = useState(null)
   
@@ -20,22 +19,13 @@ const AdminQuickOffersTab = () => {
   })
 
   useEffect(() => {
-    loadOffers()
+    const unsub = quickOffersService.subscribeToAll((data) => {
+      const sorted = (data || []).sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+      setOffers(sorted)
+    })
+    
+    return () => unsub && unsub()
   }, [])
-
-  const loadOffers = async () => {
-    try {
-      setLoading(true)
-      const data = await quickOffersService.getAll()
-      // Sort by display order
-      data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-      setOffers(data)
-    } catch (err) {
-      console.error('Failed to load quick offers:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleOpenModal = (offer = null) => {
     if (offer) {
@@ -73,7 +63,6 @@ const AdminQuickOffersTab = () => {
         await quickOffersService.create(offerData)
       }
       handleCloseModal()
-      loadOffers()
     } catch (err) {
       console.error('Error saving quick offer:', err)
     }
@@ -83,7 +72,6 @@ const AdminQuickOffersTab = () => {
     if (window.confirm('Delete this quick offer?')) {
       try {
         await quickOffersService.remove(id)
-        loadOffers()
       } catch (err) {
         console.error('Failed to delete:', err)
       }
@@ -104,9 +92,7 @@ const AdminQuickOffersTab = () => {
       </div>
 
       <div className="admin-table-container">
-        {loading ? (
-          <div className="empty-state">Loading...</div>
-        ) : (
+        {offers.length > 0 ? (
           <table className="admin-table">
             <thead>
               <tr>
@@ -119,35 +105,31 @@ const AdminQuickOffersTab = () => {
               </tr>
             </thead>
             <tbody>
-              {offers.length > 0 ? (
-                offers.map(offer => (
-                  <tr key={offer.id}>
-                    <td>{offer.displayOrder}</td>
-                    <td className="font-medium">{offer.title}</td>
-                    <td>₹{offer.price}</td>
-                    <td><span className="category-badge">{offer.iconType}</span></td>
-                    <td>
-                      <span className={`status-badge ${offer.status.toLowerCase()}`}>
-                        {offer.status}
-                      </span>
-                    </td>
-                    <td className="actions-col">
-                      <button className="action-btn edit" onClick={() => handleOpenModal(offer)}>
-                        <Edit2 size={18} />
-                      </button>
-                      <button className="action-btn delete" onClick={() => handleDelete(offer.id)}>
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="empty-state">No quick offers found.</td>
+              {offers.map(offer => (
+                <tr key={offer.id}>
+                  <td>{offer.displayOrder}</td>
+                  <td className="font-medium">{offer.title}</td>
+                  <td>₹{offer.price}</td>
+                  <td><span className="category-badge">{offer.iconType}</span></td>
+                  <td>
+                    <span className={`status-badge ${offer.status.toLowerCase()}`}>
+                      {offer.status}
+                    </span>
+                  </td>
+                  <td className="actions-col">
+                    <button className="action-btn edit" onClick={() => handleOpenModal(offer)}>
+                      <Edit2 size={18} />
+                    </button>
+                    <button className="action-btn delete" onClick={() => handleDelete(offer.id)}>
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
+        ) : (
+          <div className="empty-state">No quick offers found.</div>
         )}
       </div>
 

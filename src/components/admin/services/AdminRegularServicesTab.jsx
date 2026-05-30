@@ -15,7 +15,6 @@ const CATEGORIES = [
 
 const AdminRegularServicesTab = () => {
   const [services, setServices] = useState([])
-  const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingService, setEditingService] = useState(null)
   
@@ -28,21 +27,13 @@ const AdminRegularServicesTab = () => {
   })
 
   useEffect(() => {
-    loadServices()
+    const unsub = regularServicesService.subscribeToAll((data) => {
+      const sorted = (data || []).sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+      setServices(sorted)
+    })
+    
+    return () => unsub && unsub()
   }, [])
-
-  const loadServices = async () => {
-    try {
-      setLoading(true)
-      const data = await regularServicesService.getAll()
-      data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-      setServices(data)
-    } catch (err) {
-      console.error('Failed to load regular services:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleOpenModal = (service = null) => {
     if (service) {
@@ -71,9 +62,6 @@ const AdminRegularServicesTab = () => {
       const serviceData = {
         ...formData,
         displayOrder: Number(formData.displayOrder)
-        // Price is kept as string in case of '₹500 / ₹800' formats, 
-        // but if it's strictly numeric, we can parse it. The prompt example had 
-        // '₹500 / ₹800' in original code, so let's keep it as string to allow text.
       }
 
       if (editingService) {
@@ -82,7 +70,6 @@ const AdminRegularServicesTab = () => {
         await regularServicesService.create(serviceData)
       }
       handleCloseModal()
-      loadServices()
     } catch (err) {
       console.error('Error saving regular service:', err)
     }
@@ -92,7 +79,6 @@ const AdminRegularServicesTab = () => {
     if (window.confirm('Delete this service?')) {
       try {
         await regularServicesService.remove(id)
-        loadServices()
       } catch (err) {
         console.error('Failed to delete:', err)
       }
@@ -113,9 +99,7 @@ const AdminRegularServicesTab = () => {
       </div>
 
       <div className="admin-table-container">
-        {loading ? (
-          <div className="empty-state">Loading...</div>
-        ) : (
+        {services.length > 0 ? (
           <table className="admin-table">
             <thead>
               <tr>
@@ -128,35 +112,31 @@ const AdminRegularServicesTab = () => {
               </tr>
             </thead>
             <tbody>
-              {services.length > 0 ? (
-                services.map(service => (
-                  <tr key={service.id}>
-                    <td>{service.displayOrder}</td>
-                    <td className="font-medium">{service.name}</td>
-                    <td><span className="category-badge">{service.category}</span></td>
-                    <td>{service.price}</td>
-                    <td>
-                      <span className={`status-badge ${service.status.toLowerCase()}`}>
-                        {service.status}
-                      </span>
-                    </td>
-                    <td className="actions-col">
-                      <button className="action-btn edit" onClick={() => handleOpenModal(service)}>
-                        <Edit2 size={18} />
-                      </button>
-                      <button className="action-btn delete" onClick={() => handleDelete(service.id)}>
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="empty-state">No regular services found.</td>
+              {services.map(service => (
+                <tr key={service.id}>
+                  <td>{service.displayOrder}</td>
+                  <td className="font-medium">{service.name}</td>
+                  <td><span className="category-badge">{service.category}</span></td>
+                  <td>{service.price}</td>
+                  <td>
+                    <span className={`status-badge ${service.status.toLowerCase()}`}>
+                      {service.status}
+                    </span>
+                  </td>
+                  <td className="actions-col">
+                    <button className="action-btn edit" onClick={() => handleOpenModal(service)}>
+                      <Edit2 size={18} />
+                    </button>
+                    <button className="action-btn delete" onClick={() => handleDelete(service.id)}>
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
+        ) : (
+          <div className="empty-state">No regular services found.</div>
         )}
       </div>
 

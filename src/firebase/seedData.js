@@ -74,7 +74,8 @@ export const seedDatabase = async () => {
     seedCollection('services', dummyServices);
     seedCollection('courses', dummyCourses);
     seedCollection('gallery', dummyGallery);
-    seedCollection('offers', dummyOffers);
+    // DISABLED: Do not auto-seed dummy offers. Admin should create offers through UI.
+    // seedCollection('offers', dummyOffers);
     seedCollection('testimonials', dummyTestimonials);
     seedCollection('enquiries', dummyEnquiries);
 

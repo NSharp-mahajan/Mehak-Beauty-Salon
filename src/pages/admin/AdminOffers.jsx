@@ -4,22 +4,21 @@ import { motion, AnimatePresence } from 'framer-motion'
 import offersService from '../../services/offersService'
 import './AdminOffers.css'
 
-const CATEGORIES = ['All', 'Seasonal', 'Hair', 'Facial', 'Packages']
+// AdminOffers is for Seasonal/Promotional offers ONLY
+// Quick Offers, Packages, Hair Offers are managed from Admin Services Manager
 
 const AdminOffers = () => {
   const [offers, setOffers] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterCategory, setFilterCategory] = useState('All')
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingOffer, setEditingOffer] = useState(null)
   
-  // Form State
+  // Form State - Only for Seasonal offers
   const [formData, setFormData] = useState({
     title: '',
-    category: 'Seasonal',
     offerPrice: '',
     originalPrice: '',
     description: '',
@@ -31,35 +30,39 @@ const AdminOffers = () => {
 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   useEffect(() => {
-    loadOffers()
-  }, [])
-
-  const loadOffers = async () => {
-    try {
-      setLoading(true)
-      setError('')
-      const data = await offersService.getAll()
-      setOffers(data || [])
-    } catch (err) {
-      console.error('Failed to load offers:', err)
-      setError('Failed to load offers. Please check your connection.')
-      setOffers([])
-    } finally {
+    setLoading(true)
+    setError('')
+    
+    const unsub = offersService.subscribeToAll((data) => {
+      const seasonalOffers = (data || []).filter(o => !o.category || o.category === 'Seasonal')
+      setOffers(seasonalOffers)
       setLoading(false)
-    }
-  }
+    })
+    
+    return () => unsub && unsub()
+  }, [])
 
   // Handlers
   const handleOpenModal = (offer = null) => {
     if (offer) {
       setEditingOffer(offer)
-      setFormData(offer)
+      setFormData({
+        title: offer.title,
+        offerPrice: offer.offerPrice,
+        originalPrice: offer.originalPrice || '',
+        description: offer.description || '',
+        startDate: offer.startDate || '',
+        endDate: offer.endDate || '',
+        status: offer.status || 'Active',
+        featured: offer.featured || false
+      })
     } else {
       setEditingOffer(null)
       setFormData({ 
-        title: '', category: 'Seasonal', offerPrice: '', originalPrice: '', 
+        title: '', offerPrice: '', originalPrice: '', 
         description: '', startDate: '', endDate: '', status: 'Active', featured: false 
       })
     }
@@ -82,27 +85,46 @@ const AdminOffers = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (saving) return
     setSaving(true)
     setError('')
+    setSuccess('')
     
     try {
-      const offerData = {
-        ...formData,
-        offerPrice: Number(formData.offerPrice),
-        originalPrice: formData.originalPrice ? Number(formData.originalPrice) : ''
+      // Basic validation
+      if (!formData.title || !formData.offerPrice || !formData.description) {
+        throw new Error('Please fill in all required fields.')
       }
 
-      if (editingOffer) {
-        await offersService.update(editingOffer.id, offerData)
-        setOffers(prev => prev.map(o => o.id === editingOffer.id ? { ...offerData, id: o.id } : o))
-      } else {
-        const newOffer = await offersService.create(offerData)
-        setOffers(prev => [...prev, newOffer])
+      const offerData = {
+        title: formData.title,
+        offerPrice: Number(formData.offerPrice),
+        originalPrice: formData.originalPrice ? Number(formData.originalPrice) : '',
+        description: formData.description,
+        startDate: formData.startDate || '',
+        endDate: formData.endDate || '',
+        status: formData.status,
+        featured: formData.featured,
+        category: 'Seasonal'
       }
-      handleCloseModal()
+
+      if (editingOffer && editingOffer.id) {
+        await offersService.update(editingOffer.id, offerData)
+        setSuccess('Offer updated successfully!')
+      } else {
+        await offersService.create(offerData)
+        setSuccess('Offer created successfully!')
+      }
+      
+      // Close modal after a short delay to show success message
+      setTimeout(() => {
+        setIsModalOpen(false)
+        setEditingOffer(null)
+        setSuccess('')
+      }, 1000)
     } catch (err) {
       console.error('Error saving offer:', err)
-      setError('Failed to save offer.')
+      setError(err.message || 'Failed to save offer.')
     } finally {
       setSaving(false)
     }
@@ -112,7 +134,6 @@ const AdminOffers = () => {
     if (window.confirm('Are you sure you want to delete this offer?')) {
       try {
         await offersService.remove(id)
-        setOffers(prev => prev.filter(o => o.id !== id))
       } catch (err) {
         console.error('Failed to delete offer:', err)
         alert('Failed to delete offer.')
@@ -125,11 +146,13 @@ const AdminOffers = () => {
     if (offer) {
       const newStatus = offer.status === 'Active' ? 'Inactive' : 'Active'
       try {
-        await offersService.update(id, { status: newStatus })
-        setOffers(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o))
+        console.log('Toggling status for ID:', id, 'New Status:', newStatus);
+        // Ensure id is a string as required by the service
+        await offersService.update(id.toString(), { status: newStatus })
+        console.log('Status toggle successful');
       } catch (err) {
         console.error('Failed to toggle status:', err)
-        alert('Failed to update status.')
+        alert('Failed to update status: ' + err.message)
       }
     }
   }
@@ -137,16 +160,15 @@ const AdminOffers = () => {
   // Filtering
   const filteredOffers = offers.filter(offer => {
     const matchesSearch = offer.title.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = filterCategory === 'All' || offer.category === filterCategory
-    return matchesSearch && matchesCategory
+    return matchesSearch
   })
 
   return (
     <div className="admin-page-container">
       <div className="admin-page-header">
         <div>
-          <h2>Offers Manager</h2>
-          <p>Manage seasonal offers, packages, and active promotions.</p>
+          <h2>Seasonal Offers Manager</h2>
+          <p>Manage temporary and seasonal promotional offers. For Quick Offers, Packages, and Hair Offers, use Admin Services Manager.</p>
         </div>
         <button className="admin-btn-primary" onClick={() => handleOpenModal()}>
           <Plus size={20} />
@@ -160,22 +182,10 @@ const AdminOffers = () => {
           <Search size={20} className="search-icon" />
           <input 
             type="text" 
-            placeholder="Search offers..." 
+            placeholder="Search seasonal offers..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </div>
-        
-        <div className="category-filter">
-          {CATEGORIES.map(cat => (
-            <button 
-              key={cat}
-              className={`filter-chip ${filterCategory === cat ? 'active' : ''}`}
-              onClick={() => setFilterCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -183,8 +193,8 @@ const AdminOffers = () => {
       <div className="admin-offers-grid">
         {loading ? (
           <div className="empty-state-card">Loading offers...</div>
-        ) : filteredOffers.length > 0 ? (
-          filteredOffers.map((offer, index) => (
+        ) : offers.length > 0 ? (
+          offers.map((offer, index) => (
             <motion.div 
               key={offer.id}
               className={`admin-offer-card ${offer.featured ? 'featured' : ''} ${offer.status === 'Inactive' ? 'inactive-card' : ''}`}
@@ -247,7 +257,7 @@ const AdminOffers = () => {
         ) : (
           <div className="empty-state-card">
             <Tag size={48} opacity={0.2} />
-            <p>No offers found matching your filters.</p>
+            <p>No seasonal offers found. Create one to get started.</p>
           </div>
         )}
       </div>
@@ -271,6 +281,7 @@ const AdminOffers = () => {
               
               <form onSubmit={handleSubmit} className="admin-modal-form">
                 {error && <div className="admin-login-error" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
+                {success && <div className="admin-login-success" style={{color: 'green', marginBottom: '1rem'}}>{success}</div>}
                 <div className="form-row">
                   <div className="form-group">
                     <label>Offer Title</label>
@@ -282,14 +293,6 @@ const AdminOffers = () => {
                       placeholder="e.g. Summer Special"
                       required
                     />
-                  </div>
-                  <div className="form-group">
-                    <label>Category</label>
-                    <select name="category" value={formData.category} onChange={handleInputChange}>
-                      {CATEGORIES.filter(c => c !== 'All').map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
                   </div>
                 </div>
 
