@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { Plus, Search, Edit2, Trash2, X, Image as ImageIcon } from 'lucide-react'
+import React, { useState, useEffect, useMemo } from 'react'
+import { Plus, Search, Edit2, Trash2, X, Image as ImageIcon, Filter } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import galleryService from '../../services/galleryService'
 import ImageUploader from '../../components/admin/ImageUploader'
 import './AdminGallery.css'
-
-const CATEGORIES = ['All', 'Bridal Makeup', 'Hair Styling', 'Spa Therapy', 'Skin Care', 'Salon Interior', 'Beauty Courses', 'Party Makeup', 'Lehenga Collection']
 
 const AdminGallery = () => {
   const [galleryItems, setGalleryItems] = useState([])
@@ -20,7 +18,7 @@ const AdminGallery = () => {
   // Form State
   const [formData, setFormData] = useState({
     title: '',
-    category: 'Bridal Makeup',
+    category: '',
     url: '',
     imagePublicId: '',
     alt: '',
@@ -31,31 +29,41 @@ const AdminGallery = () => {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    loadGallery()
+    // Using subscribeToAll for real-time updates
+    const unsub = galleryService.subscribeToAll((data) => {
+      setGalleryItems(data || [])
+      setLoading(false)
+    }, (err) => {
+      console.error('Failed to subscribe to gallery:', err)
+      setError('Failed to load gallery.')
+      setLoading(false)
+    })
+    
+    return () => unsub && unsub()
   }, [])
 
-  const loadGallery = async () => {
-    try {
-      setLoading(true)
-      const data = await galleryService.getAll()
-      setGalleryItems(data)
-    } catch (err) {
-      console.error('Failed to load gallery:', err)
-      setError('Failed to load gallery.')
-    } finally {
-      setLoading(false)
-    }
-  }
+  // Dynamic categories from real data
+  const dynamicCategories = useMemo(() => {
+    const categories = ['All', ...new Set(galleryItems.map(item => item.category).filter(Boolean))]
+    return categories
+  }, [galleryItems])
 
   // Handlers
   const handleOpenModal = (item = null) => {
     if (item) {
       setEditingItem(item)
-      setFormData(item)
+      setFormData({
+        title: item.title || '',
+        category: item.category || '',
+        url: item.url || '',
+        imagePublicId: item.imagePublicId || '',
+        alt: item.alt || '',
+        status: item.status || 'Active'
+      })
     } else {
       setEditingItem(null)
       setFormData({ 
-        title: '', category: 'Bridal Makeup', url: '', imagePublicId: '', alt: '', status: 'Active' 
+        title: '', category: '', url: '', imagePublicId: '', alt: '', status: 'Active' 
       })
     }
     setError('')
@@ -82,31 +90,44 @@ const AdminGallery = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (!formData.url) {
+      setError('Please upload an image first.')
+      return
+    }
+    if (!formData.category.trim()) {
+      setError('Please provide a category/tag.')
+      return
+    }
+    
     setSaving(true)
     setError('')
     
     try {
-      if (editingItem) {
-        await galleryService.update(editingItem.id, formData)
-        setGalleryItems(prev => prev.map(img => img.id === editingItem.id ? { ...formData, id: img.id } : img))
+      const dataToSave = {
+        ...formData,
+        category: formData.category.trim(),
+        updatedAt: new Date().toISOString()
+      }
+      
+      if (!editingItem) {
+        dataToSave.createdAt = new Date().toISOString()
+        await galleryService.create(dataToSave)
       } else {
-        const newImg = await galleryService.create(formData)
-        setGalleryItems(prev => [...prev, newImg])
+        await galleryService.update(editingItem.id, dataToSave)
       }
       handleCloseModal()
     } catch (err) {
       console.error('Error saving image:', err)
-      setError('Failed to save image.')
+      setError('Failed to save image. ' + (err.message || ''))
     } finally {
       setSaving(false)
     }
   }
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this image?')) {
+    if (window.confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
       try {
         await galleryService.remove(id)
-        setGalleryItems(prev => prev.filter(img => img.id !== id))
       } catch (err) {
         console.error('Failed to delete image:', err)
         alert('Failed to delete image.')
@@ -114,9 +135,19 @@ const AdminGallery = () => {
     }
   }
 
+  const toggleStatus = async (item) => {
+    const newStatus = item.status === 'Active' ? 'Inactive' : 'Active'
+    try {
+      await galleryService.update(item.id, { status: newStatus })
+    } catch (err) {
+      console.error('Failed to toggle status:', err)
+    }
+  }
+
   // Filtering
   const filteredItems = galleryItems.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = (item.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         (item.category || '').toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = filterCategory === 'All' || item.category === filterCategory
     return matchesSearch && matchesCategory
   })
@@ -126,7 +157,7 @@ const AdminGallery = () => {
       <div className="admin-page-header">
         <div>
           <h2>Gallery Manager</h2>
-          <p>Upload and manage website portfolio images.</p>
+          <p>Control your portfolio images. No dummy data allowed.</p>
         </div>
         <button className="admin-btn-primary" onClick={() => handleOpenModal()}>
           <Plus size={20} />
@@ -140,29 +171,44 @@ const AdminGallery = () => {
           <Search size={20} className="search-icon" />
           <input 
             type="text" 
-            placeholder="Search by title..." 
+            placeholder="Search title or tag..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         
-        <div className="category-filter">
-          {CATEGORIES.map(cat => (
-            <button 
-              key={cat}
-              className={`filter-chip ${filterCategory === cat ? 'active' : ''}`}
-              onClick={() => setFilterCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {dynamicCategories.length > 1 && (
+          <div className="category-filter">
+            <div className="filter-label"><Filter size={14} /> Filters:</div>
+            {dynamicCategories.map(cat => (
+              <button 
+                key={cat}
+                className={`filter-chip ${filterCategory === cat ? 'active' : ''}`}
+                onClick={() => setFilterCategory(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Gallery Grid */}
       <div className="admin-gallery-grid">
         {loading ? (
-          <div className="empty-gallery-state">Loading gallery...</div>
+          <div className="empty-gallery-state">
+            <div className="loading-spinner"></div>
+            <p>Loading your gallery...</p>
+          </div>
+        ) : galleryItems.length === 0 ? (
+          <div className="empty-gallery-state">
+            <ImageIcon size={64} strokeWidth={1} />
+            <h3>Gallery is empty</h3>
+            <p>Upload your first work image to get started.</p>
+            <button className="admin-btn-primary" style={{ marginTop: '1rem' }} onClick={() => handleOpenModal()}>
+              Upload Now
+            </button>
+          </div>
         ) : filteredItems.length > 0 ? (
           filteredItems.map((item, index) => (
             <motion.div 
@@ -173,21 +219,20 @@ const AdminGallery = () => {
               transition={{ duration: 0.4, delay: index * 0.05 }}
             >
               <div className="gallery-card-img-wrapper">
-                {item.url ? (
-                  <img src={item.url} alt={item.alt || item.title} />
-                ) : (
-                  <div className="gallery-placeholder">
-                    <ImageIcon size={40} />
-                  </div>
-                )}
-                <div className={`gallery-card-status ${(item.status || 'Active').toLowerCase()}`}>
+                <img src={item.url} alt={item.alt || item.title} loading="lazy" />
+                <div 
+                  className={`gallery-card-status ${(item.status || 'Active').toLowerCase()}`}
+                  onClick={() => toggleStatus(item)}
+                  style={{ cursor: 'pointer' }}
+                  title="Click to toggle status"
+                >
                   {item.status || 'Active'}
                 </div>
                 <div className="gallery-card-actions">
-                  <button className="action-btn edit-solid" onClick={() => handleOpenModal(item)}>
+                  <button className="action-btn edit-solid" onClick={() => handleOpenModal(item)} title="Edit">
                     <Edit2 size={16} />
                   </button>
-                  <button className="action-btn delete-solid" onClick={() => handleDelete(item.id)}>
+                  <button className="action-btn delete-solid" onClick={() => handleDelete(item.id)} title="Delete">
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -201,7 +246,10 @@ const AdminGallery = () => {
         ) : (
           <div className="empty-gallery-state">
             <ImageIcon size={48} opacity={0.2} />
-            <p>No images found matching your filters.</p>
+            <p>No images found matching your search.</p>
+            <button className="admin-btn-secondary" onClick={() => {setSearchQuery(''); setFilterCategory('All');}}>
+              Clear Filters
+            </button>
           </div>
         )}
       </div>
@@ -224,13 +272,14 @@ const AdminGallery = () => {
               </div>
               
               <form onSubmit={handleSubmit} className="admin-modal-form">
-                {error && <div className="admin-login-error" style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
+                {error && <div className="admin-error-banner">{error}</div>}
+                
                 <div className="form-group full-width">
                   <ImageUploader
                     onImageSelect={handleImageSelect}
                     existingImageUrl={formData.url}
                     existingPublicId={formData.imagePublicId}
-                    label="Gallery Image"
+                    label="Portfolio Image"
                   />
                 </div>
 
@@ -242,36 +291,46 @@ const AdminGallery = () => {
                       name="title"
                       value={formData.title}
                       onChange={handleInputChange}
-                      placeholder="e.g. Bridal Look 2024"
+                      placeholder="e.g. Elegant Bridal Look"
                       required
                     />
                   </div>
                   <div className="form-group">
-                    <label>Category</label>
-                    <select name="category" value={formData.category} onChange={handleInputChange}>
-                      {CATEGORIES.filter(c => c !== 'All').map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
+                    <label>Tag / Category</label>
+                    <input 
+                      type="text" 
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                      placeholder="e.g. Bridal Makeup, Hair Work"
+                      required
+                      list="prev-categories"
+                    />
+                    <datalist id="prev-categories">
+                      {dynamicCategories.filter(c => c !== 'All').map(cat => (
+                        <option key={cat} value={cat} />
                       ))}
-                    </select>
+                    </datalist>
+                    <small style={{ color: '#888', marginTop: '4px' }}>Type a new tag or select existing</small>
                   </div>
                 </div>
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label>Alt Text (SEO)</label>
+                    <label>Alt Text (Optional - SEO)</label>
                     <input 
                       type="text" 
                       name="alt"
                       value={formData.alt}
                       onChange={handleInputChange}
-                      placeholder="e.g. Traditional red bridal lehenga makeup"
+                      placeholder="Describe the image for search engines"
                     />
                   </div>
                   <div className="form-group">
-                    <label>Status</label>
+                    <label>Display Status</label>
                     <select name="status" value={formData.status} onChange={handleInputChange}>
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                      <option value="Active">Active (Visible to public)</option>
+                      <option value="Inactive">Inactive (Hidden)</option>
                     </select>
                   </div>
                 </div>
@@ -281,7 +340,7 @@ const AdminGallery = () => {
                     Cancel
                   </button>
                   <button type="submit" className="admin-btn-primary" disabled={saving}>
-                    {saving ? 'Saving...' : (editingItem ? 'Save Changes' : 'Upload Image')}
+                    {saving ? 'Saving...' : (editingItem ? 'Save Changes' : 'Upload to Gallery')}
                   </button>
                 </div>
               </form>

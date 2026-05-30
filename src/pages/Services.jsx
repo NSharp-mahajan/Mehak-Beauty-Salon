@@ -42,12 +42,13 @@ const overlayVariants = {
 // Helper for dynamic icons
 const renderIcon = (type) => {
   switch (type) {
-    case 'Scissors': return <Scissors size={24} />
-    case 'Droplet': return <Droplet size={24} />
-    case 'Sparkles': return <Sparkles size={24} />
-    case 'Crown': return <Crown size={24} />
-    case 'Star': return <Star size={24} />
-    default: return <Sparkles size={24} />
+    case 'Scissors': return <Scissors size={28} />
+    case 'Droplet': return <Droplet size={28} />
+    case 'Sparkles': return <Sparkles size={28} />
+    case 'Crown': return <Crown size={28} />
+    case 'Star': return <Star size={28} />
+    case 'Tag': return <Tag size={28} />
+    default: return <Sparkles size={28} />
   }
 }
 

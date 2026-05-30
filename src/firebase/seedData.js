@@ -73,7 +73,7 @@ export const seedDatabase = async () => {
 
     seedCollection('services', dummyServices);
     seedCollection('courses', dummyCourses);
-    seedCollection('gallery', dummyGallery);
+    // seedCollection('gallery', dummyGallery); // DISABLED: Start with empty gallery
     // DISABLED: Do not auto-seed dummy offers. Admin should create offers through UI.
     // seedCollection('offers', dummyOffers);
     seedCollection('testimonials', dummyTestimonials);
