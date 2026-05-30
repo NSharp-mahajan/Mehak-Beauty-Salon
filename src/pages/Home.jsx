@@ -25,7 +25,7 @@ import coursesService from '../services/coursesService'
 import galleryService from '../services/galleryService'
 import testimonialsService from '../services/testimonialsService'
 import contentService from '../services/contentService'
-import seasonalOffersService from '../services/seasonalOffersService'
+import offersService from '../services/offersService'
 import { createWhatsAppLink } from '../utils/whatsapp'
 
 // Fallback Data
@@ -76,27 +76,25 @@ const Home = () => {
   const [coursesData, setCoursesData] = useState([])
   const [galleryData, setGalleryData] = useState([])
   const [testimonialsData, setTestimonialsData] = useState([])
-  const [offersData, setOffersData] = useState([])
   const [contentData, setContentData] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [servicesRes, coursesRes, galleryRes, testimonialsRes, contentRes, offersRes] = await Promise.all([
+        const [servicesRes, coursesRes, galleryRes, testimonialsRes, contentRes] = await Promise.all([
           servicesService.getAll(),
           coursesService.getAll(),
           galleryService.getAll(),
           testimonialsService.getAll(),
-          contentService.getById('main'),
-          seasonalOffersService.getAll()
+          contentService.getById('main')
         ])
 
         setServicesData(servicesRes.filter(s => s.status === 'Active'))
         setCoursesData(coursesRes.filter(c => c.status === 'Active'))
         setGalleryData(galleryRes)
         setTestimonialsData(testimonialsRes.filter(t => t.status === 'Approved'))
-        setOffersData(offersRes.filter(o => o.status === 'Active'))
+        
         setContentData(contentRes)
       } catch (err) {
         console.error("Failed to load home data:", err)
@@ -114,17 +112,9 @@ const Home = () => {
       }
     })
 
-    // Subscribe to real-time seasonal offers updates
-    const unsubscribeOffers = seasonalOffersService.subscribeToAll((offersRes) => {
-      if (offersRes) {
-        setOffersData(offersRes.filter(o => o.status === 'Active'))
-      }
-    })
-
     // Cleanup subscription on unmount
     return () => {
       if (unsubscribeContent) unsubscribeContent()
-      if (unsubscribeOffers) unsubscribeOffers()
     }
   }, [])
 
@@ -132,7 +122,7 @@ const Home = () => {
   const displayCourses = coursesData
   const displayGallery = galleryData
   const displayTestimonials = testimonialsData
-
+  
   const heroData = contentData?.hero || {}
   const aboutData = contentData?.about || {}
   const ctaData = contentData?.cta || {}
@@ -504,82 +494,6 @@ const Home = () => {
           </div>
         </motion.div>
       </section>
-
-      {/* Offers Section */}
-      {offersData.length > 0 && (
-        <section className="offers-section">
-          <div className="offers-container">
-            <motion.div 
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="offers-header"
-            >
-              <span className="offers-badge">Exclusive Deals</span>
-              <h2 className="offers-title">Limited Time Offers</h2>
-              <p className="offers-subtitle">Grab our best beauty and wellness deals before they're gone!</p>
-            </motion.div>
-
-            <div className="offers-grid">
-              {offersData.map((offer, index) => (
-                <motion.div
-                  key={offer.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`offer-card ${offer.featured ? 'featured' : ''}`}
-                >
-                  {offer.featured && (
-                    <div className="offer-featured-tag">
-                      <Star size={12} fill="currentColor" /> Featured
-                    </div>
-                  )}
-                  <div className="offer-content">
-                    <div className="offer-icon">
-                      <Tag size={24} />
-                    </div>
-                    <h3 className="offer-title">{offer.title}</h3>
-                    <p className="offer-description">{offer.description}</p>
-                    
-                    <div className="offer-pricing">
-                      <div className="price-wrapper">
-                        <span className="original-price">₹{offer.originalPrice}</span>
-                        <span className="offer-price">₹{offer.offerPrice}</span>
-                      </div>
-                      {offer.originalPrice > offer.offerPrice && (
-                        <div className="discount-badge">
-                          <Percent size={12} />
-                          {Math.round(((offer.originalPrice - offer.offerPrice) / offer.originalPrice) * 100)}% OFF
-                        </div>
-                      )}
-                    </div>
-
-                    {(offer.startDate || offer.endDate) && (
-                      <div className="offer-validity">
-                        <Clock size={14} />
-                        <span>Valid: {offer.startDate || 'Now'} - {offer.endDate || 'Limited Time'}</span>
-                      </div>
-                    )}
-
-                    <button 
-                      className="offer-btn"
-                      onClick={() => window.open(createWhatsAppLink({ 
-                        type: 'service', 
-                        name: offer.title,
-                        price: offer.offerPrice,
-                        category: offer.category 
-                      }), '_blank')}
-                    >
-                      Claim Offer <ArrowRight size={16} />
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="testimonials-section">
         <motion.div

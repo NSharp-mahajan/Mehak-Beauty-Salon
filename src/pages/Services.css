@@ -111,6 +111,92 @@
   box-shadow: 0 12px 35px rgba(198, 161, 110, 0.6);
 }
 
+/* Seasonal Offers Section */
+.seasonal-offers-section {
+  padding: 80px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.featured-offer-tag {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--gold);
+  color: var(--espresso);
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+.no-offers-message {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--cream);
+  border-radius: 24px;
+  border: 1px dashed var(--gold);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.no-offers-message p {
+  font-size: 1.25rem;
+  color: var(--taupe);
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+
+.price-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.original-price {
+  font-size: 1rem;
+  text-decoration: line-through;
+  color: var(--taupe);
+  opacity: 0.7;
+}
+
+.discount-badge {
+  background: #e11d48;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.offer-validity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--taupe);
+  margin-bottom: 1.5rem;
+  opacity: 0.8;
+}
+
+.offer-description {
+  font-size: 1rem;
+  color: var(--taupe);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* Section Styling */
 .quick-offers-section,
 .packages-section,

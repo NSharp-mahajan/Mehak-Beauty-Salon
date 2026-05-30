@@ -1,12 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, Scissors, Droplet, Clock, Star, Crown, X, ChevronRight, Gem, Flame, Palette } from 'lucide-react'
+import { Sparkles, Scissors, Droplet, Clock, Star, Crown, X, ChevronRight, Gem, Flame, Palette, Tag, Percent } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import './Services.css'
 import servicesBg from '../assets/images/services.png'
 import relaxingSpaSession from '../assets/images/Relaxingspasession.webp'
 
 // Services - each manages its own collection
-import offersService from '../services/offersService'
+import seasonalOffersService from '../services/seasonalOffersService'
 import quickOffersService from '../services/quickOffersService'
 import packagesService from '../services/packagesService'
 import hairOffersService from '../services/hairOffersService'
@@ -79,8 +79,6 @@ const Services = () => {
     const unsubSeasonalOffers = seasonalOffersService.subscribeToAll((data) => {
       const filtered = processOffers(data)
       setSeasonalOffers(filtered)
-    }, (error) => {
-      console.error('Error loading seasonal offers:', error)
     })
     unsubscribers.push(unsubSeasonalOffers)
 
@@ -202,7 +200,7 @@ const Services = () => {
         <div className="offer-hero-bg" style={bgStyle}></div>
         
         {/* Show offer content only if seasonal featured offer exists */}
-        {seasonalFeaturedOffer && (
+        {seasonalFeaturedOffer ? (
           <div className="hero-content">
             <motion.div
               className="badge"
@@ -254,6 +252,24 @@ const Services = () => {
             >
               Book Offer Now - ₹{seasonalFeaturedOffer.offerPrice}
             </motion.button>
+          </div>
+        ) : (
+          <div className="hero-content">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              Our Beauty Services
+            </motion.h1>
+            <motion.p
+              className="hero-subheading"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            >
+              Currently no offers available, visit our store for more offers
+            </motion.p>
           </div>
         )}
       </motion.section>
