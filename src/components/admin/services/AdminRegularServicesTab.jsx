@@ -10,7 +10,8 @@ const CATEGORIES = [
   'Hands & Feet',
   'Nails',
   'Hair Treatments',
-  'Hair Color'
+  'Hair Color',
+  'Makeup'
 ]
 
 const AdminRegularServicesTab = () => {
@@ -30,6 +31,25 @@ const AdminRegularServicesTab = () => {
     const unsub = regularServicesService.subscribeToAll((data) => {
       const sorted = (data || []).sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
       setServices(sorted)
+
+      // Auto-seed makeup if missing
+      if (data && data.length > 0) {
+        const hasMakeup = data.some(s => s.category === 'Makeup');
+        if (!hasMakeup && !window.__makeupSeeded) {
+          window.__makeupSeeded = true;
+          const makeupData = [
+            { name: 'Basic Party Makeup', category: 'Makeup', price: '1500', status: 'Active', displayOrder: 35 },
+            { name: 'Advance Party Makeup', category: 'Makeup', price: '2500', status: 'Active', displayOrder: 36 },
+            { name: 'Engagement Makeup', category: 'Makeup', price: '3500', status: 'Active', displayOrder: 37 },
+            { name: 'Shagan Makeup', category: 'Makeup', price: '4500', status: 'Active', displayOrder: 38 },
+            { name: 'Basic Bridal Makeup', category: 'Makeup', price: '6000', status: 'Active', displayOrder: 39 },
+            { name: 'Advance Bridal Makeup', category: 'Makeup', price: '8000', status: 'Active', displayOrder: 40 }
+          ];
+          makeupData.forEach(item => {
+            regularServicesService.create(item).catch(err => console.error(err));
+          });
+        }
+      }
     })
     
     return () => unsub && unsub()
